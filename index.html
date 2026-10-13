@@ -12083,6 +12083,15 @@
             if (pCardStat) pCardStat.style.display = 'none';
             if (pPowerStat) pPowerStat.style.display = 'none';
 
+            // [FIX] Penonton tidak ikut main -> sembunyikan semua notifikasi khusus pemain
+            // (penalty "Anda harus tambah kartu", giliran, dibebaskan). Elemen ini tidak
+            // pernah di-reset oleh updatePlayerUI() untuk spectator, jadi bisa nyangkut
+            // dari match sebelumnya / state lama.
+            ['player-penalty', 'player-turn-notification', 'player-freed-notification'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
             // Show all players' hands as mini (65%) scaled cards in player-deck area
             const deckDiv = document.getElementById('player-deck');
             if (deckDiv && gs.players) {
@@ -13991,6 +14000,138 @@
         };
         // ── END PAUSE VOTING ────────────────────────────────────────────────
 
+        // [FIX RACE LEAVE_MATCH] Penanda "LEAVE_MATCH sudah dikirim tapi ACK dari server belum
+        // diterima". Dipakai Tantang/terima undangan agar tidak membuat/bergabung room baru
+        // lewat socket baru SEBELUM server selesai melepas room lama (penyebab error
+        // "Sudah berada di room lain"). Nilainya selalu kembali false lewat ACK atau timeout.
+        window._leaveMatchPending = false;
+        window._waitLeaveMatchSettled = function(maxMs) {
+            return new Promise(function(resolve) {
+                if (!window._leaveMatchPending) { resolve(); return; }
+                var t0 = Date.now();
+                var iv = setInterval(function() {
+                    if (!window._leaveMatchPending || Date.now() - t0 >= maxMs) {
+                        clearInterval(iv);
+                        resolve();
+                    }
+                }, 50);
+            });
+        };
+
+        // ===== [FIX LEAVE_MATCH HILANG] Catatan "keluar belum terkonfirmasi" =====
+        // Jika LEAVE_MATCH tidak sempat sampai/ACK tidak diterima (koneksi lemah/putus), catatan
+        // disimpan di localStorage dan dikirim ulang lewat socket SEMENTARA yang terpisah
+        // (tidak menyentuh socket utama/alur reconnect yang sudah ada). Server memakai
+        // playerId+userUid dari payload untuk melepas pemain. Key sengaja DI LUAR objek LS
+        // agar tidak ikut terhapus oleh lsClear() di goToHome().
+        var _PL_KEY = 'cgn_pendingLeave';
+        var _PL_TTL_MS = 15 * 60 * 1000;   // catatan kadaluarsa setelah 15 menit
+        var _PL_MAX_TRY = 6;               // maksimal 6 kali percobaan kirim ulang
+        var _PL_MAX_ITEMS = 5;
+        var _plFlushing = false;
+        function _plReadAll() {
+            var out = [];
+            try {
+                var raw = localStorage.getItem(_PL_KEY);
+                var arr = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(arr)) arr = [];
+                var now = Date.now();
+                arr.forEach(function(p) {
+                    if (p && typeof p.roomId === 'string' && p.roomId &&
+                        typeof p.ts === 'number' && now - p.ts < _PL_TTL_MS &&
+                        (p.tries || 0) < _PL_MAX_TRY) out.push(p);
+                });
+            } catch (e) { out = []; }
+            return out;
+        }
+        function _plWriteAll(arr) {
+            try {
+                if (!arr.length) localStorage.removeItem(_PL_KEY);
+                else localStorage.setItem(_PL_KEY, JSON.stringify(arr.slice(-_PL_MAX_ITEMS)));
+            } catch (e) {}
+        }
+        function _plSave(entry) {
+            var arr = _plReadAll().filter(function(p) { return p.roomId !== entry.roomId; });
+            arr.push(entry);
+            _plWriteAll(arr);
+        }
+        function _plClear(roomId) {
+            _plWriteAll(_plReadAll().filter(function(p) { return p.roomId !== roomId; }));
+        }
+        function _plBumpTry(roomId) {
+            _plWriteAll(_plReadAll().map(function(p) {
+                if (p.roomId === roomId) p.tries = (p.tries || 0) + 1;
+                return p;
+            }));
+        }
+        // Kirim satu LEAVE_MATCH lewat socket sementara. Resolve true hanya jika ACK diterima.
+        function _plSendOne(p, maxMs) {
+            return new Promise(function(resolve) {
+                var done = false, sock = null, timer = null;
+                var finish = function(ok) {
+                    if (done) return; done = true;
+                    clearTimeout(timer);
+                    if (sock) {
+                        sock.onopen = sock.onmessage = sock.onerror = sock.onclose = null;
+                        try { sock.close(); } catch (e) {}
+                    }
+                    resolve(!!ok);
+                };
+                timer = setTimeout(function() { finish(false); }, Math.max(800, maxMs));
+                try {
+                    sock = new WebSocket(p.serverUrl || getServerUrl());
+                    sock.onopen = function() {
+                        // Cek ulang: jika user sudah masuk lagi ke room itu, jangan dikeluarkan.
+                        if (currentRoomId && currentRoomId === p.roomId) { finish(true); return; }
+                        try {
+                            sock.send(JSON.stringify({ type: 'LEAVE_MATCH', roomId: p.roomId, isSpectator: !!p.isSpectator, playerId: p.playerId || null, userUid: p.userUid || null }));
+                        } catch (e) { finish(false); }
+                    };
+                    sock.onmessage = function(ev) {
+                        try {
+                            var d = JSON.parse(ev.data);
+                            if (d && d.type === 'LEAVE_MATCH_ACK' && d.roomId === p.roomId) finish(true);
+                        } catch (e) {}
+                    };
+                    sock.onerror = function() { finish(false); };
+                    sock.onclose = function() { finish(false); };
+                } catch (e) { finish(false); }
+            });
+        }
+        window._hasPendingLeave = function() { return _plReadAll().length > 0; };
+        // Kirim ulang semua catatan keluar yang belum terkonfirmasi. Resolve true bila sudah bersih.
+        window._flushPendingLeave = async function(maxMs) {
+            try {
+                if (_plFlushing) {
+                    var t0 = Date.now();
+                    while (_plFlushing && Date.now() - t0 < (maxMs || 4000)) {
+                        await new Promise(function(r) { setTimeout(r, 50); });
+                    }
+                    return _plReadAll().length === 0;
+                }
+                _plFlushing = true;
+                try {
+                    var deadline = Date.now() + (maxMs || 4000);
+                    var list = _plReadAll();
+                    for (var i = 0; i < list.length; i++) {
+                        var p = list[i];
+                        var left = deadline - Date.now();
+                        if (left < 800) break;
+                        if (currentRoomId && currentRoomId === p.roomId) { _plClear(p.roomId); continue; }
+                        var ok = await _plSendOne(p, left);
+                        if (ok) _plClear(p.roomId); else _plBumpTry(p.roomId);
+                    }
+                } finally { _plFlushing = false; }
+            } catch (e) { _plFlushing = false; }
+            return _plReadAll().length === 0;
+        };
+        // Coba kirim ulang saat internet kembali dan beberapa detik setelah halaman dimuat.
+        window.addEventListener('online', function() {
+            setTimeout(function() { try { window._flushPendingLeave(6000); } catch (e) {} }, 1500);
+        });
+        setTimeout(function() { try { window._flushPendingLeave(6000); } catch (e) {} }, 6000);
+        // ===== akhir catatan keluar belum terkonfirmasi =====
+
         window.goToHome = function goToHome() {
             if (goToHomeInProgress) return; // guard double-click
             goToHomeInProgress = true;
@@ -14179,12 +14320,28 @@
             // Jika tidak ada pending save (surrender sudah selesai), tutup setelah 200ms.
             const _ws = ws;
             const _roomId = currentRoomId;
+            const _myPidForLeave = myPlayerId; // [FIX] dikirim ke server sbg cadangan identitas
             stopClientKeepAlive();
             ws = null; // null-kan segera agar tidak ada handler lain yang pakai
             // Putus handler onclose/onerror segera agar tidak ada yang bereaksi ke
             // penutupan socket yang memang kita sengaja lakukan sendiri di bawah ini.
             if (_ws) { _ws.onclose = null; _ws.onerror = null; }
             _endGameShown = false; // reset untuk pertandingan berikutnya
+            // [FIX LEAVE_MATCH HILANG] Catat dulu bahwa user keluar dari room ini. Catatan dihapus
+            // saat ACK server diterima; jika tidak (koneksi lemah/putus) akan dikirim ulang nanti.
+            if (_roomId && (_wasSpectator || (_myPidForLeave && currentUser))) {
+                try {
+                    _plSave({
+                        roomId: _roomId,
+                        playerId: _myPidForLeave || null,
+                        userUid: currentUser ? currentUser.uid : null,
+                        isSpectator: !!_wasSpectator,
+                        serverUrl: (_ws && _ws.url) ? _ws.url : getServerUrl(),
+                        ts: Date.now(),
+                        tries: 0
+                    });
+                } catch (_e) {}
+            }
             if (_ws && _ws.readyState === WebSocket.OPEN && _roomId) {
                 // [FIX RACE LEAVE_MATCH vs koneksi lemah] Sebelumnya socket langsung ditutup
                 // 200ms setelah LEAVE_MATCH dikirim, tanpa menunggu server benar-benar
@@ -14199,6 +14356,7 @@
                 const _finishLeaveClose = () => {
                     if (_leaveAckHandled) return;
                     _leaveAckHandled = true;
+                    window._leaveMatchPending = false;
                     _ws.onmessage = null;
                     try { _ws.close(); } catch(e) {}
                 };
@@ -14206,11 +14364,13 @@
                     try {
                         const _ackData = JSON.parse(ev.data);
                         if (_ackData && _ackData.type === 'LEAVE_MATCH_ACK' && _ackData.roomId === _roomId) {
+                            _plClear(_roomId);
                             _finishLeaveClose();
                         }
                     } catch(e) {}
                 };
-                try { _ws.send(JSON.stringify({ type: 'LEAVE_MATCH', roomId: _roomId, isSpectator: !!_wasSpectator })); } catch(e) {}
+                window._leaveMatchPending = true;
+                try { _ws.send(JSON.stringify({ type: 'LEAVE_MATCH', roomId: _roomId, isSpectator: !!_wasSpectator, playerId: _myPidForLeave || null, userUid: (currentUser ? currentUser.uid : null) })); } catch(e) {}
                 // [FIX] Fallback timeout dinaikkan sedikit (200ms → 1200ms) sebagai jaring
                 // pengaman kalau LEAVE_MATCH_ACK tidak kunjung datang, tanpa mengubah alur
                 // pindah ke halaman utama (itu tetap instan seperti sebelumnya).
@@ -14220,6 +14380,11 @@
                 _ws.onmessage = null;
                 try { _ws.close(); } catch(e) {}
             }
+
+            // [FIX LEAVE_MATCH HILANG] Jika ACK tidak datang / socket tidak terbuka, kirim ulang
+            // lewat socket sementara setelah jendela penutupan di atas lewat. Jika catatan sudah
+            // dihapus oleh ACK, pemanggilan ini tidak melakukan apa pun.
+            setTimeout(function() { try { window._flushPendingLeave(6000); } catch (_e) {} }, (_pendingWinSave ? 5000 : 1200) + 1500);
 
             // Reset semua state game
             currentRoomId = null;
@@ -17810,6 +17975,13 @@
             const _overlay = document.getElementById('kostum-picker-overlay');
             _overlay.classList.add('kostum-connecting');
 
+            // [FIX RACE LEAVE_MATCH] Jika baru saja keluar dari pertandingan, tunggu ACK server
+            // (maks 2 detik) sebelum membuat room baru. Normalnya langsung lanjut (tanpa jeda).
+            try { if (window._waitLeaveMatchSettled) await window._waitLeaveMatchSettled(2000); } catch(_) {}
+            // [FIX LEAVE_MATCH HILANG] Jika masih ada catatan keluar yang belum terkonfirmasi,
+            // coba kirim ulang dulu (maks 3 detik). Jika gagal tetap lanjut seperti biasa.
+            try { if (window._hasPendingLeave && window._hasPendingLeave()) await window._flushPendingLeave(3000); } catch(_) {}
+
             // Pastikan WS tersambung sebelum ubah state apapun
             if (!ws || ws.readyState !== WebSocket.OPEN) {
                 await _ensureWsConnected();
@@ -18598,6 +18770,14 @@
 
             try {
                 // Sambungkan WS lalu kirim JOIN — jangan tampilkan lobby dulu, tunggu konfirmasi server
+                // [FIX RACE LEAVE_MATCH] tunggu ACK keluar dari match sebelumnya (maks 2 detik)
+                // dan kirim ulang catatan keluar yang belum terkonfirmasi (maks 3 detik).
+                // Toast hanya muncul jika memang ada yang perlu ditunggu.
+                if (window._leaveMatchPending || (window._hasPendingLeave && window._hasPendingLeave())) {
+                    showToast('⏳ Menyelesaikan keluar dari pertandingan sebelumnya...', 'info');
+                }
+                try { if (window._waitLeaveMatchSettled) await window._waitLeaveMatchSettled(2000); } catch(_) {}
+                try { if (window._hasPendingLeave && window._hasPendingLeave()) await window._flushPendingLeave(3000); } catch(_) {}
                 await _ensureWsConnected();
                 if (!ws || ws.readyState !== WebSocket.OPEN) {
                     showToast('❌ Gagal terhubung ke server. Coba lagi.', 'error');
