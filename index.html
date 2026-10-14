@@ -12740,7 +12740,16 @@
 
             const emojiMap = { 'Sumber Daya Alam':'🌍', 'Bangunan Bersejarah':'🏛️', 'Sektor Ekonomi':'💰', 'Rumah Adat':'🏠', 'Senjata Tradisional':'🗡️', 'Pakaian Adat':'👘', 'Alat Musik':'🎵', 'Tarian':'💃', 'Adat Istiadat':'🏮', 'Makanan Khas':'🍜', 'Produk Unggulan':'🏆', 'Bahasa Daerah':'🗣️' };
 
-            provinceData.cards.forEach(card => {
+            // Urutan tampil: kartu yang DIMILIKI lebih dulu, lalu (di dalam tiap kelompok) rarity tertinggi -> terendah.
+            // Kartu dengan rarity sama tetap mengikuti urutan data aslinya (sort bersifat stabil).
+            const _rarityOrder = ['magis','sakral','mythic','legendary','epic','rareplus','rarestar','rare','uncommon','uncommonplus','commonplus','common'];
+            const _rarityIdx = r => { const i = _rarityOrder.indexOf(r); return i === -1 ? _rarityOrder.length : i; };
+            const _ownedRank = c => playerCardIds.includes(`${gameState.currentProvince}-${c.name}`) ? 0 : 1;
+            const _sortedCards = [...provinceData.cards].sort((a, b) =>
+                (_ownedRank(a) - _ownedRank(b)) || (_rarityIdx(a.rarity) - _rarityIdx(b.rarity))
+            );
+
+            _sortedCards.forEach(card => {
                 const cardDiv = document.createElement('div');
                 const isOwned = playerCardIds.includes(`${gameState.currentProvince}-${card.name}`);
                 cardDiv.className = `province-info-card ${card.rarity}`;
