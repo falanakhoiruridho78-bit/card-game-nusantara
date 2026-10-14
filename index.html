@@ -10,9 +10,9 @@
 	<meta name="google-site-verification" content="QY8dCc4Z0H7352C3ygLfbBhg1eEeB26lVWZJ7Tfn2Uw" />
     <meta name="msvalidate.01" content="A4A8CB24FDE413EC538EDF57E64DBFE8" />
 	<meta name="msvalidate.01" content="A4A8CB24FDE413EC538EDF57E64DBFE8" />
-    <meta name="description" content="Card Game Nusantara - Game kartu online tema provinsi Indonesia. Kumpulkan kartu, naik peringkat, dan bermain multiplayer bersama teman secara gratis." />
+    <meta name="description" content="Card Game Nusantara - Game kartu daring tema provinsi Indonesia. Kumpulkan kartu, naik peringkat, dan bermain multiplayer bersama teman secara gratis." />
     <link rel="icon" type="image/png" href="gambar/logo/gamecard.png">
-    <title>Card Game Nusantara - ONLINE MODE</title>
+    <title>Card Game Nusantara - MODE DARING</title>
 	<link rel="canonical" href="https://cardgamenusantara.github.io/card-game-nusantara/" />
 
     <!-- Firebase Compat SDK (lebih mudah dipakai dengan vanilla JS) -->
@@ -4409,7 +4409,7 @@
                 Pertandingan Dijeda
             </div>
             <p style="color:rgba(255,255,255,0.72); font-size:0.9em; line-height:1.6; margin:0 0 0 0;">
-                Host sedang menjeda pertandingan ini.<br>Tunggu hingga host melanjutkan kembali.
+                Tuan rumah sedang menjeda pertandingan ini.<br>Tunggu hingga tuan rumah melanjutkan kembali.
             </p>
             <!-- Tombol Menyerah — hanya muncul untuk pemain (bukan host/spectator) setelah 15 detik -->
             <div id="pause-escape-wrap" style="display:none; margin-top:18px; flex-direction:column; gap:8px;">
@@ -4432,7 +4432,7 @@
                     🎮 Kembali ke Halaman Utama
                 </button>
                 <p id="pause-escape-hint" style="color:rgba(255,255,255,0.38); font-size:0.72em; margin:0; line-height:1.4;">
-                    Tampil jika host tidak melanjutkan permainan.
+                    Tampil jika tuan rumah tidak melanjutkan permainan.
                 </p>
             </div>
         </div>
@@ -4572,7 +4572,7 @@
         <div class="auth-container">
             <h1 class="auth-title">👤Akun👤<br></h1>
             <div class="auth-tabs">
-                <button class="auth-tab active" onclick="playSound('button');switchAuthTab('login')">🔐 Login</button>
+                <button class="auth-tab active" onclick="playSound('button');switchAuthTab('login')">🔐 Masuk</button>
                 <button class="auth-tab" onclick="playSound('button');switchAuthTab('register')">📝 Daftar</button>
             </div>
             <div id="auth-error" class="auth-error"></div>
@@ -4587,7 +4587,7 @@
             <!-- Register Form -->
             <div id="register-form" style="display:none;">
                 <div style="background:rgba(255,193,7,0.2);border:1px solid rgba(255,193,7,0.5);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.85em;text-align:left;line-height:1.6;">
-                    ℹ️ Gunakan username bebas, lalu tambahkan <strong>&#64;cardgame.local</strong> di belakangnya.<br>
+                    ℹ️ Gunakan nama pengguna bebas, lalu tambahkan <strong>&#64;cardgame.local</strong> di belakangnya.<br>
                     Contoh: <em>muridbaik&#64;cardgame.local</em>
                 </div>
                 <input type="text" class="auth-input" id="reg-email" placeholder="📧 Email (@cardgame.local)" autocomplete="off">
@@ -4616,7 +4616,7 @@
                    placeholder="🎮 Nama kamu..." maxlength="20"
                    oninput="previewNickname(this.value)">
             <div style="margin-bottom:15px; font-size:0.9em; opacity:0.7;">
-                Preview: <strong id="nickname-preview">...</strong>
+                Pratinjau: <strong id="nickname-preview">...</strong>
             </div>
             <button class="btn-auth" onclick="playSound('button');saveNickname()">✅ Simpan & Lanjutkan</button>
         </div>
@@ -4629,7 +4629,7 @@
             <h2 class="nickname-title">🖼️ Pilih Foto Profil</h2>
             <p class="nickname-subtitle">Pilih avatar yang mewakili kamu!</p>
             <div class="avatar-setup-preview">
-                <img id="avs-preview-img" src="gambar/avatar/avatar1.png?v=1.0" alt="Preview">
+                <img id="avs-preview-img" src="gambar/avatar/avatar1.png?v=1.0" alt="Pratinjau">
             </div>
             <div class="avatar-grid">
                 <div class="avatar-option" id="avs-opt-0" onclick="playSound('button');selectAvatarSetup(0)"><img src="gambar/avatar/avatar1.png?v=1.0" alt="Avatar 1" onerror="this.parentElement.textContent='👤'"></div>
@@ -4660,7 +4660,7 @@
     </div>
 
     <!-- PROFILE BADGE (standalone, hanya muncul di halaman matchmaking) -->
-    <div id="profile-badge" title="Klik untuk logout">
+    <div id="profile-badge" title="Klik untuk keluar">
         <div class="profile-badge-inner">
             <div class="profile-avatar" id="profile-avatar">👤</div>
             <div class="profile-info">
@@ -4920,10 +4920,10 @@
                     <div class="enc-rule-text">
                         Di setiap ronde, hanya <strong>1 pemain</strong> yang boleh jatuhkan kartu di Tahap 1. Kartu itu menentukan <strong>provinsi</strong> yang harus diikuti semua pemain lain.
                         <ul style="margin-top:10px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px;">
-                            <li style="display:flex;gap:8px;align-items:flex-start;">🔵 <span><strong>Ronde pertama:</strong> Semua pemain langsung ikut <strong>Voting</strong> buat menentukan siapa yang dapat giliran duluan!</span></li>
+                            <li style="display:flex;gap:8px;align-items:flex-start;">🔵 <span><strong>Ronde pertama:</strong> Semua pemain langsung ikut <strong>Pemungutan Suara</strong> buat menentukan siapa yang dapat giliran duluan!</span></li>
                             <li style="display:flex;gap:8px;align-items:flex-start;">🔴 <span><strong>Ronde berikutnya:</strong> Pemain yang <strong>menjatuhkan kartu dengan kekuatan tertinggi</strong> di ronde sebelumnya yang dapat giliran jatuhkan kartu di Tahap 1!</span></li>
-                            <li style="display:flex;gap:8px;align-items:flex-start;">🟣 <span><strong>Kapan Voting Terjadi?</strong> Selain terjadi di ronde satu voting juga terjadi apabila pemain yang harusnya dapat giliran jatuhkan kartu di tahap 1 itu ternyata sudah nggak bisa main lagi (misalnya dia sudah menang duluan/menyerah), pemain yang tersisa harus <strong>Voting</strong> dulu buat menentukan siapa yang dapat giliran.</span></li>
-                            <li style="display:flex;gap:8px;align-items:flex-start;">🗳️ <span><strong>Voting itu apa?</strong> Cuma tebak-tebakan singkat! Kalau yang ikut <strong>2 orang</strong> → main <strong>Suit Batu-Gunting-Kertas</strong>. Kalau yang ikut <strong>3 orang atau lebih</strong> → semua pilih <strong>Kartu Putih</strong> atau <strong>Kartu Hitam</strong>, aturan mainya sama seperti <strong>permainan hompimpa</strong> yang dimana pemain yang memilih kartu yang paling berbeda di anatara pilihan kartu pemain lain maka dia akan menang! Waktu memilih cuma <strong>10 detik</strong>, kalau hasilnya seri, tebak-tebakannya diulang lagi.</span></li>
+                            <li style="display:flex;gap:8px;align-items:flex-start;">🟣 <span><strong>Kapan Pemungutan Suara Terjadi?</strong> Selain terjadi di ronde satu pemungutan suara juga terjadi apabila pemain yang harusnya dapat giliran jatuhkan kartu di tahap 1 itu ternyata sudah nggak bisa main lagi (misalnya dia sudah menang duluan/menyerah), pemain yang tersisa harus <strong>Pemungutan Suara</strong> dulu buat menentukan siapa yang dapat giliran.</span></li>
+                            <li style="display:flex;gap:8px;align-items:flex-start;">🗳️ <span><strong>Pemungutan Suara itu apa?</strong> Cuma tebak-tebakan singkat! Kalau yang ikut <strong>2 orang</strong> → main <strong>Suit Batu-Gunting-Kertas</strong>. Kalau yang ikut <strong>3 orang atau lebih</strong> → semua pilih <strong>Kartu Putih</strong> atau <strong>Kartu Hitam</strong>, aturan mainya sama seperti <strong>permainan hompimpa</strong> yang dimana pemain yang memilih kartu yang paling berbeda di anatara pilihan kartu pemain lain maka dia akan menang! Waktu memilih cuma <strong>10 detik</strong>, kalau hasilnya seri, tebak-tebakannya diulang lagi.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -5779,11 +5779,11 @@
 
             <!-- Tabel perubahan poin -->
             <div class="rank-info-section-title" style="margin-top:20px;">🎯 Perubahan Poin per Posisi</div>
-            <div class="rank-info-note">Setiap rank membutuhkan <strong>100 poin</strong> untuk naik ke rank berikutnya.</div>
+            <div class="rank-info-note">Setiap peringkat membutuhkan <strong>100 poin</strong> untuk naik ke peringkat berikutnya.</div>
             <table class="rank-info-table">
                 <thead>
                     <tr>
-                        <th>Tier</th>
+                        <th>Tingkat</th>
                         <th>🥇 #1</th>
                         <th>🥈 #2</th>
                         <th>🥉 #3</th>
@@ -5798,15 +5798,15 @@
                     <tr><td class="ri-tier platinum">Platina</td><td class="plus">+15</td><td class="plus">+6</td><td class="plus">+3</td><td class="minus">-40</td></tr>
                 </tbody>
             </table>
-            <div class="rank-info-note">🛡️ <strong>Perunggu</strong> — Tidak bisa turun rank, poin minimal 0.</div>
+            <div class="rank-info-note">🛡️ <strong>Perunggu</strong> — Tidak bisa turun peringkat, poin minimal 0.</div>
 
             <!-- Tabel perubahan Poin Pengalaman -->
             <div class="rank-info-section-title" style="margin-top:20px;">✨ Perubahan Poin Pengalaman per Posisi</div>
-            <div class="rank-info-note">Semakin tinggi rank, semakin besar Poin Pengalaman yang didapat per pertandingan.</div>
+            <div class="rank-info-note">Semakin tinggi peringkat, semakin besar Poin Pengalaman yang didapat per pertandingan.</div>
             <table class="rank-info-table">
                 <thead>
                     <tr>
-                        <th>Tier</th>
+                        <th>Tingkat</th>
                         <th>🥇 #1</th>
                         <th>🥈 #2</th>
                         <th>🥉 #3</th>
@@ -6279,7 +6279,7 @@
                 <!-- AREA KARTU ATAS -->
                 <div class="top-card-area" style="position:relative;">
                     <div class="province-label" id="province-label">Menunggu kartu...</div>
-                    <button class="sync-refresh-btn" id="sync-refresh-btn" title="Refresh & sinkronisasi">🔄</button>
+                    <button class="sync-refresh-btn" id="sync-refresh-btn" title="Muat ulang & sinkronisasi">🔄</button>
                     <button class="province-info-btn" id="province-info-btn" title="Lihat semua kartu provinsi">ℹ️</button>
                     <button class="sticker-btn" id="sticker-btn" title="Kirim stiker">
                         <span class="sticker-cooldown-num" id="sticker-cooldown-num"></span>
@@ -6424,7 +6424,7 @@
 
     <!-- PROCESSING NOTIFICATION -->
     <div class="processing-notification" id="processing-notification">
-        <h3>⏳ MEMPROSES FORCE PICK...</h3>
+        <h3>⏳ MEMPROSES PILIHAN PAKSA...</h3>
         <div class="spinner"></div>
         <p id="processing-message">Menentukan siapa yang dibebaskan...</p>
     </div>
@@ -6459,10 +6459,10 @@
     <!-- POPUP VOTING HAK TAHAP 1 -->
     <div class="voting-popup-overlay" id="voting-popup-overlay">
         <div class="voting-popup-content">
-            <div class="voting-popup-title" id="voting-popup-title">🗳️ Voting Hak Jatuh Kartu Tahap 1</div>
+            <div class="voting-popup-title" id="voting-popup-title">🗳️ Pemungutan Suara Hak Jatuh Kartu Tahap 1</div>
             <!-- [FITUR BARU] Tombol Jeda/Lanjutkan khusus penonton, hanya tampil selama voting berlangsung -->
-            <button id="btn-pause-voting" onclick="window._toggleVotingPause()" style="display:none; margin:6px auto 0; padding:5px 14px; font-size:0.75em; font-weight:bold; border-radius:20px; border:2px solid rgba(255,255,255,0.7); cursor:pointer; background:linear-gradient(135deg,#ff9800,#e65100); color:#fff; box-shadow:0 3px 10px rgba(0,0,0,0.3);">⏸️ Jeda Voting</button>
-            <div class="voting-popup-subtitle" id="voting-popup-subtitle">Tidak ada yang otomatis berhak — ayo tentukan lewat voting!</div>
+            <button id="btn-pause-voting" onclick="window._toggleVotingPause()" style="display:none; margin:6px auto 0; padding:5px 14px; font-size:0.75em; font-weight:bold; border-radius:20px; border:2px solid rgba(255,255,255,0.7); cursor:pointer; background:linear-gradient(135deg,#ff9800,#e65100); color:#fff; box-shadow:0 3px 10px rgba(0,0,0,0.3);">⏸️ Jeda Pemungutan Suara</button>
+            <div class="voting-popup-subtitle" id="voting-popup-subtitle">Tidak ada yang otomatis berhak — ayo tentukan lewat pemungutan suara!</div>
             <div class="voting-popup-timer" id="voting-popup-timer"><span id="voting-popup-timer-num">7</span></div>
             <div class="voting-popup-slots" id="voting-popup-slots"></div>
             <div class="voting-popup-choices" id="voting-popup-choices"></div>
@@ -7033,7 +7033,7 @@
                     'auth/network-request-failed':   '❌ Gagal terhubung ke server! Periksa koneksi internet.',
                     'auth/user-disabled':            '❌ Akun ini telah dinonaktifkan.',
                 };
-                showAuthError(msgs[e.code] || `❌ Login gagal: ${e.message}`);
+                showAuthError(msgs[e.code] || `❌ Gagal masuk: ${e.message}`);
                 setAuthLoading(false);
             }
         }
@@ -7051,7 +7051,7 @@
 
             const usernameInput = email.split('@')[0];
             if (usernameInput === 'muridbaik') {
-                showAuthError('⚠️ Username tersebut tidak boleh digunakan, pilih username lain!');
+                showAuthError('⚠️ Nama pengguna tersebut tidak boleh digunakan, pilih nama pengguna lain!');
                 return;
             }
 
@@ -8127,8 +8127,8 @@
             notif.innerHTML = `
                 <div style="font-size:1.3em; margin-bottom:4px;">⚠️ Akun Aktif di Tempat Lain</div>
                 <div style="font-weight:normal; opacity:0.92; font-size:0.88em;">
-                    <b>${escHtml(nickname)}</b> terdeteksi sedang online di <b>${escHtml(device)}</b>.<br>
-                    Sesi lama akan digantikan oleh login ini.
+                    <b>${escHtml(nickname)}</b> terdeteksi sedang daring di <b>${escHtml(device)}</b>.<br>
+                    Sesi lama akan digantikan oleh sesi baru ini.
                 </div>
                 <button onclick="playSound('button');document.getElementById('online-elsewhere-notif').remove()"
                     style="margin-top:10px; padding:5px 18px; background:rgba(255,255,255,0.25);
@@ -8233,7 +8233,7 @@
                 showToast('⚠️ Batalkan proses mencari lawan terlebih dahulu sebelum keluar.', 'warning');
                 return;
             }
-            if (confirm('🚪 Yakin ingin logout?\n\n⚠️ Jika sedang dalam pertandingan, aksi akan dijalankan otomatis sampai game selesai.')) {
+            if (confirm('🚪 Yakin ingin keluar?\n\n⚠️ Jika sedang dalam pertandingan, aksi akan dijalankan otomatis sampai game selesai.')) {
                 doLogout();
             }
         }
@@ -10377,8 +10377,8 @@
                         Akun ini sedang aktif di <b>${escHtml(otherDevice)}</b>.<br>
                         Tidak bisa bermain dari dua perangkat sekaligus.
                     </div>
-                    <div id="_sas-status" style="font-size:0.82em;color:#ffb74d;margin:14px 0;min-height:22px;">⏳ Menunggu perangkat lain offline…</div>
-                    <button id="_sas-logout-btn" style="padding:11px;border-radius:10px;border:2px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.65);font-size:0.85em;cursor:pointer;width:100%;">🚪 Logout dari Akun Ini</button>
+                    <div id="_sas-status" style="font-size:0.82em;color:#ffb74d;margin:14px 0;min-height:22px;">⏳ Menunggu perangkat lain luring…</div>
+                    <button id="_sas-logout-btn" style="padding:11px;border-radius:10px;border:2px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.65);font-size:0.85em;cursor:pointer;width:100%;">🚪 Keluar dari Akun Ini</button>
                 </div>`;
             document.body.appendChild(overlay);
 
@@ -10636,9 +10636,9 @@
                         Tidak bisa bermain dari dua perangkat sekaligus.
                     </div>
                     <button id="_kicked-logout-btn" style="padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ef5350,#b71c1c);color:#fff;font-size:0.95em;font-weight:bold;cursor:pointer;width:100%;margin-bottom:10px;">
-                        🚪 Logout dari Akun Ini
+                        🚪 Keluar dari Akun Ini
                     </button>
-                    <div id="_kicked-status" style="font-size:0.82em;color:#ffb74d;margin-top:10px;">⏳ Menunggu perangkat lain offline...</div>
+                    <div id="_kicked-status" style="font-size:0.82em;color:#ffb74d;margin-top:10px;">⏳ Menunggu perangkat lain luring...</div>
                 </div>`;
             document.body.appendChild(overlay);
 
@@ -10665,7 +10665,7 @@
                     if (!stillActive) {
                         watchRef.off('value', watchFn);
                         overlay.remove();
-                        if (typeof showToast === 'function') showToast('\u2705 Perangkat lain sudah offline. Silakan lanjutkan.', 'success');
+                        if (typeof showToast === 'function') showToast('\u2705 Perangkat lain sudah luring. Silakan lanjutkan.', 'success');
                     }
                 });
             }
@@ -10692,10 +10692,10 @@
                     <div style="font-size:1.15em;font-weight:bold;margin-bottom:10px;color:#ef5350;">Kata Sandi Diubah</div>
                     <div style="font-size:0.87em;opacity:0.88;line-height:1.6;margin-bottom:18px;">
                         Kata sandi akun ini baru saja diubah dari perangkat lain.<br>
-                        Silakan login ulang dengan kata sandi terbaru.
+                        Silakan masuk ulang dengan kata sandi terbaru.
                     </div>
                     <button id="_pwchange-logout-btn" style="padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ef5350,#b71c1c);color:#fff;font-size:0.95em;font-weight:bold;cursor:pointer;width:100%;">
-                        🚪 Login Ulang
+                        🚪 Masuk Ulang
                     </button>
                 </div>`;
             document.body.appendChild(overlay);
@@ -11414,7 +11414,7 @@
                         document.getElementById('custom-friend-picker').style.display = 'none';
                         _setPresenceStatus('online');
                         _startCustomRoomInviteListener();
-                        showToast('⚠️ Host telah keluar. Lobi tantang dibubarkan.', 'warning');
+                        showToast('⚠️ Tuan rumah telah keluar. Lobi tantang dibubarkan.', 'warning');
                     }
                     break;
 
@@ -11436,7 +11436,7 @@
                         document.getElementById('custom-friend-picker').style.display = 'none';
                         _setPresenceStatus('online');
                         _startCustomRoomInviteListener();
-                        showToast('⚠️ Kamu dikeluarkan dari lobi oleh host.', 'warning');
+                        showToast('⚠️ Kamu dikeluarkan dari lobi oleh tuan rumah.', 'warning');
                     }
                     break;
 
@@ -11729,9 +11729,9 @@
                         _tickVotingCountdown();
                     }
                     if (data.isPaused) {
-                        showToast('⏸️ Pertandingan/voting sedang dijeda', 'warning');
+                        showToast('⏸️ Pertandingan/pemungutan suara sedang dijeda', 'warning');
                     } else {
-                        showToast('▶️ Pertandingan/voting dilanjutkan', 'success');
+                        showToast('▶️ Pertandingan/pemungutan suara dilanjutkan', 'success');
                     }
                     break;
 
@@ -11894,7 +11894,7 @@
                     // Tampilkan floating bar (menunggu match sebagai tamu party)
                     showMatchmakingFloatBar();
                     DOM.matchmakingScreen.querySelector('#match-starting').style.display = 'none';
-                    DOM.matchmakingScreen.querySelector('#queue-status').textContent = 'Party siap — menunggu lawan...';
+                    DOM.matchmakingScreen.querySelector('#queue-status').textContent = 'Grup siap — menunggu lawan...';
                     break;
                 }
             }
@@ -12823,7 +12823,7 @@
                 title.textContent = `✊✋✌️ Suit: Rebutan Hak Tahap 1${roundLabel}`;
                 subtitle.textContent = 'Seri berdua? Pilih Gunting, Batu, atau Kertas!';
             } else {
-                title.textContent = `🗳️ Voting Kartu: Rebutan Hak Tahap 1${roundLabel}`;
+                title.textContent = `🗳️ Pemungutan Suara Kartu: Rebutan Hak Tahap 1${roundLabel}`;
                 subtitle.textContent = 'Pilih Kartu Putih atau Kartu Hitam — kelompok dengan suara lebih sedikit yang menang!';
             }
             status.textContent = '';
@@ -12920,7 +12920,7 @@
             wrap.innerHTML = '';
             const amParticipant = _votingState.participants.some(p => p.id === window.myPlayerId);
             if (!amParticipant) {
-                wrap.innerHTML = '<div class="voting-popup-status">Kamu sedang tidak ikut voting ini — menunggu hasil...</div>';
+                wrap.innerHTML = '<div class="voting-popup-status">Kamu sedang tidak ikut pemungutan suara ini — menunggu hasil...</div>';
                 return;
             }
             if (_votingState.mode === 'suit') {
@@ -13033,7 +13033,7 @@
             if (status) status.textContent = '';
             if (result) {
                 if (!winners.length) {
-                    result.textContent = '⚖️ Seri! Voting akan diulang...';
+                    result.textContent = '⚖️ Seri! Pemungutan Suara akan diulang...';
                 } else if (winners.length === 1) {
                     const wName = _votingState.participants.find(p => p.id === winners[0])?.name || '?';
                     result.textContent = `✅ ${wName} menang!`;
@@ -13983,7 +13983,7 @@
                 // beberapa detik kemudian).
                 const votingOpen = document.getElementById('voting-popup-overlay')?.classList.contains('active') && _votingState.active;
                 btnVote.style.display = (_isSpectator && votingOpen) ? 'inline-block' : 'none';
-                btnVote.innerHTML = isPaused ? '▶️ Lanjutkan Voting' : '⏸️ Jeda Voting';
+                btnVote.innerHTML = isPaused ? '▶️ Lanjutkan Pemungutan Suara' : '⏸️ Jeda Pemungutan Suara';
                 btnVote.style.background = isPaused
                     ? 'linear-gradient(135deg,#4caf50,#388e3c)'
                     : 'linear-gradient(135deg,#ff9800,#e65100)';
@@ -14012,7 +14012,7 @@
             try {
                 ws.send(JSON.stringify({ type: 'PAUSE_GAME', userUid }));
             } catch(e) {
-                showToast('❌ Gagal mengirim perintah pause', 'error');
+                showToast('❌ Gagal mengirim perintah jeda', 'error');
             }
         };
         // ── END PAUSE GAME ────────────────────────────────────────────────
@@ -14032,7 +14032,7 @@
             try {
                 ws.send(JSON.stringify({ type: 'PAUSE_VOTING', userUid }));
             } catch(e) {
-                showToast('❌ Gagal mengirim perintah jeda voting', 'error');
+                showToast('❌ Gagal mengirim perintah jeda pemungutan suara', 'error');
             }
         };
         // ── END PAUSE VOTING ────────────────────────────────────────────────
@@ -15991,13 +15991,13 @@
             countEl.textContent = `(${profiles.length})`;
 
             function _statusLabel(info) {
-                if (!info.online) return '<span class="friend-status-badge offline">⚫ Offline</span>';
+                if (!info.online) return '<span class="friend-status-badge offline">⚫ Luring</span>';
                 if (info.status === 'inGame')        return '<span class="friend-status-badge in-game">🎮 Sedang Bermain</span>';
                 if (info.status === 'inQueue')        return '<span class="friend-status-badge in-queue">🔍 Mencari Lawan</span>';
                 if (info.status === 'inLobbyRanked') return '<span class="friend-status-badge in-lobby-ranked">🏆 Di Lobi Peringkat</span>';
                 if (info.status === 'inLobbyCustom') return '<span class="friend-status-badge in-lobby-custom">⚔️ Di Lobi Tantang</span>';
                 if (info.status === 'inLobby')        return '<span class="friend-status-badge in-queue">🏠 Di Lobi</span>';
-                return '<span class="friend-status-badge online">🟢 Online</span>';
+                return '<span class="friend-status-badge online">🟢 Daring</span>';
             }
 
             function _renderCard(f, info) {
@@ -16045,15 +16045,15 @@
             ));
 
             let html = '';
-            html += `<div class="friend-status-section-title"><span class="friend-online-dot"></span>Online (${onlineFriends.length})</div>`;
+            html += `<div class="friend-status-section-title"><span class="friend-online-dot"></span>Daring (${onlineFriends.length})</div>`;
             if (onlineFriends.length === 0) {
-                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang sedang online.</div>';
+                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang sedang daring.</div>';
             } else {
                 html += onlineFriends.map(({ f, info }) => _renderCard(f, info)).join('');
             }
-            html += `<div class="friend-status-section-title" style="margin-top:10px;"><span class="friend-offline-dot"></span>Offline (${offlineFriends.length})</div>`;
+            html += `<div class="friend-status-section-title" style="margin-top:10px;"><span class="friend-offline-dot"></span>Luring (${offlineFriends.length})</div>`;
             if (offlineFriends.length === 0) {
-                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang offline.</div>';
+                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang luring.</div>';
             } else {
                 html += offlineFriends.map(({ f, info }) => _renderCard(f, info)).join('');
             }
@@ -17092,7 +17092,7 @@
             const el = document.getElementById('party-friend-list');
             el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;padding:6px 0;">⏳ Memuat...</div>';
             if (!currentUser) {
-                el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Login diperlukan.</div>';
+                el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Perlu masuk akun terlebih dahulu.</div>';
                 return;
             }
             // Cleanup listener lama jika ada
@@ -17156,7 +17156,7 @@
                         if (isInvited) {
                             statusLabel = '✅ Sudah diundang'; statusColor = 'rgba(76,175,80,0.9)';
                         } else if (!presInfo.online) {
-                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
+                            statusLabel = '⚫ Luring'; statusColor = 'rgba(255,255,255,0.35)';
                         } else if (presInfo.status === 'inGame') {
                             statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
                         } else if (presInfo.status === 'inQueue') {
@@ -17168,7 +17168,7 @@
                         } else if (presInfo.status === 'inLobby') {
                             statusLabel = '🚪 Sedang di lobi'; statusColor = 'rgba(255,193,7,0.9)';
                         } else {
-                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
+                            canInvite = true; statusLabel = '🟢 Daring'; statusColor = 'rgba(76,175,80,0.9)';
                         }
                         const init = escHtml(f.nickname.charAt(0).toUpperCase());
                         // [FIX] Render foto profil + bingkai rank langsung di HTML (tidak async lagi)
@@ -17344,11 +17344,11 @@
                             if (leftUid === _partyFriendUid) {
                                 _partyFriendUid = null; _partyFriendName = null;
                                 _resetPartySlot(2);
-                                showToast('ℹ️ Tamu meninggalkan party.', 'info');
+                                showToast('ℹ️ Tamu meninggalkan grup.', 'info');
                             } else if (leftUid === _partyFriend2Uid) {
                                 _partyFriend2Uid = null; _partyFriend2Name = null;
                                 _resetPartySlot(3);
-                                showToast('ℹ️ Tamu meninggalkan party.', 'info');
+                                showToast('ℹ️ Tamu meninggalkan grup.', 'info');
                             }
                         });
                     }
@@ -17612,7 +17612,7 @@
             const stillValid = await db.ref(`users/${currentUser.uid}/partyInvite`)
                 .get().then(s => s.exists()).catch(() => false);
             if (!stillValid) {
-                showToast('⚠️ Undangan sudah tidak berlaku (host sudah mulai atau batal).', 'warning');
+                showToast('⚠️ Undangan sudah tidak berlaku (tuan rumah sudah mulai atau batal).', 'warning');
                 return;
             }
 
@@ -17630,7 +17630,7 @@
             _partyHostUid = inv.fromUid;
             _isPartyGuest = true;
             _setPresenceStatus('inLobbyRanked');
-            showToast('✅ Undangan diterima! Menunggu host memulai...', 'success');
+            showToast('✅ Undangan diterima! Menunggu tuan rumah memulai...', 'success');
             // Pasang onDisconnect: jika tamu offline/refresh → otomatis dihapus dari roster & status
             const guestRosterRef = db.ref(`partyRoster/${inv.partyId}/${currentUser.uid}`);
             guestRosterRef.set(true).catch(() => {});
@@ -17797,8 +17797,8 @@
                         const cancellerName = val.cancelledBy || 'Salah satu pemain';
                         showToast(isInQueue
                             ? `ℹ️ ${cancellerName} membatalkan proses mencari lawan.`
-                            : `ℹ️ Party telah dibubarkan oleh ${cancellerName}.`, 'info');
-                    } else showToast('ℹ️ Kamu telah dikeluarkan dari party.', 'info');
+                            : `ℹ️ Grup telah dibubarkan oleh ${cancellerName}.`, 'info');
+                    } else showToast('ℹ️ Kamu telah dikeluarkan dari grup.', 'info');
                 });
             }
             // Listener partyCancelSearch: salah satu anggota membatalkan pencarian lawan
@@ -17866,7 +17866,7 @@
                         _closeGuestPartyLobby();
                         _partyId = null; _partyQueueSize = null;
                         _setPresenceStatus('online');
-                        showToast('ℹ️ Party telah dibubarkan oleh host.', 'info');
+                        showToast('ℹ️ Grup telah dibubarkan oleh tuan rumah.', 'info');
                         return;
                     }
                     // Cek apakah tamu lain (slot 3) keluar
@@ -17874,7 +17874,7 @@
                         _guestSlot3Uid = null;
                         if (otherSlotNum === 2) _resetSlot2();
                         else _resetSlot3();
-                        showToast('ℹ️ Tamu meninggalkan party.', 'info');
+                        showToast('ℹ️ Tamu meninggalkan grup.', 'info');
                     }
                 });
             }
@@ -18000,7 +18000,7 @@
         }
 
         function showKostumPicker() {
-            if (!currentUser) { showToast('❌ Login dulu untuk fitur ini.', 'error'); return; }
+            if (!currentUser) { showToast('❌ Masuk dulu untuk fitur ini.', 'error'); return; }
             // Blokir jika ranked party lobby sedang aktif (normal atau minimized)
             if (document.getElementById('party-lobby-overlay').style.display === 'flex') {
                 showToast('⚠️ Kamu sedang di lobi ranked. Tutup dulu sebelum buka tantang.', 'warning');
@@ -18180,7 +18180,7 @@
                 ? 'Kamu hanya menonton. Undang 4 pemain.'
                 : _isCustomRoomCreator
                     ? 'Slot 1 = kamu. Undang teman atau isi slot dengan bot.'
-                    : 'Kamu sudah bergabung. Menunggu host memulai...';
+                    : 'Kamu sudah bergabung. Menunggu tuan rumah memulai...';
             document.getElementById('custom-room-id-badge').textContent = `Kode: ${_customRoomId || '...'}`;
 
             const slotsDiv = document.getElementById('custom-slots');
@@ -18189,7 +18189,7 @@
             // ── Slot Host Spectator (ditampilkan ke semua orang jika host adalah penonton) ──
             if (_customHostRole === 'penonton' && _customHostUid) {
                 const isMe = currentUser && _customHostUid === currentUser.uid;
-                const hostName = isMe ? (currentNickname || lsGet(LS.NICKNAME) || 'Kamu') : (_customHostName || 'Host');
+                const hostName = isMe ? (currentNickname || lsGet(LS.NICKNAME) || 'Kamu') : (_customHostName || 'Tuan Rumah');
                 const hostAvNum  = isMe ? null : _customHostAvNum;
                 const hostRkName = isMe ? (_cachedRankName || 'Bronze III') : _customHostRkName;
                 const hostSlot = document.createElement('div');
@@ -18207,7 +18207,7 @@
                             <img src="${av('gambar/rank/'+hRkTier+'.png')}" onerror="this.style.display='none'">
                             <span>${escHtml(trRankName(hostRkName))}</span>
                         </div>
-                        <span title="Host Penonton" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">📺</span>`;
+                        <span title="Tuan Rumah Penonton" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">📺</span>`;
                 } else {
                     // Host adalah orang lain — tampilkan avatar dari Firebase
                     const hAvatarId = 'chost-avatar';
@@ -18221,7 +18221,7 @@
                             <img src="${av('gambar/rank/'+hRkTier+'.png')}" onerror="this.style.display='none'">
                             <span>${escHtml(trRankName(hostRkName))}</span>
                         </div>
-                        <span title="Host Penonton" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">📺</span>`;
+                        <span title="Tuan Rumah Penonton" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">📺</span>`;
                 }
                 slotsDiv.appendChild(hostSlot);
             }
@@ -18288,7 +18288,7 @@
                     const _entryBadgeHtml = _isCustomRoomCreator
                         ? ''
                         : entryIsHost
-                            ? `<span title="Host" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">👑</span>`
+                            ? `<span title="Tuan Rumah" style="background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">👑</span>`
                             : `<span title="Pemain" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.45);border-radius:6px;width:26px;height:22px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:0.7em;line-height:1;box-sizing:border-box;">${_playerBadgeEmoji}</span>`;
                     slot.innerHTML = `
                         <div id="${cIconId}" style="width:36px;height:36px;border-radius:6px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f093fb,#f5576c);font-size:1em;font-weight:bold;color:white;flex-shrink:0;${entryUid && !entry.pending ? 'cursor:pointer;' : ''}" ${entryUid && !entry.pending ? `onclick="playSound('button');visitPlayerProfile('${entryUid}')" title="Kunjungi profil ${escHtml(entry.name)}"` : ''}>${cInit}</div>
@@ -18462,7 +18462,7 @@
                         if (isInRoom) {
                             statusLabel = '✅ Sudah di room'; statusColor = 'rgba(76,175,80,0.9)';
                         } else if (!presInfo.online) {
-                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
+                            statusLabel = '⚫ Luring'; statusColor = 'rgba(255,255,255,0.35)';
                         } else if (presInfo.status === 'inGame') {
                             statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
                         } else if (presInfo.status === 'inQueue') {
@@ -18474,7 +18474,7 @@
                         } else if (presInfo.status === 'inLobby') {
                             statusLabel = '🚪 Sedang di lobi'; statusColor = 'rgba(255,193,7,0.9)';
                         } else {
-                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
+                            canInvite = true; statusLabel = '🟢 Daring'; statusColor = 'rgba(76,175,80,0.9)';
                         }
                         const init = escHtml(f.nickname.charAt(0).toUpperCase());
                         // [FIX] Render foto profil + bingkai rank langsung (tidak async)
@@ -18680,11 +18680,11 @@
                         db.ref(`userAvatars/${data.hostUid}`).get(),
                         db.ref(`users/${data.hostUid}/rankData`).get()
                     ]).then(([nickSnap, avSnap, rkSnap]) => {
-                        _customHostName   = nickSnap.val() || 'Host';
+                        _customHostName   = nickSnap.val() || 'Tuan Rumah';
                         _customHostAvNum  = avSnap.exists() ? String(avSnap.val()) : '7';
                         _customHostRkName = rkSnap.exists() ? (rkSnap.val().rankName || 'Bronze III') : 'Bronze III';
                         _renderCustomRoomLobby();
-                    }).catch(() => { _customHostName = _customHostName || 'Host'; });
+                    }).catch(() => { _customHostName = _customHostName || 'Tuan Rumah'; });
                 }
             }
 
@@ -19995,7 +19995,7 @@
     <div id="party-friend-picker" class="hide-scrollbar" style="display:none;" tabindex="-1" onclick="if(event.target===this){playSound('x');closePartyFriendPicker();}">
         <div class="party-friend-picker-card">
             <div class="party-friend-picker-header">
-                <div class="party-friend-picker-header-title">Pilih teman online:</div>
+                <div class="party-friend-picker-header-title">Pilih teman daring:</div>
                 <div class="enc-header-actions">
                     <button class="enc-scroll-btn" title="Scroll ke bawah" onclick="playSound('button');encScrollTo('bottom','party-friend-picker')">⬇</button>
                     <button class="party-friend-picker-close" onclick="playSound('x');closePartyFriendPicker()" title="Tutup">✖</button>
@@ -20040,7 +20040,7 @@
     <div id="kostum-picker-overlay" style="display:none;">
         <div class="kostum-picker-card">
             <div class="kostum-picker-title">⚔️ Mode Tantang</div>
-            <div class="kostum-picker-sub">Pertandingan tidak mempengaruhi rank, riwayat, atau statistik.</div>
+            <div class="kostum-picker-sub">Pertandingan tidak mempengaruhi peringkat, riwayat, atau statistik.</div>
             <div class="kostum-role-btns">
                 <button class="kostum-role-btn pemain" onclick="playSound('button');selectKostumRole('pemain')">
                     <span class="role-icon">🎮</span>
@@ -20080,7 +20080,7 @@
     <div id="custom-friend-picker" class="hide-scrollbar" style="display:none;" tabindex="-1" onclick="if(event.target===this){playSound('x');closeCustomFriendPicker();}">
         <div class="custom-friend-picker">
             <div class="custom-friend-picker-header">
-                <div class="custom-friend-picker-title">Pilih teman online:</div>
+                <div class="custom-friend-picker-title">Pilih teman daring:</div>
                 <div class="enc-header-actions">
                     <button class="enc-scroll-btn" title="Scroll ke bawah" onclick="playSound('button');encScrollTo('bottom','custom-friend-picker')">⬇</button>
                     <button class="custom-friend-picker-close" onclick="playSound('x');closeCustomFriendPicker()" title="Tutup">✖</button>
@@ -20349,7 +20349,7 @@ const ACHIEVEMENTS = [
         tier: 1,
         icon: '🦊',
         desc: 'Pemain yang mulai menunjukkan kemampuannya di arena.',
-        how: 'Gapai Rank <strong>Perak</strong> (semua tier)',
+        how: 'Gapai Peringkat <strong>Perak</strong> (semua tier)',
         check: (stats) => {
             const silverRanks = ['Silver III','Silver II','Silver I','Gold III','Gold II','Gold I','Diamond III','Diamond II','Diamond I','Platinum III','Platinum II','Platinum I','Platinum MAX'];
             return silverRanks.includes(stats.peakRank);
@@ -20361,7 +20361,7 @@ const ACHIEVEMENTS = [
         tier: 2,
         icon: '🐺',
         desc: 'Pemain berbakat yang telah menembus level emas.',
-        how: 'Gapai Rank <strong>Emas</strong> (semua tier)',
+        how: 'Gapai Peringkat <strong>Emas</strong> (semua tier)',
         check: (stats) => {
             const goldRanks = ['Gold III','Gold II','Gold I','Diamond III','Diamond II','Diamond I','Platinum III','Platinum II','Platinum I','Platinum MAX'];
             return goldRanks.includes(stats.peakRank);
@@ -20373,7 +20373,7 @@ const ACHIEVEMENTS = [
         tier: 3,
         icon: '🐯',
         desc: 'Segelintir pemain yang mampu mencapai tingkat diamond.',
-        how: 'Gapai Rank <strong>Berlian</strong> (semua tier)',
+        how: 'Gapai Peringkat <strong>Berlian</strong> (semua tier)',
         check: (stats) => {
             const diaRanks = ['Diamond III','Diamond II','Diamond I','Platinum III','Platinum II','Platinum I','Platinum MAX'];
             return diaRanks.includes(stats.peakRank);
@@ -20385,7 +20385,7 @@ const ACHIEVEMENTS = [
         tier: 4,
         icon: '🦁',
         desc: 'Pemain elit yang telah menembus batas tertinggi arena.',
-        how: 'Gapai Rank <strong>Platina</strong> (semua tier)',
+        how: 'Gapai Peringkat <strong>Platina</strong> (semua tier)',
         check: (stats) => {
             const platRanks = ['Platinum III','Platinum II','Platinum I','Platinum MAX'];
             return platRanks.includes(stats.peakRank);
@@ -20396,7 +20396,7 @@ const ACHIEVEMENTS = [
         name: 'Jago V',
         icon: '🐲',
         desc: 'Legenda arena. Hanya yang terbaik yang bertahan di puncak.',
-        how: 'Raih <strong>Platina MAKS</strong> — rank tertinggi!',
+        how: 'Raih <strong>Platina MAKS</strong> — peringkat tertinggi!',
         tier: 5,
         check: (stats) => stats.peakRank === 'Platinum MAX'
     },
@@ -21558,7 +21558,7 @@ function _reconnectHomeWs() {
     if (window._homeWsReconnectAttempts >= _HOME_WS_MAX) {
         window._homeWsReconnectAttempts = 0;
         showServerError(
-            'Gagal menyambung ke server setelah ' + _HOME_WS_MAX + ' percobaan.\n\nRefresh halaman untuk mencoba lagi.',
+            'Gagal menyambung ke server setelah ' + _HOME_WS_MAX + ' percobaan.\n\nMuat ulang halaman untuk mencoba lagi.',
             () => { location.reload(); }
         );
         return;
