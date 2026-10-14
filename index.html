@@ -809,6 +809,10 @@
             line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
         }
         .rarity-logo-img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        /* Setting "Logo rarity di kartu": sembunyikan logo rarity HANYA pada tampilan kartu
+           (deck-slot, enc-card-wrapper, kartu di modal provinsi, dst). Badge/teks rarity di luar kartu tidak ikut. */
+        html.hide-card-rarity .card-rarity,
+        html.hide-card-rarity .province-info-card-rarity { display: none !important; }
         .rarity-logo-inline { display: inline-block; width: 1em; height: 1em; min-width: 16px; min-height: 16px; vertical-align: -3px; object-fit: contain; }
         .card-name {
             font-size: 0.82em; font-weight: bold; text-align: center;
@@ -6214,6 +6218,14 @@
                         <span class="settings-toggle-slider"></span>
                     </label>
                 </div>
+                <div class="settings-toggle-row" style="margin-top:12px;">
+                    <span class="settings-toggle-label">Logo rarity di kartu</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="toggle-card-rarity" checked
+                               onchange="applyCardRaritySetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
             </div>
 
             <hr class="settings-divider">
@@ -6376,6 +6388,14 @@
                     <label class="settings-toggle">
                         <input type="checkbox" id="igs-toggle-deck-province-label"
                                onchange="applyDeckProvinceLabelSetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-toggle-row" style="margin-top:10px;">
+                    <span class="settings-toggle-label">Logo rarity di kartu</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="igs-toggle-card-rarity" checked
+                               onchange="applyCardRaritySetting(this.checked)">
                         <span class="settings-toggle-slider"></span>
                     </label>
                 </div>
@@ -6743,6 +6763,7 @@
             GAME_ACTIVE:      'cgn_gameActive',
             PROVINCE_TOOLTIP:    'cgn_province_tooltip',
             DECK_PROVINCE_LABEL: 'cgn_deck_province_label',
+            CARD_RARITY:         'cgn_card_rarity',
             // [BUG FIX] CUSTOM_ROOM_ROLE sebelumnya direferensikan di lsDel() tapi tidak
             // pernah didefinisikan di sini → lsDel(LS.CUSTOM_ROOM_ROLE) memanggil
             // lsDel(undefined) → key 'undefined' disimpan di localStorage alih-alih
@@ -15415,6 +15436,20 @@
         let _showProvinceTooltip    = lsGet(LS.PROVINCE_TOOLTIP)    === '1'; // default: off
         let _showDeckProvinceLabel  = lsGet(LS.DECK_PROVINCE_LABEL) === '1'; // default: off
 
+        // Logo rarity di kartu: default ON (tampil). Hanya '0' yang berarti disembunyikan.
+        let _showCardRarity = lsGet(LS.CARD_RARITY) !== '0';
+        document.documentElement.classList.toggle('hide-card-rarity', !_showCardRarity);
+
+        function applyCardRaritySetting(enabled) {
+            _showCardRarity = enabled;
+            lsSet(LS.CARD_RARITY, enabled ? '1' : '0');
+            [document.getElementById('toggle-card-rarity'),
+             document.getElementById('igs-toggle-card-rarity')]
+                .forEach(t => { if (t) t.checked = enabled; });
+            // Cukup toggle class di <html>: berlaku ke semua kartu (yang sudah ada maupun yang dibuat nanti)
+            document.documentElement.classList.toggle('hide-card-rarity', !enabled);
+        }
+
         function applyDeckProvinceLabelSetting(enabled) {
             _showDeckProvinceLabel = enabled;
             lsSet(LS.DECK_PROVINCE_LABEL, enabled ? '1' : '0');
@@ -15486,6 +15521,8 @@
             const t2 = document.getElementById('igs-toggle-deck-province-label');
             if (t1) t1.checked = _showProvinceTooltip;
             if (t2) t2.checked = _showDeckProvinceLabel;
+            const t3 = document.getElementById('igs-toggle-card-rarity');
+            if (t3) t3.checked = _showCardRarity;
         }
 
         function toggleIngameSettings() {
@@ -15535,6 +15572,8 @@
             if (toggleTip) toggleTip.checked = _showProvinceTooltip;
             const toggleLbl = document.getElementById('toggle-deck-province-label');
             if (toggleLbl) toggleLbl.checked = _showDeckProvinceLabel;
+            const toggleRar = document.getElementById('toggle-card-rarity');
+            if (toggleRar) toggleRar.checked = _showCardRarity;
             document.getElementById('settings-screen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
