@@ -697,8 +697,14 @@
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.55);
             z-index: 9001; overflow: hidden;
+            /* Tinggi panel mengikuti layar: tidak pernah melewati sisi atas layar
+               (bottom 76px + jarak aman atas 14px). Isi yang kepanjangan discroll di .igs-body. */
+            display: flex; flex-direction: column;
+            max-height: calc(100vh - 76px - 14px);
+            max-height: calc(100dvh - 76px - 14px);
         }
         .igs-header {
+            flex-shrink: 0;
             display: flex; justify-content: space-between; align-items: center;
             padding: 13px 16px;
             background: rgba(0,0,0,0.28);
@@ -711,7 +717,17 @@
             padding: 4px 11px; cursor: pointer; font-size: 0.85em; font-weight: bold;
         }
         .igs-close-btn:hover { background: #f44336; }
-        .igs-body { padding: 14px 16px; max-height: 62vh; overflow-y: auto; }
+        .igs-body { padding: 14px 16px 18px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+        /* Layar pendek (laptop kecil / HP landscape): rapatkan sedikit supaya semua pengaturan muat tanpa scroll */
+        @media (max-height: 720px) {
+            #ingame-settings-panel { bottom: 70px; max-height: calc(100vh - 70px - 10px); max-height: calc(100dvh - 70px - 10px); }
+            .igs-header { padding: 9px 14px; }
+            .igs-body { padding: 10px 14px 14px; }
+            .igs-body .igs-section-label { margin-top: 8px !important; margin-bottom: 4px; }
+            .igs-body .igs-section-label:first-child { margin-top: 0 !important; }
+            .igs-divider { margin: 9px 0; }
+            .igs-body .settings-toggle-row { margin-top: 7px !important; }
+        }
         .igs-section-label {
             color: rgba(255,255,255,0.72); font-size: 0.8em;
             font-weight: bold; margin-bottom: 6px; display: block;
@@ -809,7 +825,7 @@
             line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
         }
         .rarity-logo-img { display: block; width: 100%; height: 100%; object-fit: contain; }
-        /* Setting "Logo rarity di kartu": sembunyikan logo rarity HANYA pada tampilan kartu
+        /* Setting "Logo tingkatan kartu": sembunyikan logo rarity HANYA pada tampilan kartu
            (deck-slot, enc-card-wrapper, kartu di modal provinsi, dst). Badge/teks rarity di luar kartu tidak ikut. */
         html.hide-card-rarity .card-rarity,
         html.hide-card-rarity .province-info-card-rarity { display: none !important; }
@@ -6219,7 +6235,7 @@
                     </label>
                 </div>
                 <div class="settings-toggle-row" style="margin-top:12px;">
-                    <span class="settings-toggle-label">Logo rarity di kartu</span>
+                    <span class="settings-toggle-label">Logo tingkatan kartu</span>
                     <label class="settings-toggle">
                         <input type="checkbox" id="toggle-card-rarity" checked
                                onchange="applyCardRaritySetting(this.checked)">
@@ -6392,7 +6408,7 @@
                     </label>
                 </div>
                 <div class="settings-toggle-row" style="margin-top:10px;">
-                    <span class="settings-toggle-label">Logo rarity di kartu</span>
+                    <span class="settings-toggle-label">Logo tingkatan kartu</span>
                     <label class="settings-toggle">
                         <input type="checkbox" id="igs-toggle-card-rarity" checked
                                onchange="applyCardRaritySetting(this.checked)">
@@ -15436,7 +15452,7 @@
         let _showProvinceTooltip    = lsGet(LS.PROVINCE_TOOLTIP)    === '1'; // default: off
         let _showDeckProvinceLabel  = lsGet(LS.DECK_PROVINCE_LABEL) === '1'; // default: off
 
-        // Logo rarity di kartu: default ON (tampil). Hanya '0' yang berarti disembunyikan.
+        // Logo tingkatan kartu: default ON (tampil). Hanya '0' yang berarti disembunyikan.
         let _showCardRarity = lsGet(LS.CARD_RARITY) !== '0';
         document.documentElement.classList.toggle('hide-card-rarity', !_showCardRarity);
 
