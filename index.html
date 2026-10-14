@@ -18637,12 +18637,8 @@
             Object.values(_customRoomSlots).forEach(s => {
                 if (s?.pending && s.uid) db.ref(`users/${s.uid}/customRoomInvite`).remove().catch(() => {});
             });
-            // Ganti musik ke game music
-            try {
-                soundEffects.bgMusic.pause();
-                soundEffects.bgMusic2.currentTime = 0;
-                soundEffects.bgMusic2.play().catch(() => {});
-            } catch(e) {}
+            // Musik TIDAK diganti di sini. Musik 1 tetap berjalan sampai pertandingan benar-benar dimulai;
+            // pergantian ke Musik 2 ditangani otomatis oleh handler GAME_STARTED (saat game-container aktif).
             ws.send(JSON.stringify({ type: 'START_CUSTOM_ROOM', userUid: currentUser ? currentUser.uid : '' }));
             document.getElementById('btn-custom-start').disabled = true;
             document.getElementById('btn-custom-start').textContent = '⏳ Memulai...';
