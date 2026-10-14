@@ -719,7 +719,7 @@
         .igs-close-btn:hover { background: #f44336; }
         .igs-body { padding: 14px 16px 18px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
         /* Layar pendek (laptop kecil / HP landscape): rapatkan sedikit supaya semua pengaturan muat tanpa scroll */
-        @media (max-height: 720px) {
+        @media (max-height: 600px) {
             #ingame-settings-panel { bottom: 70px; max-height: calc(100vh - 70px - 10px); max-height: calc(100dvh - 70px - 10px); }
             .igs-header { padding: 9px 14px; }
             .igs-body { padding: 10px 14px 14px; }
@@ -3097,6 +3097,7 @@
            tanpa kursor (touch/mobile) — sembunyikan hanya di sana, desktop tidak berubah. */
         @media (pointer: coarse) {
             #row-province-tooltip { display: none; }
+            .tut-hover-only { display: none; } /* penjelasan toggle kursor di tab Tombol: ikut disembunyikan di HP/tablet */
         }
         .settings-toggle {
             position: relative; display: inline-block;
@@ -5315,6 +5316,27 @@
                         </div>
                     </div>
 
+                    <!-- Sub: Pengaturan Tampilan -->
+                    <div style="margin-top:18px;margin-bottom:8px;font-weight:bold;color:#c7d2fe;font-size:0.88em;letter-spacing:0.3px;">🗺️ Tombol Geser pada Pengaturan Tampilan</div>
+                    <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;margin-bottom:8px;">Tombol geser ini ada di kotak Pengaturan, pada bagian 🗺️ Tampilan. Jika digeser ke kanan dan berwarna hijau, pengaturan itu diaktifkan. Jika digeser ke kiri, pengaturan itu dimatikan. Fungsinya mengatur apa saja yang terlihat pada kartu.</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div class="tut-hover-only" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <label class="settings-toggle" style="pointer-events:none;" aria-hidden="true"><input type="checkbox" checked disabled tabindex="-1"><span class="settings-toggle-slider"></span></label>
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tampilkan nama provinsi saat kursor menyentuh kartu</div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Jika diaktifkan, nama provinsi muncul sebentar ketika kursor diarahkan ke sebuah kartu. Dengan begitu, kamu dapat mengetahui asal daerah kartu tanpa membuka penjelasannya. Jika dimatikan, nama provinsi tidak muncul. Di kotak Pengaturan dalam permainan, pengaturan ini tertulis “Keterangan nama provinsi”.</div></div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <label class="settings-toggle" style="pointer-events:none;" aria-hidden="true"><input type="checkbox" checked disabled tabindex="-1"><span class="settings-toggle-slider"></span></label>
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Nama provinsi di bawah kartu</div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Jika diaktifkan, nama provinsi tertulis tepat di bawah setiap kartu yang kamu pegang. Dengan begitu, kamu langsung mengetahui asal daerah setiap kartu tanpa perlu membukanya. Jika dimatikan, tulisan itu disembunyikan sehingga tampilan lebih rapi.</div></div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <label class="settings-toggle" style="pointer-events:none;" aria-hidden="true"><input type="checkbox" checked disabled tabindex="-1"><span class="settings-toggle-slider"></span></label>
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Logo tingkatan kartu</div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Setiap kartu memiliki tingkatan, misalnya Umum, Langka, Epik, atau Legendaris. Tingkatan menunjukkan seberapa jarang kartu itu. Jika diaktifkan, logo tingkatan terlihat di pojok kanan atas kartu. Jika dimatikan, logo itu disembunyikan sehingga gambar kartu terlihat lebih bersih. Pengaturan ini hanya mengubah tampilan, bukan tingkatan kartu yang sebenarnya.</div></div>
+                        </div>
+                    </div>
+
                     <!-- Sub: Akun -->
                     <div style="margin-top:18px;margin-bottom:8px;font-weight:bold;color:#c7d2fe;font-size:0.88em;letter-spacing:0.3px;">🚪 Tombol Akun</div>
                     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -6356,15 +6378,7 @@
                 <button class="igs-close-btn" onclick="playSound('x');closeIngameSettings()">✖ Tutup</button>
             </div>
             <div class="igs-body">
-                <span class="igs-section-label">🎵 Volume Musik 1 (Halaman Utama)</span>
-                <div class="settings-slider-row">
-                    <input type="range" class="settings-slider" id="igs-vol-bgmusic1"
-                           min="0" max="100" value="30"
-                           oninput="applyVolumeBgMusic1(this.value)">
-                    <span class="settings-slider-val" id="igs-vol-bgmusic1-val">30%</span>
-                </div>
-
-                <span class="igs-section-label" style="margin-top:12px;">🎶 Volume Musik 2 (Pertandingan)</span>
+                <span class="igs-section-label">🎶 Volume Musik 2 (Pertandingan)</span>
                 <div class="settings-slider-row">
                     <input type="range" class="settings-slider" id="igs-vol-bgmusic2"
                            min="0" max="100" value="30"
