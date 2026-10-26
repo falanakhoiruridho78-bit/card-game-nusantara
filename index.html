@@ -11516,6 +11516,16 @@
                     // [FIX] Tutup semua halaman (ensiklopedia, teman, profil, dll) saat game dimulai
                     closeAllScreens();
                     _setPresenceStatus('inGame');
+                    // [FIX LOG] Tiap match punya log sendiri: kosongkan game-log hanya jika
+                    // roomId-nya berbeda dari match yang terakhir menulis log. Reconnect/rejoin
+                    // ke match yang sama membawa roomId yang sama, jadi log tidak hilang.
+                    // Ini juga membuang pesan non-match (health-check, status koneksi, dll)
+                    // yang tertulis ke log selagi pemain berada di beranda.
+                    if (data.roomId && window._gameLogRoomId !== data.roomId) {
+                        const _glEl = document.getElementById('game-log');
+                        if (_glEl) _glEl.innerHTML = '';
+                        window._gameLogRoomId = data.roomId;
+                    }
                     // Handle custom room / spectator flags
                     _isCustomRoom = !!data.isCustomRoom;
                     _isSpectator  = !!data.isSpectator;
@@ -14215,6 +14225,13 @@
             // ada elemen yang masih nempel di <body> ikut kelihatan di layar home.
             _forceClearGameNotifications();
             _forceClearStickers();
+
+            // [FIX LOG] Kosongkan game-log saat keluar dari match, supaya log match
+            // sebelumnya tidak terbawa/tercampur ke match baru (ranked maupun custom).
+            // Sengaja di sini (bukan di GAME_STARTED) karena GAME_STARTED juga dikirim
+            // server saat rejoin/reconnect di tengah match.
+            const _gameLogEl = document.getElementById('game-log');
+            if (_gameLogEl) _gameLogEl.innerHTML = '';
 
             // Cek apakah player menang mid-game (checkWin) tapi save belum dikonfirmasi.
             // Jika ya, perlu beri waktu lebih lama agar server selesai savePlayerStats()
