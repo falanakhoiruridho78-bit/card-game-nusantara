@@ -3102,7 +3102,7 @@
         /* Toggle "nama provinsi saat kursor menyentuh kartu" tidak relevan di perangkat
            tanpa kursor (touch/mobile) — sembunyikan hanya di sana, desktop tidak berubah. */
         @media (pointer: coarse) {
-            #row-province-tooltip { display: none; }
+            #row-province-tooltip, #igs-row-province-tooltip { display: none; }
             .tut-hover-only { display: none; } /* penjelasan toggle kursor di tab Tombol: ikut disembunyikan di HP/tablet */
         }
         .settings-toggle {
@@ -6416,7 +6416,7 @@
                 <hr class="igs-divider">
 
                 <span class="igs-section-label">🗺️ Tampilan</span>
-                <div class="settings-toggle-row" style="margin-top:8px;">
+                <div class="settings-toggle-row" id="igs-row-province-tooltip" style="margin-top:8px;">
                     <span class="settings-toggle-label">Keterangan nama provinsi</span>
                     <label class="settings-toggle">
                         <input type="checkbox" id="igs-toggle-province-tooltip"
