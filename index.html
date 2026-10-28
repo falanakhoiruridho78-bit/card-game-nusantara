@@ -5306,7 +5306,7 @@
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <button disabled aria-label="Tombol Stiker" style="flex-shrink:0;width:44px;height:44px;padding:0;background:rgba(255,255,255,0.3) url('gambar/stiker/tombol_stiker.png') center/70% no-repeat;border:2px solid rgba(255,255,255,0.5);border-radius:8px;opacity:1;box-shadow:none;"></button>
                             <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Stiker</div>
-                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Tombol ini muncul saat pertandingan berlangsung, di sisi kiri atas, tepat di bawah tombol Info. Jika ditekan, kotak “Pilih Stiker” akan terbuka. Pilih satu stiker, lalu stiker itu tampil di layar semua orang di pertandingan beserta nama pengirimnya. Setelah mengirim stiker, tombol meredup dan menampilkan angka hitung mundur selama 8 detik. Tunggu sampai angkanya hilang sebelum mengirim stiker lagi. Penonton tidak memiliki tombol ini.</div></div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Tombol ini muncul saat pertandingan berlangsung, di sisi kiri atas, tepat di bawah tombol Info. Jika ditekan, kotak “Pilih Stiker” akan terbuka. Pilih satu stiker, lalu stiker itu tampil di layar semua orang di pertandingan beserta nama pengirimnya. Setelah mengirim stiker, tombol meredup dan menampilkan angka hitung mundur selama 5 detik. Tunggu sampai angkanya hilang sebelum mengirim stiker lagi. Penonton tidak memiliki tombol ini.</div></div>
                         </div>
                     </div>
 
@@ -12810,9 +12810,11 @@
             { id: 'nangis',  label: 'Nangis' },
             { id: 'bagus',   label: 'Bagus' },
             { id: 'tertawa', label: 'Tertawa' },
-            { id: 'tengil',  label: 'Tengil' }
+            { id: 'tengil',  label: 'Tengil' },
+            { id: 'kesal',   label: 'Kesal' },
+            { id: 'diam',    label: 'Diam' }
         ];
-        const STICKER_COOLDOWN_MS = 8000;
+        const STICKER_COOLDOWN_MS = 5000;
         const STICKER_DISPLAY_MAX_MS = 6000; // batas aman jika event 'ended' video tidak terpicu
         let _stickerCooldownUntil = 0;
         let _stickerCooldownTimer = null;
