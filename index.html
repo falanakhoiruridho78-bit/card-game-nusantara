@@ -8060,13 +8060,13 @@
                     if (info.level >= 150) {
                         prfLvlEl.innerHTML = `<span style="color:#ffd700;font-weight:bold;">Level 150 MAX ✨</span>`;
                     } else {
-                        const pct = info.neededExp > 0 ? Math.min(100, Math.round(info.currentExp / info.neededExp * 100)) : 100;
+                        const pct = info.neededExp > 0 ? Math.min(100, info.currentExp / info.neededExp * 100) : 100;
                         prfLvlEl.innerHTML = `
                             <div class="exp-bar-container">
                                 <div class="exp-bar-label">Poin Pengalaman &nbsp; Level ${info.level}</div>
                                 <div class="exp-bar-track">
                                     <div class="exp-bar-fill" style="width:${pct}%"></div>
-                                    <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${pct}%</span></div>
+                                    <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${_fmtPct(pct)}%</span></div>
                                 </div>
                                 <div class="exp-bar-numbers">
                                     <span>${info.currentExp}</span>
@@ -13544,7 +13544,7 @@
                     <div class="_ecFill exp-change-bar-fill" style="width:${startPct}%"></div>
                     <div class="exp-change-bar-text">
                         <span class="_ecNum">${startExp}/<span class="_ecNeeded">${neededExp}</span> Poin</span>
-                        <span class="_ecPct">${Math.round(startPct)}%</span>
+                        <span class="_ecPct">${_fmtPct(startPct)}%</span>
                     </div>
                 </div>
                 <div class="_ecLvlUp exp-levelup-badge" style="display:none;">🎉 LEVEL UP!</div>`;
@@ -13595,7 +13595,7 @@
                 if (numEl)  numEl.innerHTML = targetNeeded > 0
                     ? `${curExp}/<span class="_ecNeeded">${targetNeeded}</span> Poin`
                     : `<span class="_ecNeeded">MAX</span>`;
-                if (pctEl)  pctEl.textContent = Math.round(pct) + '%';
+                if (pctEl)  pctEl.textContent = _fmtPct(pct) + '%';
 
                 setTimeout(tickExp, stepDelay);
             }
@@ -16325,13 +16325,13 @@
                     if (info.level >= 150) {
                         lvlEl.innerHTML = `<span style="color:#ffd700;font-weight:bold;">⭐ Level 150 MAX</span>`;
                     } else {
-                        const pct = info.neededExp > 0 ? Math.min(100, Math.round(info.currentExp / info.neededExp * 100)) : 100;
+                        const pct = info.neededExp > 0 ? Math.min(100, info.currentExp / info.neededExp * 100) : 100;
                         lvlEl.innerHTML = `
                             <div class="exp-bar-container">
                                 <div class="exp-bar-label">⭐ Poin Pengalaman &nbsp; Level ${info.level}</div>
                                 <div class="exp-bar-track">
                                     <div class="exp-bar-fill" style="width:${pct}%"></div>
-                                    <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${pct}%</span></div>
+                                    <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${_fmtPct(pct)}%</span></div>
                                 </div>
                                 <div class="exp-bar-numbers">
                                     <span>${info.currentExp}</span>
@@ -16459,13 +16459,13 @@
                         if (info.level >= 150) {
                             lvlEl.innerHTML = `<span style="color:#ffd700;font-weight:bold;">⭐ Level 150 MAX</span>`;
                         } else {
-                            const pct = info.neededExp > 0 ? Math.min(100, Math.round(info.currentExp / info.neededExp * 100)) : 100;
+                            const pct = info.neededExp > 0 ? Math.min(100, info.currentExp / info.neededExp * 100) : 100;
                             lvlEl.innerHTML = `
                                 <div class="exp-bar-container">
                                     <div class="exp-bar-label">⭐ Poin Pengalaman &nbsp; Level ${info.level}</div>
                                     <div class="exp-bar-track">
                                         <div class="exp-bar-fill" style="width:${pct}%"></div>
-                                        <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${pct}%</span></div>
+                                        <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${_fmtPct(pct)}%</span></div>
                                     </div>
                                     <div class="exp-bar-numbers">
                                         <span>${info.currentExp}</span>
@@ -20607,6 +20607,13 @@ const ACHIEVEMENTS = [
 // SISTEM EXP & LEVEL PEMAIN
 // =============================================
 
+// Format persen EXP: 2 angka di belakang koma, DIPOTONG (bukan dibulatkan) supaya 99,996% tidak tampil 100,00%
+function _fmtPct(p) {
+    if (!isFinite(p) || p <= 0) return '0,00';
+    if (p >= 100) return '100';
+    return (Math.floor(p * 100 + 1e-6) / 100).toFixed(2).replace('.', ',');
+}
+
 // EXP yang dibutuhkan dari level N ke N+1 (base 100, naik 5% tiap level)
 function _expNeeded(level) {
     return Math.round(100 * Math.pow(1.05, level - 1));
@@ -20796,13 +20803,13 @@ async function updatePlayerLevelUI() {
         if (info.level >= 150) {
             prfLvlEl.innerHTML = `<span style="color:#ffd700;font-weight:bold;">Level 150 MAX ✨</span>`;
         } else {
-            const pct = info.neededExp > 0 ? Math.min(100, Math.round(info.currentExp / info.neededExp * 100)) : 100;
+            const pct = info.neededExp > 0 ? Math.min(100, info.currentExp / info.neededExp * 100) : 100;
             prfLvlEl.innerHTML = `
                 <div class="exp-bar-container">
                     <div class="exp-bar-label">Poin Pengalaman &nbsp; Level ${info.level}</div>
                     <div class="exp-bar-track">
                         <div class="exp-bar-fill" style="width:${pct}%"></div>
-                        <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${pct}%</span></div>
+                        <div class="exp-bar-text"><span>${info.currentExp}/${info.neededExp} Poin</span><span>${_fmtPct(pct)}%</span></div>
                     </div>
                     <div class="exp-bar-numbers">
                         <span>${info.currentExp}</span>
