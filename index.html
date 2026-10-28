@@ -5847,11 +5847,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td class="ri-tier bronze">Perunggu</td><td class="plus">+80</td><td class="plus">+50</td><td class="plus">+25</td><td class="plus">+5</td></tr>
-                    <tr><td class="ri-tier silver">Perak</td><td class="plus">+96</td><td class="plus">+60</td><td class="plus">+30</td><td class="plus">+6</td></tr>
-                    <tr><td class="ri-tier gold">Emas</td><td class="plus">+112</td><td class="plus">+70</td><td class="plus">+35</td><td class="plus">+7</td></tr>
-                    <tr><td class="ri-tier diamond">Berlian</td><td class="plus">+128</td><td class="plus">+80</td><td class="plus">+40</td><td class="plus">+8</td></tr>
-                    <tr><td class="ri-tier platinum">Platina</td><td class="plus">+160</td><td class="plus">+100</td><td class="plus">+50</td><td class="plus">+10</td></tr>
+                    <tr><td class="ri-tier bronze">Perunggu</td><td class="plus">+350</td><td class="plus">+220</td><td class="plus">+110</td><td class="plus">+22</td></tr>
+                    <tr><td class="ri-tier silver">Perak</td><td class="plus">+420</td><td class="plus">+264</td><td class="plus">+132</td><td class="plus">+26</td></tr>
+                    <tr><td class="ri-tier gold">Emas</td><td class="plus">+490</td><td class="plus">+308</td><td class="plus">+154</td><td class="plus">+31</td></tr>
+                    <tr><td class="ri-tier diamond">Berlian</td><td class="plus">+560</td><td class="plus">+352</td><td class="plus">+176</td><td class="plus">+35</td></tr>
+                    <tr><td class="ri-tier platinum">Platina</td><td class="plus">+700</td><td class="plus">+440</td><td class="plus">+220</td><td class="plus">+44</td></tr>
                 </tbody>
             </table>
             <div class="rank-info-note">⭐ Poin Pengalaman selalu positif di semua posisi — bermain selalu memberikan pengalaman!</div>
@@ -6846,7 +6846,11 @@
         }
         function lsGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
         function lsDel(key) { try { localStorage.removeItem(key); } catch(e) {} }
-        function lsClear() { Object.values(LS).forEach(k => lsDel(k)); }
+        // [FIX PENGATURAN TAMPILAN HILANG] Key preferensi (toggle Tampilan) TIDAK boleh ikut terhapus oleh
+        // lsClear() — lsClear() dipanggil di endGame() & goToHome(), sehingga sebelumnya setiap selesai
+        // pertandingan pengaturan ini ikut hilang dan kembali ke default setelah halaman di-refresh.
+        const LS_PREF_KEYS = [LS.PROVINCE_TOOLTIP, LS.DECK_PROVINCE_LABEL, LS.CARD_RARITY];
+        function lsClear() { Object.values(LS).forEach(k => { if (!LS_PREF_KEYS.includes(k)) lsDel(k); }); }
         // [FIX v8] Expose ke window agar fungsi global (_handleInternetRestored dll) bisa akses
         window._lsGet  = lsGet;
         window._lsSet  = lsSet;
@@ -13514,6 +13518,17 @@
         function _buildAnimatedExpCard(container, expGain, beforeLvl, afterLvl) {
             container.querySelectorAll('.exp-change-card').forEach(el => el.remove());
 
+            // Sudah level MAX sebelum match: tampilkan kartu statis (tidak ada bar / kebutuhan EXP)
+            if (beforeLvl.level >= 150) {
+                const maxCard = document.createElement('div');
+                maxCard.className = 'exp-change-card';
+                maxCard.innerHTML = `
+                    <div class="exp-change-title">✨ Perubahan Poin Pengalaman &nbsp;<span style="color:#ffd700;font-size:0.95em;">+${expGain} Poin</span></div>
+                    <div class="exp-change-lvl" style="color:#ffd700;font-weight:bold;">Level 150 MAX ✨</div>`;
+                container.appendChild(maxCard);
+                return;
+            }
+
             const startExp  = beforeLvl.currentExp;
             const endExp    = afterLvl.currentExp;
             const neededExp = beforeLvl.neededExp || 1;
@@ -13577,7 +13592,9 @@
                 const targetNeeded = curLvl >= afterLvl.level ? afterLvl.neededExp : curNeeded;
                 const pct = targetNeeded > 0 ? Math.min(100, (curExp / targetNeeded) * 100) : 100;
                 if (fillEl) fillEl.style.width = pct + '%';
-                if (numEl)  numEl.innerHTML = `${curExp}/<span class="_ecNeeded">${targetNeeded}</span> Poin`;
+                if (numEl)  numEl.innerHTML = targetNeeded > 0
+                    ? `${curExp}/<span class="_ecNeeded">${targetNeeded}</span> Poin`
+                    : `<span class="_ecNeeded">MAX</span>`;
                 if (pctEl)  pctEl.textContent = Math.round(pct) + '%';
 
                 setTimeout(tickExp, stepDelay);
@@ -20590,9 +20607,9 @@ const ACHIEVEMENTS = [
 // SISTEM EXP & LEVEL PEMAIN
 // =============================================
 
-// EXP yang dibutuhkan dari level N ke N+1 (base 100, naik 25% tiap level)
+// EXP yang dibutuhkan dari level N ke N+1 (base 100, naik 5% tiap level)
 function _expNeeded(level) {
-    return Math.round(100 * Math.pow(1.25, level - 1));
+    return Math.round(100 * Math.pow(1.05, level - 1));
 }
 
 // Total EXP kumulatif untuk mencapai level N (dari level 1)
@@ -20620,7 +20637,7 @@ function calcLevelFromExp(totalExp) {
 }
 
 // EXP dari hasil match: base × multiplier berdasarkan rank tier
-const _EXP_MATCH_BASE = { 1: 80, 2: 50, 3: 25, 4: 5 };
+const _EXP_MATCH_BASE = { 1: 350, 2: 220, 3: 110, 4: 22 };
 const _EXP_RANK_MULT = {
     'Bronze': 1.0, 'Silver': 1.2, 'Gold': 1.4,
     'Diamond': 1.6, 'Platinum': 2.0
@@ -20633,11 +20650,11 @@ function getMatchExp(position, rankName) {
 }
 
 // EXP dari klaim achievement berdasarkan tier (1-5+)
-const _EXP_ACH_TIER = { 1: 75, 2: 175, 3: 350, 4: 600, 5: 900 };
+const _EXP_ACH_TIER = { 1: 1000, 2: 2000, 3: 3500, 4: 5500, 5: 8000 };
 function getAchExp(tier) {
-    if (!tier || tier < 1) return 75;
+    if (!tier || tier < 1) return 1000;
     if (tier <= 5) return _EXP_ACH_TIER[tier];
-    return 900 + (tier - 5) * 350; // tier 6+ naik 350 per tingkat
+    return 8000 + (tier - 5) * 2500; // tier 6+ naik 2500 per tingkat
 }
 
 // Simpan EXP ke Firebase dan kembalikan { level, currentExp, neededExp, leveledUp, newLevel }
@@ -20696,12 +20713,12 @@ async function _migratePlayerExpFromAchievements() {
     try {
         const migKey = `users/${uid}/expMigrated`;
         const migSnap = await db.ref(migKey).get();
-        if (migSnap.exists()) return; // sudah pernah migrasi
+        if (migSnap.exists()) return false; // sudah pernah migrasi
         await db.ref(migKey).set(true);
 
         // Ambil semua achievement yang sudah diklaim
         const achSnap = await db.ref(`users/${uid}/achievements`).get();
-        if (!achSnap.exists()) return;
+        if (!achSnap.exists()) return true;
         const claimed = achSnap.val() || {};
         let totalRetroExp = 0;
         ACHIEVEMENTS.forEach(ach => {
@@ -20716,7 +20733,43 @@ async function _migratePlayerExpFromAchievements() {
             await ref.set(existing + totalRetroExp);
             console.log(`[EXP Migrasi] +${totalRetroExp} EXP dari ${Object.keys(claimed).length} pencapaian lama`);
         }
-    } catch(e) { console.warn('EXP migration error:', e); }
+        return true; // migrasi baru saja berjalan memakai nilai bonus terbaru
+    } catch(e) { console.warn('EXP migration error:', e); return false; }
+}
+
+// ─── MIGRASI V2: SELISIH BONUS ACHIEVEMENT LAMA → BARU (sekali per akun) ─────
+function _oldAchExp(tier) {
+    if (!tier || tier < 1) return 75;
+    const t = { 1: 75, 2: 175, 3: 350, 4: 600, 5: 900 };
+    if (tier <= 5) return t[tier];
+    return 900 + (tier - 5) * 350;
+}
+async function _migrateAchExpBuffV2(justMigrated) {
+    if (!currentUser) return;
+    const uid = currentUser.uid;
+    try {
+        const flagSnap = await db.ref(`users/${uid}/expMigratedV2`).get();
+        if (flagSnap.exists()) return; // sudah pernah
+        const updates = {};
+        updates[`users/${uid}/expMigratedV2`] = true;
+        // Jika migrasi lama baru berjalan, EXP achievement sudah dihitung dengan nilai baru → hanya tandai.
+        if (!justMigrated) {
+            const achSnap = await db.ref(`users/${uid}/achievements`).get();
+            const claimed = achSnap.exists() ? (achSnap.val() || {}) : {};
+            let diff = 0;
+            ACHIEVEMENTS.forEach(ach => {
+                if (claimed[ach.id] === true) diff += getAchExp(ach.tier || 1) - _oldAchExp(ach.tier || 1);
+            });
+            if (diff > 0) {
+                const expSnap = await db.ref(`users/${uid}/playerExp`).get();
+                const existing = expSnap.exists() ? (expSnap.val() || 0) : 0;
+                updates[`users/${uid}/playerExp`] = existing + diff;
+                console.log(`[EXP Migrasi V2] +${diff} EXP selisih bonus achievement`);
+            }
+        }
+        // Atomik: flag + EXP ditulis bersamaan, jika gagal tidak ada yang berubah (dicoba lagi saat login berikutnya)
+        await db.ref().update(updates);
+    } catch(e) { console.warn('EXP migration V2 error:', e); }
 }
 
 // ─── UPDATE UI LEVEL DI PROFILE BADGE ────────────────────────────────────────
@@ -21227,7 +21280,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 await _loadAchData();
                 await _migrateOldAccountAchievements(); // cek & unlock pencapaian akun lama
                 await _migrateOldAccountCreatedAt(); // isi tanggal bergabung untuk akun lama yang belum punya
-                await _migratePlayerExpFromAchievements(); // migrasi EXP retroaktif untuk akun lama
+                const _expJustMigrated = await _migratePlayerExpFromAchievements(); // migrasi EXP retroaktif untuk akun lama
+                await _migrateAchExpBuffV2(_expJustMigrated); // sesuaikan bonus achievement lama ke nilai baru (sekali)
                 await checkAndNotifyAchievements();
                 _renderAchSlotsUI();
                 updatePlayerLevelUI(); // tampilkan level di badge & profil
