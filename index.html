@@ -20472,7 +20472,7 @@ const ACHIEVEMENTS = [
     {
         id: 'top_player',
         name: 'Pemain Terbaik',
-        tier: 3,
+        tier: 3, exp: 8000,
         icon: '🏆',
         desc: 'Namamu pernah terukir di puncak papan peringkat.',
         how: 'Pernah meraih <strong>peringkat #1 di Papan Peringkat</strong>',
@@ -20491,7 +20491,7 @@ const ACHIEVEMENTS = [
     {
         id: 'king_streak_2',
         name: 'Alergi Kalah II',
-        tier: 2,
+        tier: 2, exp: 3500,
         icon: '🔥',
         desc: 'Sepuluh kemenangan tanpa henti — tidak terbendung!',
         how: 'Raih kemenangan <strong>10 kali berturut-turut (#1–#3)</strong>',
@@ -20500,7 +20500,7 @@ const ACHIEVEMENTS = [
     {
         id: 'king_streak_3',
         name: 'Alergi Kalah III',
-        tier: 3,
+        tier: 3, exp: 8000,
         icon: '🌟',
         desc: 'Dua puluh kemenangan beruntun — fenomena langka!',
         how: 'Raih kemenangan <strong>20 kali berturut-turut (#1–#3)</strong>',
@@ -20510,7 +20510,7 @@ const ACHIEVEMENTS = [
     {
         id: 'jawara_1',
         name: 'Jawara I',
-        tier: 1,
+        tier: 1, exp: 2000,
         icon: '⚔️',
         desc: 'Sepuluh kali juara pertama — konsistensi yang luar biasa.',
         how: 'Raih <strong>#1 sebanyak 10 kali</strong>',
@@ -20519,7 +20519,7 @@ const ACHIEVEMENTS = [
     {
         id: 'jawara_2',
         name: 'Jawara II',
-        tier: 2,
+        tier: 2, exp: 3500,
         icon: '🛡️',
         desc: 'Dua puluh kali menjadi yang terdepan.',
         how: 'Raih <strong>#1 sebanyak 20 kali</strong>',
@@ -20528,7 +20528,7 @@ const ACHIEVEMENTS = [
     {
         id: 'jawara_3',
         name: 'Jawara III',
-        tier: 3,
+        tier: 3, exp: 5500,
         icon: '👑',
         desc: 'Empat puluh kali juara pertama — kamu adalah arena ini.',
         how: 'Raih <strong>#1 sebanyak 40 kali</strong>',
@@ -20585,7 +20585,7 @@ const ACHIEVEMENTS = [
         id: 'level_sepuh',
         name: 'Sepuh',
         icon: '🐓',
-        tier: 5,
+        tier: 5, exp: 10500,
         desc: 'Pemain legendaris. Telah mencapai puncak tertinggi sistem level.',
         how: 'Capai <strong>Level 100</strong>',
         check: (stats) => (stats.playerLevel || 1) >= 100
@@ -20651,6 +20651,11 @@ function getMatchExp(position, rankName) {
 
 // EXP dari klaim achievement berdasarkan tier (1-5+)
 const _EXP_ACH_TIER = { 1: 1000, 2: 2000, 3: 3500, 4: 5500, 5: 8000 };
+// Hadiah EXP per achievement: pakai ach.exp bila ada (disesuaikan dgn tingkat kesulitan), jika tidak pakai tabel tier
+function getAchRewardExp(ach) {
+    if (ach && Number.isFinite(ach.exp) && ach.exp > 0) return ach.exp;
+    return getAchExp((ach && ach.tier) || 1);
+}
 function getAchExp(tier) {
     if (!tier || tier < 1) return 1000;
     if (tier <= 5) return _EXP_ACH_TIER[tier];
@@ -20723,7 +20728,7 @@ async function _migratePlayerExpFromAchievements() {
         let totalRetroExp = 0;
         ACHIEVEMENTS.forEach(ach => {
             if (claimed[ach.id] === true) {
-                totalRetroExp += getAchExp(ach.tier || 1);
+                totalRetroExp += getAchRewardExp(ach);
             }
         });
         if (totalRetroExp > 0) {
@@ -20737,7 +20742,7 @@ async function _migratePlayerExpFromAchievements() {
     } catch(e) { console.warn('EXP migration error:', e); return false; }
 }
 
-// ─── MIGRASI V2: SELISIH BONUS ACHIEVEMENT LAMA → BARU (sekali per akun) ─────
+// ─── MIGRASI V3: SELISIH BONUS ACHIEVEMENT LAMA → BARU (sekali per akun) ─────
 function _oldAchExp(tier) {
     if (!tier || tier < 1) return 75;
     const t = { 1: 75, 2: 175, 3: 350, 4: 600, 5: 900 };
@@ -20748,28 +20753,34 @@ async function _migrateAchExpBuffV2(justMigrated) {
     if (!currentUser) return;
     const uid = currentUser.uid;
     try {
-        const flagSnap = await db.ref(`users/${uid}/expMigratedV2`).get();
+        const flagSnap = await db.ref(`users/${uid}/expMigratedV3`).get();
         if (flagSnap.exists()) return; // sudah pernah
         const updates = {};
-        updates[`users/${uid}/expMigratedV2`] = true;
-        // Jika migrasi lama baru berjalan, EXP achievement sudah dihitung dengan nilai baru → hanya tandai.
+        updates[`users/${uid}/expMigratedV3`] = true;
+        // Jika migrasi lama baru berjalan, EXP achievement sudah dihitung dengan nilai terbaru → hanya tandai.
         if (!justMigrated) {
+            // Akun yang sudah menerima selisih tahap sebelumnya (V2) berpatokan ke tabel tier; selain itu ke nilai lama.
+            const v2Snap = await db.ref(`users/${uid}/expMigratedV2`).get();
+            const v2Done = v2Snap.exists();
             const achSnap = await db.ref(`users/${uid}/achievements`).get();
             const claimed = achSnap.exists() ? (achSnap.val() || {}) : {};
             let diff = 0;
             ACHIEVEMENTS.forEach(ach => {
-                if (claimed[ach.id] === true) diff += getAchExp(ach.tier || 1) - _oldAchExp(ach.tier || 1);
+                if (claimed[ach.id] === true) {
+                    const base = v2Done ? getAchExp(ach.tier || 1) : _oldAchExp(ach.tier || 1);
+                    diff += Math.max(0, getAchRewardExp(ach) - base); // tidak pernah mengurangi EXP pemain
+                }
             });
             if (diff > 0) {
                 const expSnap = await db.ref(`users/${uid}/playerExp`).get();
                 const existing = expSnap.exists() ? (expSnap.val() || 0) : 0;
                 updates[`users/${uid}/playerExp`] = existing + diff;
-                console.log(`[EXP Migrasi V2] +${diff} EXP selisih bonus achievement`);
+                console.log(`[EXP Migrasi V3] +${diff} EXP selisih bonus achievement`);
             }
         }
         // Atomik: flag + EXP ditulis bersamaan, jika gagal tidak ada yang berubah (dicoba lagi saat login berikutnya)
         await db.ref().update(updates);
-    } catch(e) { console.warn('EXP migration V2 error:', e); }
+    } catch(e) { console.warn('EXP migration V3 error:', e); }
 }
 
 // ─── UPDATE UI LEVEL DI PROFILE BADGE ────────────────────────────────────────
@@ -21080,7 +21091,7 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
     document.getElementById('ach-popup-name').textContent = ach.name;
     document.getElementById('ach-popup-desc').textContent = ach.desc;
     document.getElementById('ach-popup-how').innerHTML    = `🎯 Cara meraih: ${ach.how}`;
-    const _expVal = getAchExp(ach.tier || 1);
+    const _expVal = getAchRewardExp(ach);
     let _expEl = document.getElementById('ach-popup-exp');
     if (!_expEl) {
         _expEl = document.createElement('div');
@@ -21124,7 +21135,7 @@ async function claimAchievement(id) {
     if (ach) {
         showAchToast(`🎉 ${ach.icon} "${ach.name}" berhasil diraih!`);
         // Tambah EXP dari achievement
-        const expGain = getAchExp(ach.tier || 1);
+        const expGain = getAchRewardExp(ach);
         addPlayerExp(expGain, `ach_${id}`).then(res => {
             if (res) {
                 setTimeout(() => showAchToast(`✨ +${expGain} Poin Pengalaman dari pencapaian!`), 2000);
