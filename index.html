@@ -2544,6 +2544,8 @@
             box-shadow: 0 2px 8px rgba(100,60,180,0.3);
         }
         .btn-dl-info .dl-info-icon { font-size: 0.95em; line-height: 1; display: block; }
+        /* Ikon Tambah Kartu (gambar/tombol/tambah kartu.png), fallback emoji otomatis jika gambar tidak ada */
+        .draw-icon-img { height: 1.15em; width: auto; max-width: 1.6em; object-fit: contain; vertical-align: -0.2em; display: inline-block; }
         .btn-dl-info .dl-info-lv   { font-size: 0.7em; font-weight: bold; color: #f0a8c8; line-height: 1; white-space: nowrap; }
         .btn-dl-info:hover { background: #9268d4; box-shadow: 0 4px 12px rgba(120,80,200,0.5); transform: translateY(-1px); }
         .profile-empty { color: rgba(255,255,255,0.5); text-align: center; padding: 40px 0; font-size: 1em; }
@@ -4965,7 +4967,7 @@
 
                 <!-- 8. LEVEL TAMBAH KARTU -->
                 <div class="enc-rule-card" style="border-color:#f093fb;">
-                    <span class="enc-rule-icon">🎰</span>
+                    <span class="enc-rule-icon"><span data-draw-icon>🎰</span></span>
                     <div class="enc-rule-heading">Sistem Level Tambah Kartu — Makin Sering Tambah Kartu, Makin Bagus Kartunya!</div>
                     <div class="enc-rule-text">
                         Setiap pemain punya <strong>Level Tambah Kartu</strong> (Level 1–12) yang naik otomatis setiap <strong>1 kali Tambah Kartu</strong>. Semakin tinggi levelmu, semakin besar peluang mendapat kartu langka! Level 12 adalah level tertinggi, dengan <span data-rarity-icon="magis"></span> Ultra+ dan <span data-rarity-icon="sakral"></span> Ultra dominan!
@@ -5059,7 +5061,7 @@
                         </table>
                     </div>
                     <div class="enc-rule-text" style="margin-top:10px;">
-                        💡 <strong>Perlu diingat:</strong> Prioritas ini menentukan kartu mana yang dipilih lebih dulu dari Kartu Tersisa. Jika kartu dari tingkatan tersebut sudah tidak ada, sistem otomatis beralih ke tingkatan berikutnya. Klik tombol <strong>🎰</strong> di sebelah Tambah Kartu untuk cek level & progress-mu saat ini!
+                        💡 <strong>Perlu diingat:</strong> Prioritas ini menentukan kartu mana yang dipilih lebih dulu dari Kartu Tersisa. Jika kartu dari tingkatan tersebut sudah tidak ada, sistem otomatis beralih ke tingkatan berikutnya. Klik tombol <strong><span data-draw-icon>🎰</span></strong> di sebelah Tambah Kartu untuk cek level & progress-mu saat ini!
                     </div>
                 </div>
 
@@ -5288,11 +5290,11 @@
                     <div style="margin-top:18px;margin-bottom:8px;font-weight:bold;color:#c7d2fe;font-size:0.88em;letter-spacing:0.3px;">🎮 Tombol Saat Lagi Main</div>
                     <div style="display:flex;flex-direction:column;gap:8px;">
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#c77ddb,#e05a7a,#f5576c);color:#fff;border-radius:15px;padding:8px 20px;font-size:0.9em;font-weight:bold;opacity:1;box-shadow:none;">🎰 Tambah Kartu</button>
+                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#c77ddb,#e05a7a,#f5576c);color:#fff;border-radius:15px;padding:8px 20px;font-size:0.9em;font-weight:bold;opacity:1;box-shadow:none;"><span data-draw-icon>🎰</span> Tambah Kartu</button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ambil kartu baru pas giliranmu main.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:#7c5cbf;border:2px solid #e88aaa;color:#f9b8d0;border-radius:12px;padding:3px 9px;font-size:0.85em;font-weight:bold;line-height:1.3;opacity:1;box-shadow:none;">🎰<br><span style="font-size:0.7em;">Lv1</span></button>
+                            <button disabled style="flex-shrink:0;background:#7c5cbf;border:2px solid #e88aaa;color:#f9b8d0;border-radius:12px;padding:3px 9px;font-size:0.85em;font-weight:bold;line-height:1.3;opacity:1;box-shadow:none;"><span data-draw-icon>🎰</span><br><span style="font-size:0.7em;">Lv1</span></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Lihat peluang dapat kartu bagus dari Level Tambah Kartu.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
@@ -5375,7 +5377,7 @@
     <div id="draw-level-overlay" tabindex="-1" style="outline:none;" onclick="playSound('button');hideDrawLevelInfo()">
         <div class="dl-modal" onclick="event.stopPropagation()">
             <div class="dl-header">
-                <div class="dl-title">🎰 Level Tambah Kartu</div>
+                <div class="dl-title"><span data-draw-icon>🎰</span> Level Tambah Kartu</div>
                 <button class="btn-enc-close" onclick="playSound('x');hideDrawLevelInfo()">✖</button>
             </div>
             <div class="dl-level-badge">
@@ -6341,8 +6343,8 @@
                             <div class="player-stat" style="flex-shrink:0;">📇 Kartu: <strong id="player-cards">0</strong></div>
                             <div class="player-stat" style="flex-shrink:0;">⚡ Kekuatan: <strong id="player-power">0</strong></div>
                             <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-                                <button class="btn-draw" id="btn-draw" disabled>🎰 Tambah Kartu</button>
-                                <button class="btn-dl-info" id="btn-draw-level-info" onclick="playSound('button');showDrawLevelInfo()" title="Info Level Tambah Kartu"><span class="dl-info-icon">🎰</span><span class="dl-info-lv" id="dl-info-lv-label">Lv1</span></button>
+                                <button class="btn-draw" id="btn-draw" disabled><span data-draw-icon>🎰</span> Tambah Kartu</button>
+                                <button class="btn-dl-info" id="btn-draw-level-info" onclick="playSound('button');showDrawLevelInfo()" title="Info Level Tambah Kartu"><span class="dl-info-icon"><span data-draw-icon>🎰</span></span><span class="dl-info-lv" id="dl-info-lv-label">Lv1</span></button>
                             </div>
                             <div style="padding:8px 15px; background:rgba(255,255,255,0.2); border-radius:8px; flex-shrink:0; line-height:1.4;">
                                 <span style="font-weight:bold; font-size:0.9em;">🎮 Ronde: <strong id="round-number">1</strong></span>
@@ -6647,6 +6649,21 @@
         // =============================================
         const ASSET_V = '1.0';
         const av = (path) => `${path}?v=${ASSET_V}`;
+
+        // =============================================
+        // IKON TAMBAH KARTU (gambar/tombol/tambah kartu.png dengan fallback emoji 🎰)
+        // =============================================
+        // Pakai gambar jika ada; jika belum di-upload / gagal dimuat, otomatis kembali ke emoji 🎰
+        function drawIconHTML() {
+            return `<img src="${av('gambar/tombol/tambah kartu.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🎰';">`;
+        }
+        // Mengisi semua placeholder <span data-draw-icon></span> di HTML statis
+        function fillDrawIconPlaceholders() {
+            document.querySelectorAll('[data-draw-icon]').forEach(el => {
+                el.innerHTML = drawIconHTML();
+            });
+        }
+        fillDrawIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
@@ -12195,7 +12212,7 @@
                         const dlBtn = document.createElement('button');
                         dlBtn.className = 'btn-dl-info';
                         dlBtn.title = `Info Level Tambah Kartu ${getBotDisplayName(p)}`;
-                        dlBtn.innerHTML = `<span class="dl-info-icon">🎰</span><span class="dl-info-lv">Lv${p.drawLevel || 1}</span>`;
+                        dlBtn.innerHTML = `<span class="dl-info-icon">${drawIconHTML()}</span><span class="dl-info-lv">Lv${p.drawLevel || 1}</span>`;
                         dlBtn.addEventListener('click', () => { playSound('button'); showDrawLevelInfo(p.id); });
                         nameDiv.appendChild(dlBtn);
                     }
@@ -14939,7 +14956,7 @@
                                 <span style="font-size:0.9em;font-weight:bold;line-height:1;">${p.totalPower || 0}</span>
                             </div>
                             <div class="stat-badge dl-badge-lv" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;cursor:pointer;background:rgba(240,147,251,0.18);border:1px solid rgba(240,147,251,0.5);color:#f5c6ff;" title="Lihat Level Tambah Kartu">
-                                <span style="font-size:1.1em;line-height:1;">🎰</span>
+                                <span style="font-size:1.1em;line-height:1;">${drawIconHTML()}</span>
                                 <span style="font-size:0.9em;font-weight:bold;line-height:1;">${dlLevelLabel}</span>
                             </div>
                        </div>`;
@@ -14989,11 +15006,11 @@
                 btnDraw.style.color = '#1a4a2a';
                 btnDraw.disabled = true; // kartu dijatuhkan lewat klik kartu di deck
             } else if (player.mustDraw && !player.hasPlayed) {
-                btnDraw.innerHTML = '🎰 Tambah Kartu';
+                btnDraw.innerHTML = drawIconHTML() + ' Tambah Kartu';
                 btnDraw.style.background = '';
                 btnDraw.style.color = '';
             } else {
-                btnDraw.innerHTML = '🎰 Tambah Kartu';
+                btnDraw.innerHTML = drawIconHTML() + ' Tambah Kartu';
                 btnDraw.style.background = '';
                 btnDraw.style.color = '';
             }
@@ -16657,9 +16674,8 @@
                 // Update judul: tampilkan nama pemain jika bukan diri sendiri
                 const titleEl = document.querySelector('#draw-level-overlay .dl-title');
                 if (titleEl) {
-                    titleEl.textContent = playerId
-                        ? `🎰 Level Tambah Kartu — ${getBotDisplayName(player)}`
-                        : '🎰 Level Tambah Kartu';
+                    titleEl.innerHTML = drawIconHTML() + ' Level Tambah Kartu';
+                    if (playerId) titleEl.appendChild(document.createTextNode(` — ${getBotDisplayName(player)}`));
                 }
 
                 // Bintang & teks level
