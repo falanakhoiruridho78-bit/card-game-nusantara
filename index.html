@@ -4772,7 +4772,7 @@
 
         <div class="enc-tabs">
             <button class="enc-tab active" id="enc-tab-btn-rules" onclick="playSound('button');showTutTab('rules')">📖 Aturan</button>
-            <button class="enc-tab" id="enc-tab-btn-buttons" onclick="playSound('button');showTutTab('buttons')">🎛️ Tombol</button>
+            <button class="enc-tab" id="enc-tab-btn-buttons" onclick="playSound('button');showTutTab('buttons')"><span data-buttons-icon>🎛️</span> Tombol</button>
             <button class="enc-tab" id="enc-tab-btn-video" onclick="playSound('button');showTutTab('video')">🎬 Video</button>
         </div>
 
@@ -5106,12 +5106,12 @@
         <!-- TAB TOMBOL -->
         <div class="enc-tab-content" id="enc-tab-buttons">
             <div class="enc-rules-container">
-                <div class="enc-rules-title">🎛️ Fungsi Setiap Tombol</div>
+                <div class="enc-rules-title"><span data-buttons-icon>🎛️</span> Fungsi Setiap Tombol</div>
                 <div class="enc-rules-subtitle">Kenali bentuk dan kegunaan setiap tombol di aplikasi ini! 🔎</div>
 
                 <!-- FUNGSI SETIAP TOMBOL (LEGENDA IKON, BENTUK ASLI) -->
                 <div class="enc-rule-card" style="border-color:#818cf8;">
-                    <span class="enc-rule-icon">🎛️</span>
+                    <span class="enc-rule-icon"><span data-buttons-icon>🎛️</span></span>
                     <div class="enc-rule-heading">Fungsi Setiap Tombol</div>
                     <div class="enc-rule-text">
                         Masih bingung tentang fungsi tombol-tombol yang ada disini? Tenang, di sini dijelasin satu-satu, dan bentuk tombolnya dibuat semirip mungkin sama yang beneran ada di aplikasi. Ada yang bulat, ada yang kotak, ada juga yang lonjong, macam-macam! 😊
@@ -6731,6 +6731,19 @@
             });
         }
         fillTakeCardIconPlaceholders();
+
+        // =============================================
+        // IKON TOMBOL (gambar/tombol/tombol.png dengan fallback emoji 🎛️)
+        // =============================================
+        function buttonsIconHTML() {
+            return `<img src="${av('gambar/tombol/tombol.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🎛️';">`;
+        }
+        function fillButtonsIconPlaceholders() {
+            document.querySelectorAll('[data-buttons-icon]').forEach(el => {
+                el.innerHTML = buttonsIconHTML();
+            });
+        }
+        fillButtonsIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
