@@ -6746,10 +6746,10 @@
         fillButtonsIconPlaceholders();
 
         // =============================================
-        // IKON VOTING (gambar/tombol/voting.png dengan fallback emoji 🗳️)
+        // IKON VOTING (gambar/voting/voting.png dengan fallback emoji 🗳️)
         // =============================================
         function votingIconHTML() {
-            return `<img src="${av('gambar/tombol/voting.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🗳️';">`;
+            return `<img src="${av('gambar/voting/voting.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🗳️';">`;
         }
         function fillVotingIconPlaceholders() {
             document.querySelectorAll('[data-voting-icon]').forEach(el => {
