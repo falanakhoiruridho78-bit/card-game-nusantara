@@ -4824,7 +4824,7 @@
 
                 <!-- 3. KARTU AWAL -->
                 <div class="enc-rule-card" style="border-color:#a78bfa;">
-                    <span class="enc-rule-icon">🃏</span>
+                    <span class="enc-rule-icon"><span data-start-card-icon>🃏</span></span>
                     <div class="enc-rule-heading">Kartu yang Kamu Dapat di Awal</div>
                     <div class="enc-rule-text">
                         Setiap pemain mendapat <strong>8 kartu di awal permainan</strong>, masing-masing 1 kartu dari setiap tingkatan berikut:
@@ -6666,6 +6666,19 @@
             });
         }
         fillDrawIconPlaceholders();
+
+        // =============================================
+        // IKON KARTU AWAL (gambar/tombol/kartu awal.png dengan fallback emoji 🃏)
+        // =============================================
+        function startCardIconHTML() {
+            return `<img src="${av('gambar/tombol/kartu awal.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🃏';">`;
+        }
+        function fillStartCardIconPlaceholders() {
+            document.querySelectorAll('[data-start-card-icon]').forEach(el => {
+                el.innerHTML = startCardIconHTML();
+            });
+        }
+        fillStartCardIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
