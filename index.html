@@ -4748,7 +4748,7 @@
         </div>
 
         <div class="enc-tabs">
-            <button class="enc-tab active" id="enc-tab-btn-cards" onclick="playSound('button');showEncTab('cards')">🔶 Kartu</button>
+            <button class="enc-tab active" id="enc-tab-btn-cards" onclick="playSound('button');showEncTab('cards')"><span data-card-types-icon>🔶</span> Kartu</button>
         </div>
 
         <!-- TAB KARTU -->
@@ -4793,7 +4793,7 @@
 
                 <!-- 2. JENIS KARTU -->
                 <div class="enc-rule-card" style="border-color:#f093fb;">
-                    <span class="enc-rule-icon">🔶</span>
+                    <span class="enc-rule-icon"><span data-card-types-icon>🔶</span></span>
                     <div class="enc-rule-heading">Jenis Kartu & Kekuatannya</div>
                     <div class="enc-rule-text">Setiap provinsi punya 12 kartu dengan kekuatan berbeda:</div>
                     <div class="enc-rarity-row">
@@ -4867,7 +4867,7 @@
                         <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;">
                             <div style="width:105px;height:152px;border-radius:10px;padding:6px;box-shadow:0 6px 12px rgba(0,0,0,0.4);background:linear-gradient(135deg,#e0f7fa 0%,#80deea 100%);border:2px solid #00acc1;display:flex;flex-direction:column;position:relative;overflow:hidden;">
                                 <span style="position:absolute;top:3px;right:4px;font-size:1em;"><span data-rarity-icon="rare"></span></span>
-                                <div style="width:100%;height:58px;background:rgba(0,0,0,0.1);border-radius:6px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:2em;">🏮</div>
+                                <div style="width:100%;height:58px;background:rgba(0,0,0,0.1);border-radius:6px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:2em;">🙏</div>
                                 <div style="font-size:0.55em;text-align:center;color:#00838f;margin-top:auto;padding-top:4px;border-top:1px solid rgba(0,0,0,0.1);">Adat Istiadat</div>
                             </div>
                             <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#e0f7fa,#80deea);color:#006064;"><span data-rarity-icon="rare"></span> Langka</span>
@@ -4926,7 +4926,7 @@
 
                 <!-- 4. TAHAP 1 -->
                 <div class="enc-rule-card" style="border-color:#f5576c;">
-                    <span class="enc-rule-icon">⚔️</span>
+                    <span class="enc-rule-icon"><span data-stage1-icon>⚔️</span></span>
                     <div class="enc-rule-heading">Tahap 1 — Siapa yang Jatuhkan Kartu Pertama?</div>
                     <div class="enc-rule-text">
                         Di setiap ronde, hanya <strong>1 pemain</strong> yang boleh jatuhkan kartu di Tahap 1. Kartu itu menentukan <strong>provinsi</strong> yang harus diikuti semua pemain lain.
@@ -4941,7 +4941,7 @@
 
                 <!-- 5. TAHAP 2 -->
                 <div class="enc-rule-card" style="border-color:#38ef7d;">
-                    <span class="enc-rule-icon">🔄</span>
+                    <span class="enc-rule-icon"><span data-stage2-icon>🔄</span></span>
                     <div class="enc-rule-heading">Tahap 2 — Giliran Semua Pemain Lain</div>
                     <div class="enc-rule-text">
                         Setelah Tahap 1, semua pemain <strong>selain yang sudah jatuhkan kartu di Tahap 1</strong> harus menjatuhkan kartu dari <strong>provinsi yang sama</strong> dengan kartu yang ada di arena.
@@ -6679,6 +6679,45 @@
             });
         }
         fillStartCardIconPlaceholders();
+
+        // =============================================
+        // IKON TAHAP 2 (gambar/tombol/tahap dua.png dengan fallback emoji 🔄)
+        // =============================================
+        function stage2IconHTML() {
+            return `<img src="${av('gambar/tombol/tahap dua.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🔄';">`;
+        }
+        function fillStage2IconPlaceholders() {
+            document.querySelectorAll('[data-stage2-icon]').forEach(el => {
+                el.innerHTML = stage2IconHTML();
+            });
+        }
+        fillStage2IconPlaceholders();
+
+        // =============================================
+        // IKON TAHAP 1 (gambar/tombol/tahap satu.png dengan fallback emoji ⚔️)
+        // =============================================
+        function stage1IconHTML() {
+            return `<img src="${av('gambar/tombol/tahap satu.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='⚔️';">`;
+        }
+        function fillStage1IconPlaceholders() {
+            document.querySelectorAll('[data-stage1-icon]').forEach(el => {
+                el.innerHTML = stage1IconHTML();
+            });
+        }
+        fillStage1IconPlaceholders();
+
+        // =============================================
+        // IKON JENIS KARTU (gambar/tombol/kumpulan kartu.png dengan fallback emoji 🔶)
+        // =============================================
+        function cardTypesIconHTML() {
+            return `<img src="${av('gambar/tombol/kumpulan kartu.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🔶';">`;
+        }
+        function fillCardTypesIconPlaceholders() {
+            document.querySelectorAll('[data-card-types-icon]').forEach(el => {
+                el.innerHTML = cardTypesIconHTML();
+            });
+        }
+        fillCardTypesIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
@@ -13897,7 +13936,7 @@
 
             resultStatsDiv.innerHTML = `
                 <span>📋 Ronde ke-${gameState.round}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
-                <span>🔶 Kartu Tersisa: ${gameState.drawPile ? gameState.drawPile.length : 0} kartu</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <span>${cardTypesIconHTML()} Kartu Tersisa: ${gameState.drawPile ? gameState.drawPile.length : 0} kartu</span>&nbsp;&nbsp;|&nbsp;&nbsp;
                 <span>🗑️ Kartu Terpakai: ${gameState.discardPile ? gameState.discardPile.length : 0} kartu</span>
             `;
 
