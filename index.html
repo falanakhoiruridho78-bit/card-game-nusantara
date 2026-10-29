@@ -4934,7 +4934,7 @@
                             <li style="display:flex;gap:8px;align-items:flex-start;">🔵 <span><strong>Ronde pertama:</strong> Semua pemain langsung ikut <strong>Pemungutan Suara</strong> buat menentukan siapa yang dapat giliran duluan!</span></li>
                             <li style="display:flex;gap:8px;align-items:flex-start;">🔴 <span><strong>Ronde berikutnya:</strong> Pemain yang <strong>menjatuhkan kartu dengan kekuatan tertinggi</strong> di ronde sebelumnya yang dapat giliran jatuhkan kartu di Tahap 1!</span></li>
                             <li style="display:flex;gap:8px;align-items:flex-start;">🟣 <span><strong>Kapan Pemungutan Suara Terjadi?</strong> Selain terjadi di ronde satu pemungutan suara juga terjadi apabila pemain yang harusnya dapat giliran jatuhkan kartu di tahap 1 itu ternyata sudah nggak bisa main lagi (misalnya dia sudah menang duluan/menyerah), pemain yang tersisa harus <strong>Pemungutan Suara</strong> dulu buat menentukan siapa yang dapat giliran.</span></li>
-                            <li style="display:flex;gap:8px;align-items:flex-start;">🗳️ <span><strong>Pemungutan Suara itu apa?</strong> Cuma tebak-tebakan singkat! Kalau yang ikut <strong>2 orang</strong> → main <strong>Suit Batu-Gunting-Kertas</strong>. Kalau yang ikut <strong>3 orang atau lebih</strong> → semua pilih <strong>Kartu Putih</strong> atau <strong>Kartu Hitam</strong>, aturan mainya sama seperti <strong>permainan hompimpa</strong> yang dimana pemain yang memilih kartu yang paling berbeda di anatara pilihan kartu pemain lain maka dia akan menang! Waktu memilih cuma <strong>10 detik</strong>, kalau hasilnya seri, tebak-tebakannya diulang lagi.</span></li>
+                            <li style="display:flex;gap:8px;align-items:flex-start;"><span data-voting-icon>🗳️</span> <span><strong>Pemungutan Suara itu apa?</strong> Cuma tebak-tebakan singkat! Kalau yang ikut <strong>2 orang</strong> → main <strong>Suit Batu-Gunting-Kertas</strong>. Kalau yang ikut <strong>3 orang atau lebih</strong> → semua pilih <strong>Kartu Putih</strong> atau <strong>Kartu Hitam</strong>, aturan mainya sama seperti <strong>permainan hompimpa</strong> yang dimana pemain yang memilih kartu yang paling berbeda di anatara pilihan kartu pemain lain maka dia akan menang! Waktu memilih cuma <strong>10 detik</strong>, kalau hasilnya seri, tebak-tebakannya diulang lagi.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -6488,7 +6488,7 @@
     <!-- POPUP VOTING HAK TAHAP 1 -->
     <div class="voting-popup-overlay" id="voting-popup-overlay">
         <div class="voting-popup-content">
-            <div class="voting-popup-title" id="voting-popup-title">🗳️ Pemungutan Suara Hak Jatuh Kartu Tahap 1</div>
+            <div class="voting-popup-title" id="voting-popup-title"><span data-voting-icon>🗳️</span> Pemungutan Suara Hak Jatuh Kartu Tahap 1</div>
             <!-- [FITUR BARU] Tombol Jeda/Lanjutkan khusus penonton, hanya tampil selama voting berlangsung -->
             <button id="btn-pause-voting" onclick="window._toggleVotingPause()" style="display:none; margin:6px auto 0; padding:5px 14px; font-size:0.75em; font-weight:bold; border-radius:20px; border:2px solid rgba(255,255,255,0.7); cursor:pointer; background:linear-gradient(135deg,#ff9800,#e65100); color:#fff; box-shadow:0 3px 10px rgba(0,0,0,0.3);">⏸️ Jeda Pemungutan Suara</button>
             <div class="voting-popup-subtitle" id="voting-popup-subtitle">Tidak ada yang otomatis berhak — ayo tentukan lewat pemungutan suara!</div>
@@ -6744,6 +6744,19 @@
             });
         }
         fillButtonsIconPlaceholders();
+
+        // =============================================
+        // IKON VOTING (gambar/tombol/voting.png dengan fallback emoji 🗳️)
+        // =============================================
+        function votingIconHTML() {
+            return `<img src="${av('gambar/tombol/voting.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🗳️';">`;
+        }
+        function fillVotingIconPlaceholders() {
+            document.querySelectorAll('[data-voting-icon]').forEach(el => {
+                el.innerHTML = votingIconHTML();
+            });
+        }
+        fillVotingIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
@@ -12972,7 +12985,7 @@
                 title.textContent = `✊✋✌️ Suit: Rebutan Hak Tahap 1${roundLabel}`;
                 subtitle.textContent = 'Seri berdua? Pilih Gunting, Batu, atau Kertas!';
             } else {
-                title.textContent = `🗳️ Pemungutan Suara Kartu: Rebutan Hak Tahap 1${roundLabel}`;
+                title.innerHTML = `${votingIconHTML()} Pemungutan Suara Kartu: Rebutan Hak Tahap 1${roundLabel}`;
                 subtitle.textContent = 'Pilih Kartu Putih atau Kartu Hitam — kelompok dengan suara lebih sedikit yang menang!';
             }
             status.textContent = '';
