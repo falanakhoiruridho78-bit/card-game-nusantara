@@ -13671,7 +13671,10 @@
             let curExp      = startExp;
             let curLvl      = beforeLvl.level;
             let curNeeded   = neededExp;
-            const totalSteps = expGain || 1;
+            // Animasi dibuat cepat: untuk EXP besar, bar bertambah beberapa poin per langkah
+            // supaya total durasi tetap sekitar 0,8 detik (maks ~150 langkah) berapa pun EXP-nya.
+            const stepSize   = Math.max(1, Math.ceil((expGain || 1) / 150));
+            const totalSteps = Math.max(1, Math.ceil((expGain || 1) / stepSize));
             const stepDelay  = Math.max(6, Math.min(50, Math.round(800 / totalSteps)));
 
             function tickExp() {
@@ -13684,7 +13687,9 @@
                     return;
                 }
 
-                curExp++;
+                // Tambah beberapa poin sekaligus, tapi tidak melewati batas level atau target akhir
+                const _capExp = curLvl >= afterLvl.level ? Math.max(endExp, curExp) : curNeeded;
+                curExp = Math.min(curExp + stepSize, _capExp);
 
                 // Level up saat curExp mencapai curNeeded
                 if (curExp >= curNeeded && curLvl < afterLvl.level) {
