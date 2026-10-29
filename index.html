@@ -4956,7 +4956,7 @@
 
                 <!-- 6. AMBIL KARTU -->
                 <div class="enc-rule-card" style="border-color:#ffd700;">
-                    <span class="enc-rule-icon">⚡</span>
+                    <span class="enc-rule-icon"><span data-take-card-icon>⚡</span></span>
                     <div class="enc-rule-heading">Ambil Kartu dari Arena — Kapan & Siapa yang Bebas?</div>
                     <div class="enc-rule-text">
                         Mode <strong>Ambil Kartu</strong> terjadi saat kamu tidak punya kartu provinsi yang sedang dimainkan dan Kartu Tersisa sudah habis. Kamu harus ambil salah satu kartu yang ada di arena.<br><br>
@@ -6718,6 +6718,19 @@
             });
         }
         fillCardTypesIconPlaceholders();
+
+        // =============================================
+        // IKON AMBIL KARTU (gambar/tombol/ambil kartu.png dengan fallback emoji ⚡)
+        // =============================================
+        function takeCardIconHTML() {
+            return `<img src="${av('gambar/tombol/ambil kartu.png')}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='⚡';">`;
+        }
+        function fillTakeCardIconPlaceholders() {
+            document.querySelectorAll('[data-take-card-icon]').forEach(el => {
+                el.innerHTML = takeCardIconHTML();
+            });
+        }
+        fillTakeCardIconPlaceholders();
 
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
