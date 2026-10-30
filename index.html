@@ -6796,6 +6796,10 @@
         }
         fillMatchIconPlaceholders();
 
+        // Ikon jumlah kartu & kekuatan (gambar/macth/kartu.png dan kekuatan.png), fallback ke emoji 📇 / ⚡ jika gambar tidak ada
+        function cardIconHTML()  { return matchIconHTML('kartu', '📇'); }
+        function powerIconHTML() { return matchIconHTML('kekuatan', '⚡'); }
+
         // =============================================
         // RARITY LOGO (gambar/rarity/*.png dengan fallback emoji otomatis)
         // =============================================
@@ -12328,7 +12332,7 @@
                     const medals = { 1: '🥇', 2: '🥈', 3: '🥉', 4: '💀' };
                     const statusLabel = p.winner
                         ? `${medals[p.rank] || '🏅'} Peringkat ${p.rank}`
-                        : `${p.hand?.length ?? 0} kartu | ⚡${p.totalPower ?? 0}`;
+                        : `${p.hand?.length ?? 0} kartu | ${powerIconHTML()}${p.totalPower ?? 0}`;
                     const indicators = [];
                     if (p.mustDraw) indicators.push('⚠️ Tambah Kartu');
                     if (p.mustForcePick) indicators.push('⚡ Ambil Kartu');
@@ -12805,7 +12809,7 @@
                 const row = document.createElement('div');
                 row.className = `spec-card-row ${rowClass}`;
                 row.innerHTML = `<span class="spec-card-name">${rarityLogoHTML(card.rarity, 'rarity-logo-inline')} ${escHtml(card.name)}</span>` +
-                                `<span class="spec-card-power">⚡${card.power}</span>` +
+                                `<span class="spec-card-power">${powerIconHTML()}${card.power}</span>` +
                                 `<span class="spec-card-badge ${badge}"${badgeTitle}>${badgeLabel}</span>`;
                 cardList.appendChild(row);
             });
@@ -14005,7 +14009,7 @@
                 }
                 div.innerHTML = `${rankLabel} &mdash; <strong>${escHtml(getBotDisplayName(p))}</strong> `
                     + `👤 `
-                    + `<span style="font-weight:normal;color:#666">(${p.hand.length} kartu | ⚡${p.totalPower})</span>`;
+                    + `<span style="font-weight:normal;color:#666">(${p.hand.length} kartu | ${powerIconHTML()}${p.totalPower})</span>`;
                 resultRankDiv.appendChild(div);
             });
 
@@ -15086,11 +15090,11 @@
                     ? `<div class="stat-badge" style="background:rgba(255,210,0,0.25);border:1px solid rgba(255,210,0,0.6);color:#ffd200;font-weight:bold;">🏆#${p.rank}</div>`
                     : `<div style="display:flex;gap:4px;width:100%;">
                             <div class="stat-badge" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;">
-                                <span style="font-size:1.1em;line-height:1;">📇</span>
+                                <span style="font-size:1.1em;line-height:1;">${cardIconHTML()}</span>
                                 <span style="font-size:0.9em;font-weight:bold;line-height:1;">${p.hand ? p.hand.length : 0}</span>
                             </div>
                             <div class="stat-badge" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;">
-                                <span style="font-size:1.1em;line-height:1;">⚡</span>
+                                <span style="font-size:1.1em;line-height:1;">${powerIconHTML()}</span>
                                 <span style="font-size:0.9em;font-weight:bold;line-height:1;">${p.totalPower || 0}</span>
                             </div>
                             <div class="stat-badge dl-badge-lv" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;cursor:pointer;background:rgba(240,147,251,0.18);border:1px solid rgba(240,147,251,0.5);color:#f5c6ff;" title="Lihat Level Tambah Kartu">
@@ -16875,7 +16879,7 @@
                         const badges = (isTop   ? ' <span class="dl-rate-top-badge">✦ Tertinggi</span>'  : '')
                                      + (isReset ? ' <span class="dl-rate-reset-badge">🔄 Reset Level</span>' : '')
                                      + (!hasStock ? ' <span class="dl-rate-empty-badge">Habis</span>' : '');
-                        row.innerHTML = `<span class="dl-rate-name">${rarityLogoHTML(key, 'rarity-logo-inline')} ${label}${badges}</span><span class="dl-rate-power">⚡${power}</span><span class="dl-rate-pct">${rates[key]}%</span><span class="dl-rate-stock">📦 ${stockText}</span>`;
+                        row.innerHTML = `<span class="dl-rate-name">${rarityLogoHTML(key, 'rarity-logo-inline')} ${label}${badges}</span><span class="dl-rate-power">${powerIconHTML()}${power}</span><span class="dl-rate-pct">${rates[key]}%</span><span class="dl-rate-stock">📦 ${stockText}</span>`;
                         grid.appendChild(row);
                     });
                 }
@@ -19895,7 +19899,7 @@
                     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
                         <span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
                             border-radius:20px;padding:4px 12px;font-size:0.78em;color:#ffd700;font-weight:bold;">
-                            ⚡ Kekuatan ${cardData.power}
+                            ${powerIconHTML()} Kekuatan ${cardData.power}
                         </span>
                         <span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
                             border-radius:20px;padding:4px 12px;font-size:0.78em;color:#fff;">
@@ -20097,7 +20101,7 @@
 
                     const powerBadge = document.createElement('div');
                     powerBadge.className = 'enc-power-badge';
-                    powerBadge.textContent = '⚡ Kekuatan ' + cardData.power;
+                    powerBadge.innerHTML = powerIconHTML() + ' Kekuatan ' + cardData.power;
 
                     const rarityBadge = document.createElement('div');
                     rarityBadge.className = `enc-rarity-badge ${cardData.rarity}`;
