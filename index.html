@@ -2557,6 +2557,21 @@
         /* Ikon tombol Tambah Kartu (#btn-draw) disamakan tingginya dengan ikon Tahap; tinggi tombol & posisi tengah tetap */
         /* Ikon Kartu & Kekuatan (gambar/macth/kartu.png, kekuatan.png): sama besar dengan ikon Tahap (teks stat 1em vs Tahap 0.9em, jadi 1.9em) */
         .player-stat .draw-icon-img.match-icon-img { height: 1.9em; width: 1.9em; max-width: none; object-fit: contain; object-position: center; margin: -0.4em 0.1em -0.4em 0; vertical-align: -0.19em; }
+        /* Badge lawan (Kartu / Kekuatan / Level Tambah Kartu): tiga ikon satu ukuran kotak, tanpa margin negatif, jarak ke angka seragam */
+        .opponent-item .stat-badge .draw-icon-img { display: block; height: 1.8em; width: 1.8em; max-width: none; object-fit: contain; object-position: center; margin: 0 auto 2px; vertical-align: top; }
+        /* Ikon kekuatan yang langsung diikuti angka (tanpa spasi teks): beri jarak agar tidak menempel */
+        .spec-card-power .match-icon-img, .dl-rate-power .match-icon-img { margin-right: 0.25em; }
+        .dl-rate-power { white-space: nowrap; }
+        /* Layar sempit: bar pemain boleh turun baris (sebelumnya terpotong), supaya Kartu/Kekuatan/Tambah Kartu/Lv/Ronde/Tahap tetap terlihat semua */
+        @media (max-width: 768px) {
+            .player-controls-bar { flex-wrap: wrap; gap: 6px 4px; }
+        }
+        /* Di HP teks kotak Kartu/Kekuatan mengecil jadi 0.78em; kotak ikon dibesarkan agar tingginya tetap sama dengan ikon Tahap/Ronde/Tambah Kartu */
+        @media (max-width: 480px) {
+            .player-stat .draw-icon-img.match-icon-img { height: 2.42em; width: 2.42em; margin: 0; vertical-align: middle; }
+            /* Kotak Kartu/Kekuatan dibuat cukup tinggi & rata tengah supaya ikon berada di dalam kotak, tidak mencuat keluar */
+            .player-controls-bar .player-stat { display: flex; align-items: center; gap: 4px; min-height: 34px; padding: 2px 10px 2px 4px; box-sizing: border-box; }
+        }
         #btn-draw .draw-icon-img { height: 2.1em; width: 2.1em; max-width: none; object-fit: contain; object-position: center; margin: -0.475em 0.1em -0.475em 0; vertical-align: -0.215em; }
         .btn-dl-info .dl-info-lv   { font-size: 0.7em; font-weight: bold; color: #f0a8c8; line-height: 1; white-space: nowrap; }
         .btn-dl-info:hover { background: #9268d4; box-shadow: 0 4px 12px rgba(120,80,200,0.5); transform: translateY(-1px); }
@@ -12332,7 +12347,7 @@
                     const medals = { 1: '🥇', 2: '🥈', 3: '🥉', 4: '💀' };
                     const statusLabel = p.winner
                         ? `${medals[p.rank] || '🏅'} Peringkat ${p.rank}`
-                        : `${p.hand?.length ?? 0} kartu | ${powerIconHTML()}${p.totalPower ?? 0}`;
+                        : `${p.hand?.length ?? 0} kartu | ${powerIconHTML()} ${p.totalPower ?? 0}`;
                     const indicators = [];
                     if (p.mustDraw) indicators.push('⚠️ Tambah Kartu');
                     if (p.mustForcePick) indicators.push('⚡ Ambil Kartu');
@@ -14009,7 +14024,7 @@
                 }
                 div.innerHTML = `${rankLabel} &mdash; <strong>${escHtml(getBotDisplayName(p))}</strong> `
                     + `👤 `
-                    + `<span style="font-weight:normal;color:#666">(${p.hand.length} kartu | ${powerIconHTML()}${p.totalPower})</span>`;
+                    + `<span style="font-weight:normal;color:#666">(${p.hand.length} kartu | ${powerIconHTML()} ${p.totalPower})</span>`;
                 resultRankDiv.appendChild(div);
             });
 
