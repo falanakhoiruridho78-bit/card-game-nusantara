@@ -2572,6 +2572,13 @@
             /* Kotak Kartu/Kekuatan dibuat cukup tinggi & rata tengah supaya ikon berada di dalam kotak, tidak mencuat keluar */
             .player-controls-bar .player-stat { display: flex; align-items: center; gap: 4px; min-height: 34px; padding: 2px 10px 2px 4px; box-sizing: border-box; }
         }
+        /* Grup nama + notifikasi (giliran / penalti / dibebaskan): tinggi dicadangkan dari awal supaya halaman tidak bergeser saat notifikasi muncul/hilang */
+        .player-name-stats-group { min-height: 38px; align-content: center; }
+        @media (max-width: 640px) {
+            /* Layar sempit: notifikasi selalu di baris sendiri (nama selalu di baris atas, tidak ikut bergeser); cadangkan nama + notifikasi 2 baris teks */
+            .player-name-stats-group { min-height: 97px; align-content: flex-start; }
+            .player-name-stats-group > div { flex: 0 0 100%; box-sizing: border-box; }
+        }
         #btn-draw .draw-icon-img { height: 2.1em; width: 2.1em; max-width: none; object-fit: contain; object-position: center; margin: -0.475em 0.1em -0.475em 0; vertical-align: -0.215em; }
         .btn-dl-info .dl-info-lv   { font-size: 0.7em; font-weight: bold; color: #f0a8c8; line-height: 1; white-space: nowrap; }
         .btn-dl-info:hover { background: #9268d4; box-shadow: 0 4px 12px rgba(120,80,200,0.5); transform: translateY(-1px); }
