@@ -11674,6 +11674,10 @@
                     break;
                 }
 
+                case 'LEAVE_MATCH_ACK':
+                    if (window._plHandleAck) window._plHandleAck(data.roomId, data.result);
+                    break;
+
                 case 'CUSTOM_ROOM_CREATED':
                     _customRoomId = data.roomId;
                     // Pastikan tombol Mulai terlihat (reset dari sesi sebelumnya)
@@ -14381,7 +14385,7 @@
                     sock.onmessage = function(ev) {
                         try {
                             var d = JSON.parse(ev.data);
-                            if (d && d.type === 'LEAVE_MATCH_ACK' && d.roomId === p.roomId) finish(true);
+                            if (d && d.type === 'LEAVE_MATCH_ACK' && d.roomId === p.roomId) finish(d.result !== 'retry');
                         } catch (e) {}
                     };
                     sock.onerror = function() { finish(false); };
@@ -14390,6 +14394,19 @@
             });
         }
         window._hasPendingLeave = function() { return _plReadAll().length > 0; };
+        // [FIX LEAVE SAAT BUAT ROOM BARU] Daftar room yang sudah ditinggalkan tapi belum terkonfirmasi,
+        // untuk disertakan pada CREATE/JOIN_CUSTOM_ROOM. Room yang sedang dimasuki lagi dikecualikan.
+        window._plBuildLeaveRooms = function() {
+            try {
+                return _plReadAll()
+                    .filter(function(p) { return !(currentRoomId && currentRoomId === p.roomId); })
+                    .map(function(p) { return { roomId: p.roomId, isSpectator: !!p.isSpectator }; });
+            } catch (e) { return []; }
+        };
+        // ACK dari server untuk pelepasan yang dikirim bersama CREATE/JOIN_CUSTOM_ROOM.
+        window._plHandleAck = function(roomId, result) {
+            try { if (roomId && result !== 'retry') _plClear(roomId); } catch (e) {}
+        };
         // Kirim ulang semua catatan keluar yang belum terkonfirmasi. Resolve true bila sudah bersih.
         window._flushPendingLeave = async function(maxMs) {
             try {
@@ -14662,7 +14679,7 @@
                     try {
                         const _ackData = JSON.parse(ev.data);
                         if (_ackData && _ackData.type === 'LEAVE_MATCH_ACK' && _ackData.roomId === _roomId) {
-                            _plClear(_roomId);
+                            if (_ackData.result !== 'retry') _plClear(_roomId); // 'retry' = server belum bisa proses, biarkan catatan
                             _finishLeaveClose();
                         }
                     } catch(e) {}
@@ -18329,7 +18346,8 @@
                 type: 'CREATE_CUSTOM_ROOM',
                 playerName: myName,
                 userUid: currentUser.uid,
-                role
+                role,
+                leaveRooms: (window._plBuildLeaveRooms ? window._plBuildLeaveRooms() : [])
             }));
             // UI shown when server responds with CUSTOM_ROOM_CREATED
         }
@@ -19108,7 +19126,8 @@
                     type: 'JOIN_CUSTOM_ROOM',
                     roomId: inv.roomId,
                     playerName: myName,
-                    userUid: currentUser.uid
+                    userUid: currentUser.uid,
+                    leaveRooms: (window._plBuildLeaveRooms ? window._plBuildLeaveRooms() : [])
                 }));
                 // Lobby hanya ditampilkan setelah CUSTOM_ROOM_UPDATE diterima (join berhasil)
             } catch (e) {
