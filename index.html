@@ -6718,7 +6718,7 @@
             if (el.dataset.phase === String(ph) && el.firstChild) return; // tidak berubah, hindari reload gambar
             el.dataset.phase = String(ph);
             const file = ph === 2 ? 'tahap dua.png' : 'tahap satu.png';
-            el.innerHTML = `<img src="${av('gambar/tombol/' + file)}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🕹️';">`;
+            el.innerHTML = `<img src="${av('gambar/tombol/' + file)}" class="draw-icon-img match-icon-img" alt="" draggable="false" onerror="this.outerHTML='🕹️';">`;
         }
         updatePhaseIcon(1);
 
