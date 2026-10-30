@@ -2574,14 +2574,14 @@
         }
         /* Grup nama + notifikasi (giliran / penalti / dibebaskan): tinggi dicadangkan dari awal supaya halaman tidak bergeser saat notifikasi muncul/hilang.
            - Notifikasi dibuat lebih pendek (padding 3px) dan line-height dikunci, supaya tingginya tidak ikut berubah karena font/emoji perangkat.
-           - Layar lebar: tinggi notifikasi dikunci 34px (satu baris), cadangan grup 40px -> ada sisa 6px.
+           - Layar lebar: tinggi notifikasi dikunci 34px (satu baris), cadangan grup pas 34px (tidak perlu sisa karena tinggi notifikasi tidak bisa membesar); margin bawah 4px agar jarak ke bar tidak jauh.
            - Layar sempit: notifikasi boleh 2 baris teks (tinggi mengikuti isi), cadangan grup 100px -> ada sisa. */
         .player-header-name-h2 { line-height: 1.2; }
         #player-turn-notification, #player-penalty, #player-freed-notification {
             padding: 3px 12px !important; line-height: 1.25 !important; box-sizing: border-box;
             height: 34px; overflow: hidden;
         }
-        .player-name-stats-group { min-height: 40px; align-content: center; }
+        .player-name-stats-group { min-height: 34px; align-content: center; margin-bottom: 4px; }
         @media (max-width: 640px) {
             /* Notifikasi selalu di baris sendiri (nama selalu di baris atas, tidak ikut bergeser) */
             .player-name-stats-group { min-height: 100px; align-content: flex-start; }
