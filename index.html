@@ -6354,7 +6354,7 @@
                                 <span style="font-weight:bold; font-size:0.9em;"><span data-match-icon="ronde" data-emoji="🎮">🎮</span> Ronde: <strong id="round-number">1</strong></span>
                             </div>
                             <div style="padding:8px 15px; background:rgba(255,255,255,0.2); border-radius:8px; flex-shrink:0; line-height:1.4;">
-                                <span style="font-weight:bold; font-size:0.9em;">🕹️ Tahap: <strong id="phase-name">1</strong></span>
+                                <span style="font-weight:bold; font-size:0.9em;"><span id="phase-icon" data-phase-icon></span> Tahap: <strong id="phase-name">1</strong></span>
                             </div>
                         </div>
                     </div>
@@ -6707,6 +6707,20 @@
             });
         }
         fillStage1IconPlaceholders();
+
+        // =============================================
+        // IKON LABEL "TAHAP" (tahap satu.png / tahap dua.png sesuai tahap, fallback tetap 🕹️)
+        // =============================================
+        function updatePhaseIcon(phase) {
+            const el = document.getElementById('phase-icon');
+            if (!el) return;
+            const ph = (Number(phase) === 2) ? 2 : 1;
+            if (el.dataset.phase === String(ph) && el.firstChild) return; // tidak berubah, hindari reload gambar
+            el.dataset.phase = String(ph);
+            const file = ph === 2 ? 'tahap dua.png' : 'tahap satu.png';
+            el.innerHTML = `<img src="${av('gambar/tombol/' + file)}" class="draw-icon-img" alt="" draggable="false" onerror="this.outerHTML='🕹️';">`;
+        }
+        updatePhaseIcon(1);
 
         // =============================================
         // IKON JENIS KARTU (gambar/tombol/kumpulan kartu.png dengan fallback emoji 🔶)
@@ -12216,6 +12230,7 @@
             const pl = document.getElementById('province-label');
             if (rn) rn.textContent = gs.round || 1;
             if (ph) ph.textContent = gs.phase || 1;
+            updatePhaseIcon(gs.phase || 1);
             if (pl) pl.innerHTML = gs.currentProvince ? `<img src="${av(`gambar/provinsi/${gs.currentProvince}/peta (${gs.currentProvince}).png`)}" alt="Peta" class="province-label-map" onerror="this.style.display='none'"> ${gs.currentProvince}` : _waitingArenaLabel(gs);
 
             // Draw/discard pile counts
@@ -14735,6 +14750,7 @@
             // Stats
             document.getElementById('round-number').textContent = gameState.round || 1;
             document.getElementById('phase-name').textContent = gameState.phase || 1;
+            updatePhaseIcon(gameState.phase || 1);
             document.getElementById('draw-pile-count-2').textContent = gameState.drawPile ? gameState.drawPile.length : 0;
             document.getElementById('discard-pile-count-2').textContent = gameState.discardPile ? gameState.discardPile.length : 0;
 
