@@ -981,17 +981,6 @@
         }
         .province-info-btn:hover { background: rgba(255,255,255,0.5); transform: scale(1.1); }
 
-        .sync-refresh-btn {
-            position: absolute; top: 68px; right: 8px;
-            width: 40px; height: 40px;
-            background: rgba(102,126,234,0.8); border: 2px solid rgba(255,255,255,0.6);
-            border-radius: 8px; display: none; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 1.4em; transition: all 0.3s;
-            -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); z-index: 5; padding: 0; line-height: 1;
-        }
-        .sync-refresh-btn:hover { background: rgba(102,126,234,1); transform: scale(1.1) rotate(180deg); }
-        .sync-refresh-btn.urgent { background: rgba(244,67,54,0.9); border-color: #fff; animation: pulseUrgent 1s ease-in-out infinite; }
-        .sync-refresh-btn.success { background: rgba(76,175,80,0.9); border-color: #fff; }
         @keyframes pulseUrgent { 0%,100%{box-shadow:0 4px 10px rgba(244,67,54,0.4);transform:scale(1);} 50%{box-shadow:0 8px 25px rgba(244,67,54,0.8);transform:scale(1.05);} }
 
         /* TOMBOL STIKER — persis di bawah province-info-btn */
@@ -5193,11 +5182,6 @@
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini versi mininya, biasanya nempel di sebelah tulisan "Peringkat". Dipencet buat lihat penjelasan cara kerja sistem peringkat.</div></div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;width:44px;height:44px;padding:0;font-size:1.3em;background:rgba(102,126,234,0.8);border:2px solid rgba(255,255,255,0.6);color:#fff;border-radius:8px;opacity:1;box-shadow:none;">🔄</button>
-                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Muat Ulang</div>
-                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Kalau layarmu kelihatan aneh atau kayak macet pas lagi main, pencet ini biar tampilannya diperbarui. Kalau warnanya jadi merah dan berkedip-kedip, itu artinya kamu memang harus segera pencet tombol ini.</div></div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <button disabled style="flex-shrink:0;width:30px;height:30px;padding:0;font-size:1.1em;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;opacity:1;box-shadow:none;">—</button>
                             <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Perkecil</div>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ada di lobi sebelum main dimulai. Kalau dipencet, ruang tunggunya jadi bulatan kecil yang ngambang di layar, jadi kamu bisa buka menu lain dulu sambil tetap menunggu.</div></div>
@@ -6357,7 +6341,6 @@
                 <!-- AREA KARTU ATAS -->
                 <div class="top-card-area" style="position:relative;">
                     <div class="province-label" id="province-label">Menunggu kartu...</div>
-                    <button class="sync-refresh-btn" id="sync-refresh-btn" title="Muat ulang & sinkronisasi">🔄</button>
                     <button class="province-info-btn" id="province-info-btn" title="Lihat semua kartu provinsi">ℹ️</button>
                     <button class="sticker-btn" id="sticker-btn" title="Kirim stiker">
                         <span class="sticker-cooldown-num" id="sticker-cooldown-num"></span>
@@ -10401,7 +10384,6 @@
         let forcePickClickDebounce = false;
         let forcePickHeartbeat = null;
         let autoForcePickTimer = null;
-        let refreshButtonTimer = null;
         let _pingInterval = null;
         let _pingTs = 0;
         let _myLocalPing = null;
@@ -13457,7 +13439,6 @@
             penaltyText.textContent = '⚠️ Ambil Kartu Di Atas';
 
             startForcePickHeartbeat();
-            checkAndShowRefreshButton();
         }
 
         function startForcePickHeartbeat() {
@@ -13486,69 +13467,6 @@
 
         function stopForcePickHeartbeat() {
             if (forcePickHeartbeat) { clearInterval(forcePickHeartbeat); forcePickHeartbeat = null; }
-        }
-
-        function checkAndShowRefreshButton() {
-            if (!gameState || !myPlayerId) return;
-            const player = gameState.players.find(p => p.id === myPlayerId);
-            if (!player) return;
-            const btn = document.getElementById('sync-refresh-btn');
-            if (!btn) return;
-
-            if (gameState.forcePickMode && gameState.forcePickPlayers.some(p => p.id === player.id) && !player.hasPlayed && gameState.topCard.length > 0) {
-                if (refreshButtonTimer) clearTimeout(refreshButtonTimer);
-                refreshButtonTimer = setTimeout(() => {
-                    btn.style.display = 'flex';
-                    setTimeout(() => { if (btn.style.display === 'flex') btn.classList.add('urgent'); }, 7000);
-                }, 15000);
-            } else {
-                btn.style.display = 'none';
-                btn.classList.remove('urgent');
-                if (refreshButtonTimer) { clearTimeout(refreshButtonTimer); refreshButtonTimer = null; }
-            }
-        }
-
-        function hideRefreshButton() {
-            const btn = document.getElementById('sync-refresh-btn');
-            btn.style.display = 'none';
-            btn.classList.remove('urgent', 'success');
-            btn.textContent = '🔄';
-            if (refreshButtonTimer) { clearTimeout(refreshButtonTimer); refreshButtonTimer = null; }
-            if (autoForcePickTimer) { clearTimeout(autoForcePickTimer); autoForcePickTimer = null; }
-        }
-
-        function syncRefresh() {
-            if (!gameState || !myPlayerId) return;
-            const player = gameState.players.find(p => p.id === myPlayerId);
-            if (!player) return;
-            const btn = document.getElementById('sync-refresh-btn');
-
-            btn.style.transform = 'rotate(360deg)';
-            btn.style.transition = 'transform 0.5s ease-in-out';
-
-            player.isProcessingAction = false;
-            forcePickClickDebounce = false;
-
-            stopForcePickHeartbeat();
-
-            document.querySelectorAll('.card').forEach(cardEl => {
-                cardEl.classList.remove('zoom-in', 'zoom-out', 'fly-to-top', 'shake', 'wrong-card');
-            });
-
-            if (gameState.forcePickMode && gameState.forcePickPlayers.some(p => p.id === player.id) && !player.hasPlayed) {
-                setTimeout(() => enableForcePickInteraction(), 300);
-            }
-
-            updateUI();
-            addLog('✅ Sinkronisasi selesai!');
-
-            setTimeout(() => {
-                btn.style.transform = 'rotate(0deg)';
-                btn.classList.remove('urgent');
-                btn.classList.add('success');
-                btn.textContent = '✅';
-                setTimeout(() => { btn.classList.remove('success'); btn.textContent = '🔄'; }, 2000);
-            }, 500);
         }
 
         // =============================================
@@ -13800,6 +13718,8 @@
             _endGameShown = true;
             stopPingMeasurement();
             lsClear();
+            // Simpan ID room yang baru selesai agar goToHome() tetap bisa kirim LEAVE_MATCH ke server
+            window._lastEndedRoomId = currentRoomId;
             currentRoomId = null; // Cegah beforeunload menyimpan ulang room yang sudah selesai
 
             // Tandai gameState sebagai selesai agar updateButtons() bisa mendeteksi untuk spectator
@@ -14634,7 +14554,10 @@
             // server sempat mengirim STATS_SAVED / SAVE_STATS_CLIENT sebelum socket ditutup.
             // Jika tidak ada pending save (surrender sudah selesai), tutup setelah 200ms.
             const _ws = ws;
-            const _roomId = currentRoomId;
+            // Match yang sudah selesai: currentRoomId sudah di-null oleh endGame(), pakai cadangannya
+            // (hanya jika gameState masih ada dan ditandai gameOver, supaya tidak ada ID basi yang terkirim)
+            const _roomId = currentRoomId || ((gameState && gameState.gameOver) ? window._lastEndedRoomId : null) || null;
+            window._lastEndedRoomId = null;
             const _myPidForLeave = myPlayerId; // [FIX] dikirim ke server sbg cadangan identitas
             stopClientKeepAlive();
             ws = null; // null-kan segera agar tidak ada handler lain yang pakai
@@ -14715,9 +14638,9 @@
 
             // [FIX] Reset _listenerAdded pada elemen DOM agar event listener
             // dapat ditambahkan kembali di pertandingan berikutnya.
-            // Tanpa ini, tombol info/refresh tidak merespon setelah match ke-2+
+            // Tanpa ini, tombol info tidak merespon setelah match ke-2+
             // karena flag _listenerAdded = true tetap tersisa di elemen DOM.
-            ['province-info-btn', 'sync-refresh-btn', 'province-info-close', 'sticker-btn', 'sticker-popup-close'].forEach(id => {
+            ['province-info-btn', 'province-info-close', 'sticker-btn', 'sticker-popup-close'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el._listenerAdded = false;
             });
@@ -14839,13 +14762,6 @@
             if (stickerCloseBtn2 && !stickerCloseBtn2._listenerAdded) {
                 stickerCloseBtn2.addEventListener('click', closeStickerPopup);
                 stickerCloseBtn2._listenerAdded = true;
-            }
-
-            // Refresh button listener
-            const refreshBtn = document.getElementById('sync-refresh-btn');
-            if (!refreshBtn._listenerAdded) {
-                refreshBtn.addEventListener('click', () => { playSound('button'); syncRefresh(); });
-                refreshBtn._listenerAdded = true;
             }
 
             // Close province info modal
