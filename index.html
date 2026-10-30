@@ -11837,6 +11837,9 @@
                             // agar updatePlayerUI tidak mencampur elemen lama (skala 65%) dengan kartu baru
                             const _deckDiv = document.getElementById('player-deck');
                             if (_deckDiv) _deckDiv.innerHTML = '';
+                            // [FIX ANIMASI BAGI KARTU] Pastikan render deck berikutnya memakai animasi deal-in,
+                            // walau GAME_STATE_UPDATE sempat merender deck lebih dulu (balapan dgn timeout 500ms ini).
+                            deckInitialized = false;
                         }
                         updateGameUI(data.state);
                         // Untuk spectator: pastikan tombol "Hasil Pertandingan" langsung muncul
