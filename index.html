@@ -659,6 +659,19 @@
             align-items: center; gap: 4px;
         }
         .deck-slot.zoom-in  { animation: cardZoomIn  0.4s ease-out forwards; }
+        /* Animasi pembagian kartu awal: kartu meluncur dari atas bergantian */
+        .deck-slot.deal-in {
+            animation: cardDealIn 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+            animation-delay: var(--deal-delay, 0ms);
+        }
+        @keyframes cardDealIn {
+            0%   { opacity: 0; transform: translateY(-140px) scale(0.35) rotate(-14deg); }
+            60%  { opacity: 1; }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .deck-slot.deal-in { animation: none; }
+        }
         .deck-slot.zoom-out { animation: cardZoomOut 0.3s ease-in  forwards !important; pointer-events: none !important; }
         .deck-province-label {
             font-size: 0.65em; font-weight: 600;
@@ -14931,6 +14944,7 @@
             });
 
             // 2. Tambah kartu baru & update interaktivitas
+            let dealIndex = 0; // urutan kartu saat pembagian awal
             sortedHand.forEach(card => {
                 let slot = deckDiv.querySelector(`.deck-slot[data-slot-id="${card.id}"]`);
                 let existing; // elemen .card di dalam slot
@@ -14945,9 +14959,22 @@
                     lbl.textContent = card.province || '';
                     slot.appendChild(lbl);
                     deckDiv.appendChild(slot);
-                    slot.classList.add('zoom-in');
-                    if (deckInitialized) playSound('zoomIn');
-                    setTimeout(() => slot.classList.remove('zoom-in'), 400);
+                    if (!deckInitialized) {
+                        // Pembagian awal: kartu muncul bergantian seperti dibagikan
+                        const dealDelay = dealIndex * 90;
+                        dealIndex++;
+                        slot.style.setProperty('--deal-delay', dealDelay + 'ms');
+                        slot.classList.add('deal-in');
+                        setTimeout(() => playSound('zoomIn'), dealDelay);
+                        setTimeout(() => {
+                            slot.classList.remove('deal-in');
+                            slot.style.removeProperty('--deal-delay');
+                        }, dealDelay + 500);
+                    } else {
+                        slot.classList.add('zoom-in');
+                        playSound('zoomIn');
+                        setTimeout(() => slot.classList.remove('zoom-in'), 400);
+                    }
                     existing = cardEl;
                 } else {
                     existing = slot.querySelector('.card');
