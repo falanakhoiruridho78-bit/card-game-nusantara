@@ -661,7 +661,7 @@
         .deck-slot.zoom-in  { animation: cardZoomIn  0.4s ease-out forwards; }
         /* Animasi pembagian kartu awal: kartu meluncur dari atas bergantian */
         .deck-slot.deal-in {
-            animation: cardDealIn 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+            animation: cardDealIn var(--deal-dur, 400ms) cubic-bezier(0.2, 0.8, 0.3, 1) both;
             animation-delay: var(--deal-delay, 0ms);
         }
         @keyframes cardDealIn {
@@ -14945,6 +14945,8 @@
 
             // 2. Tambah kartu baru & update interaktivitas
             let dealIndex = 0; // urutan kartu saat pembagian awal
+            // Total waktu pembagian dijaga ~2 detik berapa pun jumlah kartunya (8 kartu = 250ms per kartu)
+            const dealStep = Math.min(400, Math.floor(2000 / Math.max(sortedHand.length, 1)));
             sortedHand.forEach(card => {
                 let slot = deckDiv.querySelector(`.deck-slot[data-slot-id="${card.id}"]`);
                 let existing; // elemen .card di dalam slot
@@ -14961,15 +14963,17 @@
                     deckDiv.appendChild(slot);
                     if (!deckInitialized) {
                         // Pembagian awal: kartu muncul bergantian seperti dibagikan
-                        const dealDelay = dealIndex * 90;
+                        const dealDelay = dealIndex * dealStep; // satu kartu selesai dulu, baru kartu berikutnya
                         dealIndex++;
                         slot.style.setProperty('--deal-delay', dealDelay + 'ms');
+                        slot.style.setProperty('--deal-dur', dealStep + 'ms');
                         slot.classList.add('deal-in');
                         setTimeout(() => playSound('zoomIn'), dealDelay);
                         setTimeout(() => {
                             slot.classList.remove('deal-in');
                             slot.style.removeProperty('--deal-delay');
-                        }, dealDelay + 500);
+                            slot.style.removeProperty('--deal-dur');
+                        }, dealDelay + dealStep + 50);
                     } else {
                         slot.classList.add('zoom-in');
                         playSound('zoomIn');
