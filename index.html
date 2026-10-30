@@ -672,6 +672,14 @@
         @media (prefers-reduced-motion: reduce) {
             .deck-slot.deal-in { animation: none; }
         }
+        /* Animasi bagi kartu awal untuk POV penonton (kartu semua pemain dibagikan paralel) */
+        .spec-deal-in {
+            animation: cardDealIn var(--deal-dur, 250ms) cubic-bezier(0.2, 0.8, 0.3, 1) both;
+            animation-delay: var(--deal-delay, 0ms);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .spec-deal-in { animation: none; }
+        }
         .deck-slot.zoom-out { animation: cardZoomOut 0.3s ease-in  forwards !important; pointer-events: none !important; }
         .deck-province-label {
             font-size: 0.65em; font-weight: 600;
@@ -11841,6 +11849,13 @@
                             // walau GAME_STATE_UPDATE sempat merender deck lebih dulu (balapan dgn timeout 500ms ini).
                             deckInitialized = false;
                         }
+                        // [ANIMASI BAGI KARTU - PENONTON] Hanya untuk game yang BARU mulai (semua pemain pegang 8 kartu,
+                        // ronde 1, belum ada kartu dijatuhkan, voting belum mulai). Rejoin di tengah game tidak dianimasikan.
+                        { const _st = data.state;
+                          window._specDeal = { start: 0, step: 250, total: 2000, active: !!(_isSpectator && _st && _st.round === 1
+                              && Array.isArray(_st.players) && _st.players.length > 0
+                              && _st.players.every(p => p.hand && p.hand.length === 8)
+                              && !(_st.topCard && _st.topCard.length) && !_st.votingActive) }; }
                         updateGameUI(data.state);
                         // Untuk spectator: pastikan tombol "Hasil Pertandingan" langsung muncul
                         if (_isSpectator) updateButtons();
@@ -12376,6 +12391,21 @@
             const deckDiv = document.getElementById('player-deck');
             if (deckDiv && gs.players) {
                 deckDiv.innerHTML = '';
+                // [ANIMASI BAGI KARTU - PENONTON] Deck dibangun ulang di tiap update state, jadi posisi animasi dihitung dari
+                // waktu mulai (animation-delay negatif) agar tidak restart. Suara hanya 1 set (1x per langkah), bukan per pemain.
+                const _sd = window._specDeal;
+                let _sdElapsed = null, _sdStep = 250;
+                if (_sd && _sd.active) {
+                    if (!_sd.start && DOM.gameContainer.classList.contains('active')) {
+                        _sd.start = Date.now();
+                        const _maxHand = Math.max(1, ...gs.players.map(pp => (pp.hand ? pp.hand.length : 0)));
+                        _sd.step = Math.min(400, Math.floor(2000 / _maxHand));
+                        _sd.total = _sd.step * _maxHand;
+                        for (let i = 0; i < _maxHand; i++) setTimeout(() => playSound('zoomIn'), i * _sd.step);
+                        setTimeout(() => { _sd.active = false; }, _sd.total + 100);
+                    }
+                    if (_sd.start) { _sdElapsed = Date.now() - _sd.start; _sdStep = _sd.step; }
+                }
                 gs.players.forEach(p => {
                     const section = document.createElement('div');
                     const isMobSec = window.innerWidth <= 768;
@@ -12416,12 +12446,20 @@
                         const wH = Math.ceil(baseH * cardScale);
                         const rowGap = Math.ceil((baseH - wH) * 0.25); // kompensasi negative margin antar baris
                         cardsRow.style.cssText = `display:flex; flex-wrap:wrap; column-gap:4px; row-gap:${rowGap}px; align-items:flex-start;`;
-                        p.hand.forEach(card => {
+                        p.hand.forEach((card, _hIdx) => {
                             // outerWrap lebar wW → jarak antar kartu rapat sesuai ukuran visual
                             // kartu scale top center, negative margin kiri/kanan collapse DOM width ke wW
                             // negative margin bawah collapse DOM height ke wH
                             const outerWrap = document.createElement('div');
                             outerWrap.style.cssText = `display:inline-flex; flex-direction:column; align-items:center; width:${wW}px; flex-shrink:0;`;
+                            if (_sdElapsed !== null) {
+                                const _d = _hIdx * _sdStep - _sdElapsed; // kartu ke-n dibagikan paralel di semua pemain
+                                if (_d + _sdStep > 0) {
+                                    outerWrap.classList.add('spec-deal-in');
+                                    outerWrap.style.setProperty('--deal-delay', _d + 'ms');
+                                    outerWrap.style.setProperty('--deal-dur', _sdStep + 'ms');
+                                }
+                            }
 
                             const cardEl = createCardElement(card);
                             const negH = baseH - wH; // collapse height
