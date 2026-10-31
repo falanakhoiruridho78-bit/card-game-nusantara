@@ -16589,6 +16589,19 @@
             if (customOverlay && customCard && customOverlay.style.display !== 'none' && customCard.style.display !== 'none') {
                 minimizeCustomRoom();
             }
+            // [FIX] Jika yang dikunjungi adalah akun sendiri, langsung buka profile-screen
+            // (bukan visit-profile-screen) karena itu halaman profil milik sendiri.
+            if (currentUser && uid === currentUser.uid) {
+                // Tutup layar yang mungkin menutupi profile-screen (z-index sama 15000)
+                const _temanEl = document.getElementById('teman-screen');
+                if (_temanEl && _temanEl.style.display !== 'none') hideTemanScreen();
+                const _lbEl = document.getElementById('leaderboard-screen');
+                if (_lbEl && _lbEl.style.display !== 'none') hideLeaderboard();
+                // Pastikan visit-profile-screen tidak ikut terbuka
+                if (_visitUid) closeVisitProfile();
+                showProfileScreen();
+                return;
+            }
             _visitUid = uid;
             document.getElementById('visit-profile-screen').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -21750,6 +21763,8 @@ function _patchVisitPlayerProfile() {
     if (typeof _origVisitPlayerProfile === 'function') {
         window.visitPlayerProfile = function(uid, ...args) {
             _origVisitPlayerProfile(uid, ...args);
+            // [FIX] Akun sendiri dialihkan ke profile-screen, tidak perlu render slot visit
+            if (currentUser && uid === currentUser.uid) return;
             _renderVisitAchSlots(uid);
         };
     }
