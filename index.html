@@ -2374,6 +2374,19 @@
             transition: background 0.2s;
         }
         .btn-rank-info:hover { background: rgba(255,255,255,0.35); }
+        /* [SEASON] Gambar "Peringkat Saat Ini" bisa diklik -> popup riwayat peringkat season */
+        .rank-img-clickable { cursor: pointer; transition: transform 0.15s ease, filter 0.15s ease; -webkit-tap-highlight-color: transparent; }
+        .rank-img-clickable:hover { transform: scale(1.06); filter: brightness(1.1); }
+        .rank-img-clickable:active { transform: scale(0.96); }
+        .sh-row {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 12px; padding: 10px 14px; margin: 8px 20px;
+        }
+        .sh-row img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+        .sh-season { font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.75); }
+        .sh-rank { font-weight: bold; color: #fff; }
+        .sh-pts { font-size: 0.9em; color: #ffd700; }
         .rank-info-modal {
             background: linear-gradient(160deg, #2d1b69 0%, #11998e 100%);
             border: 1px solid rgba(255,255,255,0.2); border-radius: 18px;
@@ -5840,6 +5853,19 @@
 
     <!-- TEMAN SCREEN -->
     <!-- ===== RANK INFO MODAL ===== -->
+    <!-- [SEASON] Popup riwayat peringkat akhir tiap season (3 season terakhir) -->
+    <div id="season-history-overlay" class="hide-scrollbar" tabindex="-1" onclick="playSound('button');hideSeasonHistory()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:39500;overflow-y:auto;padding:20px;box-sizing:border-box;outline:none;">
+        <div class="rank-info-modal" onclick="event.stopPropagation()">
+            <div class="rank-info-header">
+                <div class="rank-info-title">🕘 Riwayat Peringkat Season</div>
+                <button class="btn-enc-close" onclick="playSound('x');hideSeasonHistory()">✖ Tutup</button>
+            </div>
+            <div class="rank-info-note" id="sh-current" style="margin:16px 20px 4px;"></div>
+            <div id="sh-list"></div>
+            <div class="rank-info-note" id="sh-info" style="margin:12px 20px 0;"></div>
+        </div>
+    </div>
+
     <div id="rank-info-overlay" class="hide-scrollbar" tabindex="-1" onclick="playSound('button');hideRankInfo()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:30000;overflow-y:auto;padding:20px;box-sizing:border-box;outline:none;">
         <div class="rank-info-modal" onclick="event.stopPropagation()">
             <div class="rank-info-header">
@@ -6032,7 +6058,7 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Peringkat Saat Ini</div>
-                            <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat season" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('self')" onkeydown="if(event.key==='Enter'){showSeasonHistory('self')}">
                             <div class="profile-rank-name" id="prf-rank-name">Perunggu III</div>
                             <div class="profile-rank-points" id="prf-rank-points">0 / 100 poin</div>
                             <div class="profile-rank-points" id="prf-season-label" style="opacity:0.8;"></div>
@@ -6202,7 +6228,7 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Peringkat Saat Ini</div>
-                            <img id="vp-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="vp-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat season" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('visit')" onkeydown="if(event.key==='Enter'){showSeasonHistory('visit')}">
                             <div class="profile-rank-name" id="vp-rank-name">Perunggu III</div>
                             <div class="profile-rank-points" id="vp-rank-points">0 / 100 poin</div>
                         </div>
@@ -8960,7 +8986,7 @@
                                 if (el) el.classList.remove('active');
                             });
                             // ── Overlay style.display ──
-                            ['rank-info-overlay','game-paused-overlay','change-password-modal',
+                            ['rank-info-overlay','season-history-overlay','game-paused-overlay','change-password-modal',
                              'avatar-picker-overlay'].forEach(id => {
                                 const el = document.getElementById(id);
                                 if (el) el.style.display = 'none';
@@ -10941,6 +10967,8 @@
             if (_drawLvl) _drawLvl.classList.remove('active');
             const _rankInfo = document.getElementById('rank-info-overlay');
             if (_rankInfo) _rankInfo.style.display = 'none';
+            const _seasonHist = document.getElementById('season-history-overlay');
+            if (_seasonHist) _seasonHist.style.display = 'none';
             // [FIX] Tutup halaman pencapaian saat lawan ditemukan
             const _achScr = document.getElementById('achievement-screen');
             if (_achScr) _achScr.classList.remove('active');
@@ -11395,7 +11423,7 @@
                                                 || document.getElementById('custom-room-overlay')?.style.display === 'flex');
                         const _isInAnyPopup  = ['profile-screen','settings-screen','leaderboard-screen',
                                                 'teman-screen','encyclopedia-screen','tutorial-screen','pengembang-screen',
-                                                'achievement-screen','rank-info-overlay','draw-level-overlay',
+                                                'achievement-screen','rank-info-overlay','season-history-overlay','draw-level-overlay',
                                                 'ach-popup-overlay','visit-profile-screen'].some(id => {
                                                     const el = document.getElementById(id);
                                                     if (!el) return false;
@@ -16971,6 +16999,80 @@
         // =============================================
         // RANK INFO MODAL
         // =============================================
+        // =============================================
+        // [SEASON] RIWAYAT PERINGKAT SEASON (popup dari gambar "Peringkat Saat Ini")
+        // Data: users/{uid}/seasonHistory/{seasonId} — ditulis server saat season berganti, berisi
+        // rank & poin TERAKHIR pemain di season yang baru berakhir (seasonId 0 = Pra-Season).
+        // Yang ditampilkan: SEASON_HISTORY_LIMIT season terakhir yang sudah berakhir.
+        // =============================================
+        const SEASON_HISTORY_LIMIT = 3;
+        let _seasonHistToken = 0; // abaikan hasil lama jika popup ditutup/dibuka ulang saat data masih dimuat
+        function _seasonLabelById(id) { return Number(id) >= 1 ? `Season ${id}` : 'Pra-Season'; }
+        function showSeasonHistory(which) {
+            const uid = which === 'visit' ? _visitUid : (currentUser && currentUser.uid);
+            if (!uid) return;
+            const token = ++_seasonHistToken;
+            const el = document.getElementById('season-history-overlay');
+            const listEl = document.getElementById('sh-list');
+            const infoEl = document.getElementById('sh-info');
+            const curEl  = document.getElementById('sh-current');
+            if (!el || !listEl || !infoEl || !curEl) return;
+
+            // Keterangan season saat ini (Pra-Season belum punya riwayat apa pun)
+            const si = getSeasonInfo(seasonNow());
+            const endTxt = new Date(si.endAt).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'long', year: 'numeric' });
+            curEl.textContent = si.id === 0
+                ? `Sekarang: Pra-Season. Season 1 dimulai ${endTxt}.`
+                : `Sekarang: Season ${si.id} (berakhir ${endTxt}). Peringkat season ini masih berjalan.`;
+
+            listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Memuat riwayat...</div>';
+            infoEl.textContent = '';
+            el.style.display = 'block';
+            el.focus({ preventScroll: true });
+
+            db.ref(`users/${uid}/seasonHistory`).orderByKey().limitToLast(SEASON_HISTORY_LIMIT).get().then(snap => {
+                if (token !== _seasonHistToken) return;
+                const rows = [];
+                snap.forEach(ch => {
+                    const v = ch.val();
+                    if (!v || typeof v !== 'object') return;
+                    rows.push({ id: Number(ch.key), rankName: v.rankName || 'Bronze III', points: Number(v.points) || 0 });
+                });
+                rows.sort((a, b) => b.id - a.id); // terbaru di atas
+                if (rows.length === 0) {
+                    listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Belum ada season yang berakhir, jadi belum ada riwayat peringkat.</div>';
+                    infoEl.textContent = si.id === 0
+                        ? 'Rank akhir Pra-Season akan muncul di sini setelah Season 1 dimulai.'
+                        : 'Riwayat akan muncul setelah season yang pemain ikuti berakhir.';
+                    return;
+                }
+                listEl.innerHTML = rows.map(r => {
+                    const isMax = r.rankName === 'Platinum MAX';
+                    const ptsTxt = isMax ? `${r.points} poin` : `${r.points} / 100 poin`;
+                    return `<div class="sh-row">
+                        <img src="${rankImgSrc(r.rankName)}" alt="${escHtml(r.rankName)}" onerror="this.style.display='none'">
+                        <div>
+                            <div class="sh-season">${escHtml(_seasonLabelById(r.id))}</div>
+                            <div class="sh-rank">${escHtml(trRankName(r.rankName))}</div>
+                            <div class="sh-pts">${escHtml(ptsTxt)}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                infoEl.textContent = `Menampilkan ${rows.length} season terakhir yang sudah berakhir: ${rows.map(r => _seasonLabelById(r.id)).join(', ')}. `
+                    + 'Peringkat di-reset ke Perunggu III setiap ganti season; rank dan poin di atas adalah posisi terakhir pemain sebelum reset.';
+            }).catch(err => {
+                if (token !== _seasonHistToken) return;
+                // [DIAG] Biasanya karena Firebase Rules belum mengizinkan baca node seasonHistory
+                console.error(`❌ Gagal membaca users/${uid}/seasonHistory:`, err && err.message ? err.message : err);
+                listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Riwayat belum bisa dimuat. Coba lagi nanti.</div>';
+            });
+        }
+        function hideSeasonHistory() {
+            _seasonHistToken++;
+            const el = document.getElementById('season-history-overlay');
+            if (el) el.style.display = 'none';
+        }
+
         function showRankInfo() {
             const el = document.getElementById('rank-info-overlay');
             el.style.display = 'block';
