@@ -1952,6 +1952,11 @@
         .lb-pos.bronze { color: #cd7f32; font-size: 1.1em; }
         .btn-stats-mode { padding: 6px 14px; border-radius: 18px; border: 2px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08); color: #fff; font-weight: bold; font-size: 0.85em; cursor: pointer; }
         .btn-stats-mode.active { background: linear-gradient(135deg,#ff9800,#e65100); border-color: #fff; }
+        .stats-mode-menu { display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; z-index: 30; min-width: 190px; padding: 6px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.35); background: rgba(40,30,95,0.97); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .stats-mode-menu.open { display: block; }
+        .stats-mode-opt { display: block; width: 100%; text-align: left; padding: 9px 12px; border: none; border-radius: 10px; background: transparent; color: #fff; font-weight: bold; font-size: 0.9em; cursor: pointer; }
+        .stats-mode-opt:hover { background: rgba(255,255,255,0.15); }
+        .stats-mode-opt.active { background: linear-gradient(135deg,#ff9800,#e65100); }
         .lb-rank-img { width: 42px; height: 42px; object-fit: contain; flex-shrink: 0; }
         .lb-avatar { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; display: block; }
         .lb-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
@@ -6061,9 +6066,12 @@
             <!-- Tab: Statistik -->
             <div id="tab-statistik" class="profile-panel">
                 <div class="profile-panel-title">📊 Statistik Pemain</div>
-                <div id="stats-mode-toggle" style="display:flex;gap:8px;margin:-8px 0 14px;justify-content:center;">
-                    <button id="stats-mode-all" class="btn-stats-mode active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
-                    <button id="stats-mode-season" class="btn-stats-mode" onclick="playSound('button');setProfileStatsMode('season')">Pra-Season</button>
+                <div id="stats-mode-toggle" style="display:flex;position:relative;margin:-8px 0 14px;justify-content:flex-start;">
+                    <button id="stats-mode-btn" class="btn-stats-mode active" onclick="playSound('button');toggleStatsModeMenu()">Semua season ▾</button>
+                    <div id="stats-mode-menu" class="stats-mode-menu">
+                        <button id="stats-mode-all" class="stats-mode-opt active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
+                        <button id="stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setProfileStatsMode('season')">Pra-Season</button>
+                    </div>
                 </div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
@@ -6991,6 +6999,7 @@
             const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = _seasonName;
             const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
             const sb = document.getElementById('stats-mode-season'); if (sb) sb.textContent = _seasonName;
+            if (typeof _refreshStatsModeBtn === 'function') _refreshStatsModeBtn();
         }
         // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 12 jam sebelum season berakhir, atau saat season berganti
         let _lblSeasonId = null;
@@ -7018,11 +7027,29 @@
             if (el('stat-p3'))      el('stat-p3').textContent      = pct(s.rank3 || 0);
             if (el('stat-p4'))      el('stat-p4').textContent      = pct(s.rank4 || 0);
         }
+        function _seasonModeName() {
+            const si = getSeasonInfo(seasonNow());
+            return si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
+        }
+        function _refreshStatsModeBtn() {
+            const btn = document.getElementById('stats-mode-btn');
+            if (btn) btn.textContent = `${_profStatsMode === 'season' ? _seasonModeName() : 'Semua season'} ▾`;
+        }
+        function toggleStatsModeMenu(force) {
+            const m = document.getElementById('stats-mode-menu'); if (!m) return;
+            m.classList.toggle('open', typeof force === 'boolean' ? force : !m.classList.contains('open'));
+        }
+        document.addEventListener('click', (e) => {
+            const wrap = document.getElementById('stats-mode-toggle');
+            if (wrap && !wrap.contains(e.target)) toggleStatsModeMenu(false);
+        });
         function setProfileStatsMode(mode) {
             _profStatsMode = (mode === 'season') ? 'season' : 'all';
             const a = document.getElementById('stats-mode-all'), b = document.getElementById('stats-mode-season');
             if (a) a.classList.toggle('active', _profStatsMode === 'all');
             if (b) b.classList.toggle('active', _profStatsMode === 'season');
+            _refreshStatsModeBtn();
+            toggleStatsModeMenu(false);
             _renderProfileStats();
         }
 
