@@ -1950,6 +1950,8 @@
         .lb-pos.gold   { color: #ffd700; font-size: 1.2em; }
         .lb-pos.silver { color: #c0c0c0; font-size: 1.1em; }
         .lb-pos.bronze { color: #cd7f32; font-size: 1.1em; }
+        .btn-stats-mode { padding: 6px 14px; border-radius: 18px; border: 2px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08); color: #fff; font-weight: bold; font-size: 0.85em; cursor: pointer; }
+        .btn-stats-mode.active { background: linear-gradient(135deg,#ff9800,#e65100); border-color: #fff; }
         .lb-rank-img { width: 42px; height: 42px; object-fit: contain; flex-shrink: 0; }
         .lb-avatar { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; display: block; }
         .lb-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
@@ -5900,6 +5902,7 @@
                 </tbody>
             </table>
             <div class="rank-info-note">🛡️ <strong>Perunggu</strong> — Tidak bisa turun peringkat, poin minimal 0.</div>
+            <div class="rank-info-note">🗓️ <strong>Season</strong> — Setiap 3 bulan peringkat saat ini direset ke Perunggu III (0 poin). Peringkat tertinggi dan statistik semua season tetap tersimpan.</div>
 
             <!-- Tabel perubahan Poin Pengalaman -->
             <div class="rank-info-section-title" style="margin-top:20px;">✨ Perubahan Poin Pengalaman per Posisi</div>
@@ -5937,7 +5940,8 @@
             </div>
         </div>
         <div style="padding:20px; max-width:680px; margin:0 auto;">
-            <div class="friend-section-title" style="margin-bottom:16px;">🥇 Top 100 Pemain — Peringkat Tertinggi</div>
+            <div class="friend-section-title" style="margin-bottom:6px;">🥇 Top 100 Pemain — Peringkat Tertinggi</div>
+            <div id="lb-season-info" style="text-align:center;margin:0 0 14px;font-size:0.9em;opacity:0.85;"></div>
             <div id="leaderboard-list"><div class="profile-empty">Memuat papan peringkat...</div></div>
         </div>
     </div>
@@ -6024,6 +6028,7 @@
                             <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="prf-rank-name">Perunggu III</div>
                             <div class="profile-rank-points" id="prf-rank-points">0 / 100 poin</div>
+                            <div class="profile-rank-points" id="prf-season-label" style="opacity:0.8;"></div>
                         </div>
                         <div class="profile-rank-item">
                             <div class="profile-rank-label" style="display:flex;align-items:center;gap:6px;">
@@ -6056,6 +6061,10 @@
             <!-- Tab: Statistik -->
             <div id="tab-statistik" class="profile-panel">
                 <div class="profile-panel-title">📊 Statistik Pemain</div>
+                <div id="stats-mode-toggle" style="display:none;gap:8px;margin:-8px 0 14px;justify-content:center;">
+                    <button id="stats-mode-all" class="btn-stats-mode active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
+                    <button id="stats-mode-season" class="btn-stats-mode" onclick="playSound('button');setProfileStatsMode('season')">Season ini</button>
+                </div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
                     <span class="profile-stat-value highlight" id="stat-winrate">0%</span>
@@ -6932,6 +6941,91 @@
             'Diamond':  [24, 12,  6, -31],
             'Platinum': [15,  6,  3, -40]
         };
+        // =============================================
+        // SEASON (reset rank tiap 3 bulan) — hitungan SAMA dengan server (SEASON_START_MS di server.js)
+        // Season 1 mulai 1 Jan 2027 00:00 WIB; sebelum itu id 0 (pra-season, tanpa reset).
+        // =============================================
+        const SEASON_START_MS = Date.UTC(2026, 11, 31, 17, 0, 0);
+        const SEASON_WIB_OFFSET_MS = 7 * 3600 * 1000;
+        function getSeasonInfo(nowMs) {
+            if (nowMs < SEASON_START_MS) return { id: 0, startAt: null, endAt: SEASON_START_MS };
+            const d = new Date(nowMs + SEASON_WIB_OFFSET_MS);
+            const y = d.getUTCFullYear();
+            const qStartMonth = Math.floor(d.getUTCMonth() / 3) * 3;
+            return {
+                id: (y - 2027) * 4 + Math.floor(d.getUTCMonth() / 3) + 1,
+                startAt: Date.UTC(y, qStartMonth, 1) - SEASON_WIB_OFFSET_MS,
+                endAt:   Date.UTC(y, qStartMonth + 3, 1) - SEASON_WIB_OFFSET_MS
+            };
+        }
+        // Waktu acuan = jam server Firebase (kebal jam perangkat yang salah); fallback ke jam perangkat.
+        let _fbTimeOffset = 0;
+        let _profStatsAll = null, _profStatsSeason = null, _profStatsMode = 'all';
+        function seasonNow() { return Date.now() + _fbTimeOffset; }
+        try {
+            db.ref('.info/serverTimeOffset').on('value', snap => {
+                _fbTimeOffset = Number(snap.val()) || 0;
+                if (typeof updateSeasonLabels === 'function') updateSeasonLabels();
+            });
+        } catch (e) { /* abaikan: pakai jam perangkat */ }
+        function updateSeasonLabels() {
+            const si = getSeasonInfo(seasonNow());
+            let lbTxt;
+            if (si.id === 0) {
+                const dt = new Date(si.endAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' });
+                lbTxt = `Pra-Season • Season 1 dimulai ${dt}`;
+            } else {
+                const ms = si.endAt - seasonNow();
+                const days = Math.floor(ms / 86400000);
+                let left;
+                if (ms < 43200000) { // [SEASON] kurang dari 12 jam → hitung mundur jam:menit:detik
+                    const tot = Math.max(0, Math.floor(ms / 1000));
+                    const p2 = n => String(n).padStart(2, '0');
+                    left = `${p2(Math.floor(tot / 3600))}:${p2(Math.floor((tot % 3600) / 60))}:${p2(tot % 60)}`;
+                } else {
+                    left = days >= 1 ? `${days} hari` : `${Math.max(1, Math.ceil(ms / 3600000))} jam`;
+                }
+                lbTxt = `Season ${si.id} • Berakhir dalam ${left}`;
+            }
+            const lb = document.getElementById('lb-season-info'); if (lb) lb.textContent = lbTxt;
+            const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = si.id >= 1 ? `Season ${si.id}` : '';
+            const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = si.id >= 1 ? 'flex' : 'none';
+            if (si.id < 1 && _profStatsMode === 'season') setProfileStatsMode('all');
+        }
+        // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 12 jam sebelum season berakhir, atau saat season berganti
+        let _lblSeasonId = null;
+        setInterval(() => {
+            try {
+                const si = getSeasonInfo(seasonNow());
+                const changed = _lblSeasonId !== null && si.id !== _lblSeasonId;
+                _lblSeasonId = si.id;
+                if (changed || (si.id >= 1 && si.endAt - seasonNow() < 43200000 + 1500)) updateSeasonLabels();
+            } catch (e) { }
+        }, 1000);
+        function _renderProfileStats() {
+            const s = (_profStatsMode === 'season' ? _profStatsSeason : _profStatsAll)
+                || { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
+            const total = s.totalMatches || 0;
+            const pct = n => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '0%';
+            const totalWins = (s.rank1 || 0) + (s.rank2 || 0) + (s.rank3 || 0);
+            const el = id => document.getElementById(id);
+            if (el('stat-total'))   el('stat-total').textContent   = total;
+            if (el('stat-wins'))    el('stat-wins').textContent    = totalWins;
+            if (el('stat-losses'))  el('stat-losses').textContent  = s.rank4 || 0;
+            if (el('stat-winrate')) el('stat-winrate').textContent = pct(totalWins);
+            if (el('stat-p1'))      el('stat-p1').textContent      = pct(s.rank1 || 0);
+            if (el('stat-p2'))      el('stat-p2').textContent      = pct(s.rank2 || 0);
+            if (el('stat-p3'))      el('stat-p3').textContent      = pct(s.rank3 || 0);
+            if (el('stat-p4'))      el('stat-p4').textContent      = pct(s.rank4 || 0);
+        }
+        function setProfileStatsMode(mode) {
+            _profStatsMode = (mode === 'season') ? 'season' : 'all';
+            const a = document.getElementById('stats-mode-all'), b = document.getElementById('stats-mode-season');
+            if (a) a.classList.toggle('active', _profStatsMode === 'all');
+            if (b) b.classList.toggle('active', _profStatsMode === 'season');
+            _renderProfileStats();
+        }
+
         function getRankTier(rankName) {
             if (rankName === 'Platinum MAX') return 'Platinum';
             const t = ['Bronze','Silver','Gold','Diamond','Platinum'].find(x => rankName.startsWith(x));
@@ -8236,20 +8330,22 @@
             // ── stats (statistik tab) ──
             _profileListeners.stats = db.ref(`users/${uid}/stats`);
             _profileListeners.stats.on('value', snap => {
-                const s = snap.exists() ? snap.val() : { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
-                const total = s.totalMatches || 0;
-                const pct = n => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '0%';
-                const totalWins = (s.rank1 || 0) + (s.rank2 || 0) + (s.rank3 || 0);
-                const el = id => document.getElementById(id);
-                if (el('stat-total'))   el('stat-total').textContent   = total;
-                if (el('stat-wins'))    el('stat-wins').textContent    = totalWins;
-                if (el('stat-losses')) el('stat-losses').textContent  = s.rank4 || 0;
-                if (el('stat-winrate'))el('stat-winrate').textContent = pct(totalWins);
-                if (el('stat-p1'))     el('stat-p1').textContent      = pct(s.rank1 || 0);
-                if (el('stat-p2'))     el('stat-p2').textContent      = pct(s.rank2 || 0);
-                if (el('stat-p3'))     el('stat-p3').textContent      = pct(s.rank3 || 0);
-                if (el('stat-p4'))     el('stat-p4').textContent      = pct(s.rank4 || 0);
+                _profStatsAll = snap.exists() ? snap.val() : null;
+                _renderProfileStats();
             });
+            // [SEASON] Statistik season berjalan (hanya ada setelah Season 1 dimulai)
+            _profStatsSeason = null;
+            const _sInfo = getSeasonInfo(seasonNow());
+            if (_sInfo.id >= 1) {
+                _profileListeners.seasonStats = db.ref(`users/${uid}/seasonStats/${_sInfo.id}`);
+                _profileListeners.seasonStats.on('value', snap => {
+                    _profStatsSeason = snap.exists() ? snap.val() : null;
+                    _renderProfileStats();
+                });
+            } else {
+                _profileListeners.seasonStats = null;
+            }
+            updateSeasonLabels();
 
             // ── history (riwayat tab) ──
             // Tampilkan loading dulu sebelum listener fire dengan data server
@@ -8335,6 +8431,7 @@
         function detachProfileListeners() {
             if (_profileListeners.rankData)  { _profileListeners.rankData.off();  _profileListeners.rankData  = null; }
             if (_profileListeners.stats)     { _profileListeners.stats.off();     _profileListeners.stats     = null; }
+            if (_profileListeners.seasonStats) { _profileListeners.seasonStats.off(); _profileListeners.seasonStats = null; }
             if (_profileListeners.history)   { _profileListeners.history.off();   _profileListeners.history   = null; }
             if (_profileListeners.playerExp) { _profileListeners.playerExp.off(); _profileListeners.playerExp = null; }
         }
@@ -15969,8 +16066,22 @@
                 });
                 // Ambil rankData dulu agar bisa catat perubahan ke history
                 let _rankBefore = 'Bronze III', _rankAfter = 'Bronze III', _ptsChange = 0, _ptsBefore = 0, _ptsAfter = 0;
+                const _fbSeason = getSeasonInfo(seasonNow());
+                if (_fbSeason.id >= 1) {
+                    // [SEASON] statistik season berjalan; dibungkus terpisah agar kegagalan tidak membatalkan update rank
+                    try {
+                        await db.ref(`users/${uid}/seasonStats/${_fbSeason.id}`).transaction(ss => {
+                            if (!ss) ss = { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
+                            ss.totalMatches = (ss.totalMatches || 0) + 1;
+                            ss[`rank${myRank}`] = (ss[`rank${myRank}`] || 0) + 1;
+                            return ss;
+                        });
+                    } catch (e) { }
+                }
                 await db.ref(`users/${uid}/rankData`).transaction(r => {
-                    if (!r) r = { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III', peakRankIndex: 0 };
+                    if (!r) r = { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III', peakRankIndex: 0, seasonId: _fbSeason.id };
+                    // [SEASON] season berganti → reset rank saat ini (peakRank tidak disentuh)
+                    if ((r.seasonId || 0) !== _fbSeason.id) { r.rankName = 'Bronze III'; r.points = 0; r.seasonId = _fbSeason.id; }
                     _rankBefore = r.rankName || 'Bronze III';
                     _ptsBefore  = r.points   || 0;
                     const tier  = getRankTier(_rankBefore);
@@ -17015,6 +17126,7 @@
         function loadLeaderboard() {
             const listEl = document.getElementById('leaderboard-list');
             listEl.innerHTML = '<div class="profile-empty">⏳ Memuat papan peringkat...</div>';
+            updateSeasonLabels();
             // Lepas listener lama jika ada
             if (_leaderboardRef) { _leaderboardRef.off(); _leaderboardRef = null; }
             // Baca dari node /leaderboard (ditulis server, flat & cepat) secara real-time
@@ -20814,6 +20926,16 @@ const ACHIEVEMENTS = [
         how: 'Raih skor <strong>sempurna (10/10)</strong> di Kuis Daerahku Kebanggaanku',
         check: (stats) => (stats.kuisBestScore || 0) >= (stats.kuisBestTotal || 10)
     },
+    // MAHARAJA (juara season) — ditetapkan SERVER saat season berakhir (users/{uid}/seasonChampion/{season})
+    {
+        id: 'maharaja',
+        name: 'Maharaja',
+        icon: '👑',
+        tier: 5,
+        desc: 'Penguasa tertinggi arena — berdiri di puncak papan peringkat saat sebuah season berakhir.',
+        how: 'Jadi <strong>peringkat #1 di Papan Peringkat</strong> saat sebuah season berakhir (minimal 20 pertandingan di season itu)',
+        check: (stats) => (stats.championSeasons || []).length > 0
+    },
 ];
 
 
@@ -21085,7 +21207,13 @@ async function _getAchStats() {
         const expSnap = await db.ref(`users/${uid}/playerExp`).get();
         const totalExp = expSnap.exists() ? (expSnap.val() || 0) : 0;
         const { level: playerLevel } = calcLevelFromExp(totalExp);
+        let championSeasons = [];
+        try {
+            const csSnap = await db.ref(`users/${uid}/seasonChampion`).get();
+            if (csSnap.exists()) championSeasons = Object.keys(csSnap.val() || {}).map(Number).filter(n => n > 0).sort((a, b) => a - b);
+        } catch (e) { /* aturan belum mengizinkan / gagal baca → anggap belum ada juara */ }
         return {
+            championSeasons,
             peakRank:            rankData.peakRank           || 'Bronze III',
             rank1:               stats.rank1                  || 0,
             maxWinStreak:        rankMeta.maxWinStreak        || 0,
@@ -21321,6 +21449,21 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
         document.getElementById('ach-popup-how').insertAdjacentElement('afterend', _expEl);
     }
     _expEl.innerHTML = `✨ Hadiah klaim: <span style="font-size:1.05em;">+${_expVal} Poin Pengalaman</span>`;
+    // [MAHARAJA] Tampilkan di season berapa pemain jadi #1
+    const _champList = (ach.id === 'maharaja' && stats && Array.isArray(stats.championSeasons)) ? stats.championSeasons : [];
+    let _seaEl = document.getElementById('ach-popup-season');
+    if (_champList.length) {
+        if (!_seaEl) {
+            _seaEl = document.createElement('div');
+            _seaEl.id = 'ach-popup-season';
+            _seaEl.style.cssText = 'background:rgba(255,210,0,0.18);border:1px solid rgba(255,210,0,0.6);border-radius:8px;padding:8px 12px;margin:6px 0 0 0;font-size:0.95em;color:#ffd200;font-weight:bold;text-align:center;';
+            document.getElementById('ach-popup-how').insertAdjacentElement('afterend', _seaEl);
+        }
+        _seaEl.style.display = 'block';
+        _seaEl.textContent = `👑 Kamu peringkat #1 di Season ${_champList.join(', ')}!`;
+    } else if (_seaEl) {
+        _seaEl.style.display = 'none';
+    }
     const stEl = document.getElementById('ach-popup-status');
     const brEl = document.getElementById('ach-popup-btn-row');
     if (isClaimable) {
@@ -21501,6 +21644,30 @@ async function _renderVisitAchSlots(uid) {
     }
 }
 
+// ─── [MAHARAJA] POPUP OTOMATIS SEKALI PER SEASON JUARA ───────────────────────
+async function _maybeShowChampionPopup() {
+    if (!currentUser || window._champPopupShown) return;
+    try {
+        if (typeof DOM !== 'undefined' && DOM.gameContainer && DOM.gameContainer.classList.contains('active')) return; // jangan ganggu pertandingan
+        const stats = await _getAchStats();
+        const cs = stats.championSeasons || [];
+        if (!cs.length) return;
+        const uid = currentUser.uid;
+        let seen = {};
+        try { const sn = await db.ref(`users/${uid}/championSeen`).get(); if (sn.exists()) seen = sn.val() || {}; } catch (e) { }
+        const unseen = cs.filter(id => !seen[id]);
+        if (!unseen.length) return;
+        const ach = ACHIEVEMENTS.find(a => a.id === 'maharaja');
+        if (!ach) return;
+        window._champPopupShown = true; // sekali per sesi
+        const isUnlocked = _achClaimed['maharaja'] === true;
+        playSound('button');
+        openAchPopup(ach, isUnlocked, !isUnlocked, stats);
+        const upd = {}; unseen.forEach(id => { upd[id] = true; });
+        try { await db.ref(`users/${uid}/championSeen`).update(upd); } catch (e) { }
+    } catch (e) { /* popup tambahan, abaikan error */ }
+}
+
 // ─── INTEGRASI: PANGGIL SAAT LOGIN & SETELAH GAME SELESAI ───────────────────
 // Hook ke event login Firebase yang sudah ada
 const _origFirebaseOnAuth = typeof firebase !== 'undefined' ? null : null;
@@ -21517,9 +21684,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 await checkAndNotifyAchievements();
                 _renderAchSlotsUI();
                 updatePlayerLevelUI(); // tampilkan level di badge & profil
+                setTimeout(_maybeShowChampionPopup, 2500); // [MAHARAJA] beri jeda agar UI utama sudah tampil
             } else {
                 _achClaimed = {};
                 _achSlots = [null,null,null];
+                window._champPopupShown = false; // akun lain yang login berikutnya boleh mendapat popup juara
                 _updateAchBadge(0);
                 const badgeLvl = document.getElementById('profile-badge-level');
                 if (badgeLvl) badgeLvl.textContent = '';
