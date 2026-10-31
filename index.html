@@ -16592,11 +16592,9 @@
             // [FIX] Jika yang dikunjungi adalah akun sendiri, langsung buka profile-screen
             // (bukan visit-profile-screen) karena itu halaman profil milik sendiri.
             if (currentUser && uid === currentUser.uid) {
-                // Tutup layar yang mungkin menutupi profile-screen (z-index sama 15000)
-                const _temanEl = document.getElementById('teman-screen');
-                if (_temanEl && _temanEl.style.display !== 'none') hideTemanScreen();
-                const _lbEl = document.getElementById('leaderboard-screen');
-                if (_lbEl && _lbEl.style.display !== 'none') hideLeaderboard();
+                // Layar asal (leaderboard/teman) sengaja TIDAK ditutup: profile-screen berada
+                // di bawahnya dalam DOM dengan z-index sama (15000), jadi otomatis tampil di atas.
+                // Saat profil ditutup, pengguna kembali ke layar asal.
                 // Pastikan visit-profile-screen tidak ikut terbuka
                 if (_visitUid) closeVisitProfile();
                 showProfileScreen();
