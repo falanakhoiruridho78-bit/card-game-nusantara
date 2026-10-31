@@ -2878,10 +2878,12 @@
         }
         .vp-stat-label { color: rgba(255,255,255,0.72); font-size: 0.87em; }
         .vp-stat-value { font-weight: bold; font-size: 0.97em; }
+        #vp-friend-action { text-align: left; }
         .btn-visit-friend {
-            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            display: inline-block; width: auto; max-width: 100%;
+            padding: 12px 24px; border-radius: 12px; border: none;
             font-size: 0.95em; font-weight: bold; cursor: pointer;
-            margin-top: 16px; transition: all 0.2s;
+            margin-top: 16px; transition: all 0.2s; white-space: nowrap;
         }
         @media (max-width: 480px) {
             #visit-profile-screen { flex-direction: column; }
@@ -16313,8 +16315,8 @@
 
         // Hapus teman
         async function removeFriend(friendUid) {
-            if (!currentUser) return;
-            if (!confirm('Hapus teman ini dari daftar pertemanan?')) return;
+            if (!currentUser) return false;
+            if (!confirm('Hapus teman ini dari daftar pertemanan?')) return false;
             try {
                 await Promise.all([
                     db.ref(`users/${currentUser.uid}/friends/${friendUid}`).remove(),
@@ -16322,7 +16324,8 @@
                 ]);
                 _detachFriendsPresenceListener();
                 loadFriendsTab();
-            } catch(e) {}
+                return true;
+            } catch(e) { return false; }
         }
 
         // Load semua konten tab Teman
@@ -16575,6 +16578,11 @@
         // =============================================
         let _visitUid = null; // uid pemain yang sedang dikunjungi
         let _visitListeners = { rankData: null, stats: null, history: null, playerExp: null };
+        let _visitFriendRefs = []; // listener realtime tombol pertemanan di visit-profile-screen
+        function _detachVisitFriendListener() {
+            _visitFriendRefs.forEach(({ ref, fn }) => ref.off('value', fn));
+            _visitFriendRefs = [];
+        }
 
         async function visitPlayerProfile(uid) {
             // [FIX] Auto-minimize ranked party lobby jika sedang terbuka
@@ -16755,6 +16763,7 @@
             if (_visitListeners.stats)     { _visitListeners.stats.off();     _visitListeners.stats     = null; }
             if (_visitListeners.history)   { _visitListeners.history.off();   _visitListeners.history   = null; }
             if (_visitListeners.playerExp) { _visitListeners.playerExp.off(); _visitListeners.playerExp = null; }
+            _detachVisitFriendListener();
         }
 
         async function loadVisitProfil() {
@@ -16839,30 +16848,45 @@
                     }
                 });
 
-                // Tombol pertemanan
+                // Tombol pertemanan — realtime, tetap di halaman ini setelah Hapus/Tambah Teman
+                _detachVisitFriendListener();
                 const actionDiv = document.getElementById('vp-friend-action');
                 actionDiv.innerHTML = '';
+                if (_visitUid !== uid) return; // profil sudah ditutup/berganti saat menunggu data
                 if (currentUser && uid !== currentUser.uid) {
-                    const [isFriendSnap, isSentSnap] = await Promise.all([
-                        db.ref(`users/${currentUser.uid}/friends/${uid}`).get(),
-                        db.ref(`users/${currentUser.uid}/friendRequests/sent/${uid}`).get()
-                    ]);
-                    const btn = document.createElement('button');
-                    btn.className = 'btn-visit-friend';
-                    if (isFriendSnap.exists()) {
-                        btn.style.cssText = 'background:rgba(244,67,54,0.7);color:#fff;';
-                        btn.textContent = '🗑 Hapus Teman';
-                        btn.onclick = () => { playSound('button'); removeFriend(uid); closeVisitProfile(); };
-                    } else if (isSentSnap.exists()) {
-                        btn.style.cssText = 'background:rgba(255,193,7,0.4);color:#fff;cursor:default;';
-                        btn.textContent = '⏳ Permintaan Terkirim';
-                        btn.disabled = true;
-                    } else {
-                        btn.style.cssText = 'background:rgba(76,175,80,0.8);color:#fff;';
-                        btn.textContent = '➕ Tambah Teman';
-                        btn.onclick = () => { playSound('button'); sendFriendRequest(uid, nick, btn); };
-                    }
-                    actionDiv.appendChild(btn);
+                    let isFriend = false, isSent = false, loadedF = false, loadedS = false;
+                    const renderFriendBtn = () => {
+                        if (!loadedF || !loadedS || _visitUid !== uid) return;
+                        const box = document.getElementById('vp-friend-action');
+                        if (!box) return;
+                        box.innerHTML = '';
+                        const btn = document.createElement('button');
+                        btn.className = 'btn-visit-friend';
+                        if (isFriend) {
+                            btn.style.cssText = 'background:rgba(244,67,54,0.7);color:#fff;';
+                            btn.textContent = '🗑 Hapus Teman';
+                            btn.onclick = () => { playSound('button'); removeFriend(uid); };
+                        } else if (isSent) {
+                            btn.style.cssText = 'background:rgba(255,193,7,0.4);color:#fff;cursor:default;';
+                            btn.textContent = '⏳ Permintaan Terkirim';
+                            btn.disabled = true;
+                        } else {
+                            btn.style.cssText = 'background:rgba(76,175,80,0.8);color:#fff;';
+                            btn.textContent = '➕ Tambah Teman';
+                            btn.onclick = async () => {
+                                playSound('button');
+                                btn.disabled = true;
+                                await sendFriendRequest(uid, nick, null);
+                                btn.disabled = false; // jika gagal; bila berhasil listener sudah mengganti tombol
+                            };
+                        }
+                        box.appendChild(btn);
+                    };
+                    const friendRef = db.ref(`users/${currentUser.uid}/friends/${uid}`);
+                    const sentRef   = db.ref(`users/${currentUser.uid}/friendRequests/sent/${uid}`);
+                    const fFn = friendRef.on('value', snap => { isFriend = snap.exists(); loadedF = true; renderFriendBtn(); });
+                    const sFn = sentRef.on('value',   snap => { isSent   = snap.exists(); loadedS = true; renderFriendBtn(); });
+                    _visitFriendRefs = [ { ref: friendRef, fn: fFn }, { ref: sentRef, fn: sFn } ];
                 }
             } catch(e) {
                 document.getElementById('vp-name').textContent = '❌ Gagal memuat profil';
