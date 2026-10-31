@@ -8371,6 +8371,9 @@
                 _profileListeners.seasonStats.on('value', snap => {
                     _profStatsSeason = snap.exists() ? snap.val() : null;
                     _renderProfileStats();
+                }, err => {
+                    // [DIAG] Biasanya karena Firebase Rules belum mengizinkan baca node seasonStats
+                    console.error(`❌ Gagal membaca users/${uid}/seasonStats/${_sInfo.id}:`, err && err.message ? err.message : err);
                 });
             } else {
                 _profileListeners.seasonStats = null;
@@ -15781,7 +15784,7 @@
                 _profStatsAll    = allSnap.exists() ? allSnap.val() : null;
                 _profStatsSeason = (seasonSnap && seasonSnap.exists()) ? seasonSnap.val() : null;
                 _renderProfileStats();
-            }).catch(() => {});
+            }).catch(err => { console.error('❌ loadProfileStats gagal:', err && err.message ? err.message : err); });
         }
 
         function loadProfileHistory() {
