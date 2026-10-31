@@ -6066,13 +6066,14 @@
             <!-- Tab: Statistik -->
             <div id="tab-statistik" class="profile-panel">
                 <div class="profile-panel-title">📊 Statistik Pemain</div>
-                <div id="stats-mode-toggle" style="display:flex;position:relative;margin:-8px 0 14px;justify-content:flex-start;">
+                <div id="stats-mode-toggle" style="display:flex;position:relative;margin:-8px 0 6px;justify-content:flex-start;">
                     <button id="stats-mode-btn" class="btn-stats-mode active" onclick="playSound('button');toggleStatsModeMenu()">Semua season ▾</button>
                     <div id="stats-mode-menu" class="stats-mode-menu">
                         <button id="stats-mode-all" class="stats-mode-opt active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
-                        <button id="stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setProfileStatsMode('season')">Pra-Season</button>
+                        <button id="stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setProfileStatsMode('season')">Season saat ini</button>
                     </div>
                 </div>
+                <div id="stats-season-note" style="margin:0 0 14px;font-size:0.85em;opacity:0.85;text-align:left;">Sekarang: Pra-Season</div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
                     <span class="profile-stat-value highlight" id="stat-winrate">0%</span>
@@ -6998,7 +6999,7 @@
             const _seasonName = si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
             const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = _seasonName;
             const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
-            const sb = document.getElementById('stats-mode-season'); if (sb) sb.textContent = _seasonName;
+            const sn = document.getElementById('stats-season-note'); if (sn) sn.textContent = `Sekarang: ${_seasonName}`;
             if (typeof _refreshStatsModeBtn === 'function') _refreshStatsModeBtn();
         }
         // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 12 jam sebelum season berakhir, atau saat season berganti
@@ -7033,7 +7034,7 @@
         }
         function _refreshStatsModeBtn() {
             const btn = document.getElementById('stats-mode-btn');
-            if (btn) btn.textContent = `${_profStatsMode === 'season' ? _seasonModeName() : 'Semua season'} ▾`;
+            if (btn) btn.textContent = `${_profStatsMode === 'season' ? 'Season saat ini' : 'Semua season'} ▾`;
         }
         function toggleStatsModeMenu(force) {
             const m = document.getElementById('stats-mode-menu'); if (!m) return;
