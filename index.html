@@ -15769,19 +15769,18 @@
 
         function loadProfileStats() {
             if (!currentUser) return;
-            db.ref(`users/${currentUser.uid}/stats`).get().then(snap => {
-                const s = snap.exists() ? snap.val() : { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
-                const total = s.totalMatches || 0;
-                const pct = n => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '0%';
-                const totalWins = (s.rank1 || 0) + (s.rank2 || 0) + (s.rank3 || 0);
-                document.getElementById('stat-total').textContent = total;
-                document.getElementById('stat-wins').textContent = totalWins;
-                document.getElementById('stat-losses').textContent = s.rank4 || 0;
-                document.getElementById('stat-winrate').textContent = pct(totalWins);
-                document.getElementById('stat-p1').textContent = pct(s.rank1 || 0);
-                document.getElementById('stat-p2').textContent = pct(s.rank2 || 0);
-                document.getElementById('stat-p3').textContent = pct(s.rank3 || 0);
-                document.getElementById('stat-p4').textContent = pct(s.rank4 || 0);
+            // [FIX] Jangan tulis langsung ke DOM: dulu fungsi ini selalu menimpa tampilan dengan statistik
+            // SEMUA season walau mode "Season saat ini" sedang dipilih, sehingga statistik season
+            // tampak tidak bertambah. Sekarang hanya memperbarui cache lalu render sesuai mode aktif.
+            const uid = currentUser.uid;
+            const si  = getSeasonInfo(seasonNow());
+            Promise.all([
+                db.ref(`users/${uid}/stats`).get(),
+                si.id >= 0 ? db.ref(`users/${uid}/seasonStats/${si.id}`).get() : Promise.resolve(null)
+            ]).then(([allSnap, seasonSnap]) => {
+                _profStatsAll    = allSnap.exists() ? allSnap.val() : null;
+                _profStatsSeason = (seasonSnap && seasonSnap.exists()) ? seasonSnap.val() : null;
+                _renderProfileStats();
             }).catch(() => {});
         }
 
