@@ -6061,9 +6061,9 @@
             <!-- Tab: Statistik -->
             <div id="tab-statistik" class="profile-panel">
                 <div class="profile-panel-title">📊 Statistik Pemain</div>
-                <div id="stats-mode-toggle" style="display:none;gap:8px;margin:-8px 0 14px;justify-content:center;">
+                <div id="stats-mode-toggle" style="display:flex;gap:8px;margin:-8px 0 14px;justify-content:center;">
                     <button id="stats-mode-all" class="btn-stats-mode active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
-                    <button id="stats-mode-season" class="btn-stats-mode" onclick="playSound('button');setProfileStatsMode('season')">Season ini</button>
+                    <button id="stats-mode-season" class="btn-stats-mode" onclick="playSound('button');setProfileStatsMode('season')">Pra-Season</button>
                 </div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
@@ -6972,8 +6972,7 @@
             const si = getSeasonInfo(seasonNow());
             let lbTxt;
             if (si.id === 0) {
-                const dt = new Date(si.endAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' });
-                lbTxt = `Pra-Season • Season 1 dimulai ${dt}`;
+                lbTxt = 'Pra-Season'; // tanpa tanggal
             } else {
                 const ms = si.endAt - seasonNow();
                 const days = Math.floor(ms / 86400000);
@@ -6988,9 +6987,10 @@
                 lbTxt = `Season ${si.id} • Berakhir dalam ${left}`;
             }
             const lb = document.getElementById('lb-season-info'); if (lb) lb.textContent = lbTxt;
-            const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = si.id >= 1 ? `Season ${si.id}` : '';
-            const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = si.id >= 1 ? 'flex' : 'none';
-            if (si.id < 1 && _profStatsMode === 'season') setProfileStatsMode('all');
+            const _seasonName = si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
+            const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = _seasonName;
+            const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
+            const sb = document.getElementById('stats-mode-season'); if (sb) sb.textContent = _seasonName;
         }
         // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 12 jam sebelum season berakhir, atau saat season berganti
         let _lblSeasonId = null;
@@ -8333,10 +8333,10 @@
                 _profStatsAll = snap.exists() ? snap.val() : null;
                 _renderProfileStats();
             });
-            // [SEASON] Statistik season berjalan (hanya ada setelah Season 1 dimulai)
+            // [SEASON] Statistik season berjalan (termasuk Pra-Season = id 0)
             _profStatsSeason = null;
             const _sInfo = getSeasonInfo(seasonNow());
-            if (_sInfo.id >= 1) {
+            if (_sInfo.id >= 0) {
                 _profileListeners.seasonStats = db.ref(`users/${uid}/seasonStats/${_sInfo.id}`);
                 _profileListeners.seasonStats.on('value', snap => {
                     _profStatsSeason = snap.exists() ? snap.val() : null;
@@ -16067,7 +16067,7 @@
                 // Ambil rankData dulu agar bisa catat perubahan ke history
                 let _rankBefore = 'Bronze III', _rankAfter = 'Bronze III', _ptsChange = 0, _ptsBefore = 0, _ptsAfter = 0;
                 const _fbSeason = getSeasonInfo(seasonNow());
-                if (_fbSeason.id >= 1) {
+                if (_fbSeason.id >= 0) {
                     // [SEASON] statistik season berjalan; dibungkus terpisah agar kegagalan tidak membatalkan update rank
                     try {
                         await db.ref(`users/${uid}/seasonStats/${_fbSeason.id}`).transaction(ss => {
