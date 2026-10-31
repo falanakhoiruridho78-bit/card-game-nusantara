@@ -7025,7 +7025,7 @@
             }
             const lb = document.getElementById('lb-season-info'); if (lb) lb.textContent = lbTxt;
             const _seasonName = si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
-            const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = _seasonName;
+            const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = si.id >= 1 ? _seasonName : ''; // Pra-Season: tidak ditampilkan
             const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
             const sn = document.getElementById('stats-season-note'); if (sn) sn.textContent = `Sekarang: ${_seasonName}`;
             if (typeof _refreshStatsModeBtn === 'function') _refreshStatsModeBtn();
