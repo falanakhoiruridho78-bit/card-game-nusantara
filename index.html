@@ -6986,10 +6986,10 @@
                 const ms = si.endAt - seasonNow();
                 const days = Math.floor(ms / 86400000);
                 let left;
-                if (ms < 43200000) { // [SEASON] kurang dari 12 jam → hitung mundur jam:menit:detik
+                if (ms < 14 * 86400000) { // [SEASON] kurang dari 14 hari → hitung mundur hari:jam:menit:detik
                     const tot = Math.max(0, Math.floor(ms / 1000));
                     const p2 = n => String(n).padStart(2, '0');
-                    left = `${p2(Math.floor(tot / 3600))}:${p2(Math.floor((tot % 3600) / 60))}:${p2(tot % 60)}`;
+                    left = `${p2(Math.floor(tot / 86400))}:${p2(Math.floor((tot % 86400) / 3600))}:${p2(Math.floor((tot % 3600) / 60))}:${p2(tot % 60)}`;
                 } else {
                     left = days >= 1 ? `${days} hari` : `${Math.max(1, Math.ceil(ms / 3600000))} jam`;
                 }
@@ -7002,14 +7002,14 @@
             const sn = document.getElementById('stats-season-note'); if (sn) sn.textContent = `Sekarang: ${_seasonName}`;
             if (typeof _refreshStatsModeBtn === 'function') _refreshStatsModeBtn();
         }
-        // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 12 jam sebelum season berakhir, atau saat season berganti
+        // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 14 hari sebelum season berakhir, atau saat season berganti
         let _lblSeasonId = null;
         setInterval(() => {
             try {
                 const si = getSeasonInfo(seasonNow());
                 const changed = _lblSeasonId !== null && si.id !== _lblSeasonId;
                 _lblSeasonId = si.id;
-                if (changed || (si.id >= 1 && si.endAt - seasonNow() < 43200000 + 1500)) updateSeasonLabels();
+                if (changed || (si.id >= 1 && si.endAt - seasonNow() < 14 * 86400000 + 1500)) updateSeasonLabels();
             } catch (e) { }
         }, 1000);
         function _renderProfileStats() {
