@@ -17020,10 +17020,8 @@
 
             // Keterangan season saat ini (Pra-Season belum punya riwayat apa pun)
             const si = getSeasonInfo(seasonNow());
-            const endTxt = new Date(si.endAt).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'long', year: 'numeric' });
-            curEl.textContent = si.id === 0
-                ? `Sekarang: Pra-Season. Season 1 dimulai ${endTxt}.`
-                : `Sekarang: Season ${si.id} (berakhir ${endTxt}). Peringkat season ini masih berjalan.`;
+            curEl.textContent = si.id === 0 ? '' : `Sekarang: Season ${si.id}`;
+            curEl.style.display = si.id === 0 ? 'none' : '';
 
             listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Memuat riwayat...</div>';
             infoEl.textContent = '';
@@ -17040,10 +17038,8 @@
                 });
                 rows.sort((a, b) => b.id - a.id); // terbaru di atas
                 if (rows.length === 0) {
-                    listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Belum ada season yang berakhir, jadi belum ada riwayat peringkat.</div>';
-                    infoEl.textContent = si.id === 0
-                        ? 'Rank akhir Pra-Season akan muncul di sini setelah Season 1 dimulai.'
-                        : 'Riwayat akan muncul setelah season yang pemain ikuti berakhir.';
+                    listEl.innerHTML = `<div class="rank-info-note" style="margin:16px 20px 8px;text-align:center;">${si.id === 0 ? 'Masih Pra-Season' : 'Belum ada riwayat'}</div>`;
+                    infoEl.textContent = '';
                     return;
                 }
                 listEl.innerHTML = rows.map(r => {
