@@ -21605,7 +21605,7 @@ async function _renderAchGrid() {
 }
 
 // ─── POPUP DETAIL ─────────────────────────────────────────────────────────────
-function openAchPopup(ach, isUnlocked, isClaimable, stats) {
+function openAchPopup(ach, isUnlocked, isClaimable, stats, viewOnly = false) {
     const ov = document.getElementById('ach-popup-overlay');
     const pp = document.getElementById('ach-popup');
     if (!ov || !pp) return;
@@ -21626,6 +21626,7 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
         document.getElementById('ach-popup-how').insertAdjacentElement('afterend', _expEl);
     }
     _expEl.innerHTML = `✨ Hadiah klaim: <span style="font-size:1.05em;">+${_expVal} Poin Pengalaman</span>`;
+    _expEl.style.display = viewOnly ? 'none' : ''; // profil orang lain: hadiah EXP tidak ditampilkan
     // [MAHARAJA] Tampilkan di season berapa pemain jadi #1
     const _champList = (ach.id === 'maharaja' && stats && Array.isArray(stats.championSeasons)) ? stats.championSeasons : [];
     let _seaEl = document.getElementById('ach-popup-season');
@@ -21637,12 +21638,22 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
             document.getElementById('ach-popup-how').insertAdjacentElement('afterend', _seaEl);
         }
         _seaEl.style.display = 'block';
-        _seaEl.textContent = `👑 Kamu peringkat #1 di Musim ${_champList.join(', ')}!`;
+        _seaEl.textContent = viewOnly
+            ? `👑 Peringkat #1 di Musim ${_champList.join(', ')}!`   // profil pemain lain
+            : `👑 Kamu peringkat #1 di Musim ${_champList.join(', ')}!`;
     } else if (_seaEl) {
         _seaEl.style.display = 'none';
     }
     const stEl = document.getElementById('ach-popup-status');
     const brEl = document.getElementById('ach-popup-btn-row');
+    stEl.style.display = viewOnly ? 'none' : ''; // profil orang lain: status (Sudah diraih / Belum terpenuhi) tidak ditampilkan
+    ov.style.zIndex = viewOnly ? '39600' : '';    // di atas visit-profile-screen (38000)
+    if (viewOnly) {
+        pp.className = 'ach-popup';
+        brEl.innerHTML = `<button class="ach-popup-btn-close" style="flex:1;" onclick="playSound('x');closeAchPopup()">Tutup</button>`;
+        ov.classList.add('active');
+        return;
+    }
     if (isClaimable) {
         pp.className = 'ach-popup claimable';
         stEl.className = 'ach-popup-status done'; stEl.textContent = '✅ Syarat terpenuhi! Siap diklaim.';
@@ -21659,6 +21670,27 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
         brEl.innerHTML = `<button class="ach-popup-btn-close" style="flex:1;" onclick="playSound('x');closeAchPopup()">Tutup</button>`;
     }
     ov.classList.add('active');
+}
+
+// Popup detail pencapaian dari slot di profil pemain lain: hanya info (tanpa hadiah EXP, tanpa status, tanpa tombol klaim)
+function openVisitAchPopup(ach) {
+    if (!ach) return;
+    openAchPopup(ach, true, false, null, true);
+    // [MAHARAJA] Pamerkan di musim berapa saja pemain yang sedang dilihat jadi #1 (dimuat setelah popup terbuka)
+    if (ach.id === 'maharaja' && typeof _visitUid !== 'undefined' && _visitUid) {
+        const uid = _visitUid;
+        db.ref(`users/${uid}/seasonChampion`).get().then(snap => {
+            if (!snap.exists()) return;
+            const list = Object.keys(snap.val() || {}).map(Number).filter(n => n > 0).sort((a, b) => a - b);
+            if (!list.length) return;
+            const ov = document.getElementById('ach-popup-overlay');
+            const nm = document.getElementById('ach-popup-name');
+            // hanya perbarui jika popup yang sama masih terbuka dan masih profil pemain yang sama
+            if (ov && ov.classList.contains('active') && nm && nm.textContent === ach.name && uid === _visitUid) {
+                openAchPopup(ach, true, false, { championSeasons: list }, true);
+            }
+        }).catch(e => console.error(`❌ Gagal membaca users/${uid}/seasonChampion:`, e && e.message ? e.message : e));
+    }
 }
 
 function closeAchPopup() {
@@ -21801,7 +21833,8 @@ async function _renderVisitAchSlots(uid) {
             const ach = id ? ACHIEVEMENTS.find(a => a.id === id) : null;
             const div = document.createElement('div');
             div.className = 'ach-slot' + (ach ? ' filled' : '');
-            div.style.cursor = 'default';
+            div.style.cursor = ach ? 'pointer' : 'default';
+            if (ach) div.onclick = () => { playSound('button'); openVisitAchPopup(ach); }; // popup detail (tanpa hadiah EXP & status)
             div.innerHTML = ach
                 ? `<img src="gambar/pencapaian/${ach.id}.png" alt="${ach.name}" style="width:54px;height:54px;object-fit:contain;border-radius:8px;" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${ach.icon}'}))"><span class="ach-slot-label">${ach.name}</span>`
                 : ``;
