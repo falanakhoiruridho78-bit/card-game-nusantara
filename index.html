@@ -104,6 +104,9 @@
         .pre-loading-spinner.has-progress::after { animation: none; width: var(--p, 3%); transition: width 0.6s ease; }
         @keyframes preBarSlide { from { margin-left: 0; } to { margin-left: 65%; } }
         .pre-loading-info {
+            /* Teks status tepat di atas loading bar (bar: bottom 6%, tinggi 14px) */
+            position: absolute; left: 10%; right: 10%; bottom: calc(6% + 14px + 12px);
+            text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,0.7);
             font-size: 1.1em;
             opacity: 0.8;
             margin: 0;
