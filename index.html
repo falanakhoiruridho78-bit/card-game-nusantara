@@ -17015,7 +17015,7 @@
         // =============================================
         // =============================================
         // [SEASON] RIWAYAT PERINGKAT SEASON (popup dari gambar "Peringkat Saat Ini")
-        // Data: users/{uid}/seasonHistory/{seasonId} — ditulis server saat season berganti, berisi
+        // Data: users/{uid}/seasonHistory/{seasonId}, ditulis server saat season berganti, berisi
         // rank & poin TERAKHIR pemain di season yang baru berakhir (seasonId 0 = Pra-Season).
         // Yang ditampilkan: SEASON_HISTORY_LIMIT season terakhir yang sudah berakhir.
         // =============================================
@@ -21109,7 +21109,7 @@ const ACHIEVEMENTS = [
         name: 'Maharaja',
         icon: '👑',
         tier: 5,
-        desc: 'Penguasa tertinggi arena — berdiri di puncak papan peringkat saat sebuah musim berakhir.',
+        desc: 'Penguasa tertinggi arena, berdiri di puncak papan peringkat saat sebuah musim berakhir.',
         how: 'Jadi <strong>peringkat #1 di Papan Peringkat</strong> saat sebuah musim berakhir',
         check: (stats) => (stats.championSeasons || []).length > 0
     },
