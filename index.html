@@ -8,10 +8,8 @@
 	<meta name="google-site-verification" content="e6U7viC84simCa8Sz_4HMCLZZvBm2sIUKqP_G1kJOFo" />
 	<meta name="google-site-verification" content="sEXJnrpUJcIdpbx0NH5bgW-jgaU4G9lyYOhN6u8qrcg" />
 	<meta name="google-site-verification" content="QY8dCc4Z0H7352C3ygLfbBhg1eEeB26lVWZJ7Tfn2Uw" />
-	<meta name="google-site-verification" content="MNb8jxPPz5UZUjcUNAbVmUZkXoHcXLdahTulusLAT8c" />
     <meta name="msvalidate.01" content="A4A8CB24FDE413EC538EDF57E64DBFE8" />
 	<meta name="msvalidate.01" content="A4A8CB24FDE413EC538EDF57E64DBFE8" />
-	<meta name="msvalidate.01" content="C245696FA41688E866891C89581A7060" />
     <meta name="description" content="Card Game Nusantara - Game kartu daring tema provinsi Indonesia. Kumpulkan kartu, naik peringkat, dan bermain multiplayer bersama teman secara gratis." />
     <link rel="icon" type="image/png" href="gambar/logo/gamecard.png">
     <title>Card Game Nusantara - MODE DARING</title>
@@ -2368,14 +2366,6 @@
         .phi-date { margin-left: auto; font-size: 0.72em; color: rgba(255,255,255,0.5); align-self: flex-end; }
 
         /* ===== RANK INFO BUTTON & MODAL ===== */
-        .btn-rank-info {
-            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);
-            border-radius: 50%; width: 20px; height: 20px; font-size: 0.75em;
-            cursor: pointer; padding: 0; line-height: 1; display: inline-flex;
-            align-items: center; justify-content: center; flex-shrink: 0;
-            transition: background 0.2s;
-        }
-        .btn-rank-info:hover { background: rgba(255,255,255,0.35); }
         /* [SEASON] Gambar "Peringkat Saat Ini" bisa diklik -> popup riwayat peringkat season */
         .rank-img-clickable { cursor: pointer; transition: transform 0.15s ease, filter 0.15s ease; -webkit-tap-highlight-color: transparent; }
         .rank-img-clickable:hover { transform: scale(1.06); filter: brightness(1.1); }
@@ -5236,18 +5226,28 @@
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <button disabled style="flex-shrink:0;width:44px;height:44px;padding:0;font-size:1.3em;background:rgba(255,255,255,0.3);border:2px solid rgba(255,255,255,0.5);color:#fff;border-radius:8px;opacity:1;box-shadow:none;">ℹ️</button>
-                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Info (Bentuk Kotak)</div>
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Info</div>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Muncul pas lagi main, buat lihat semua kartu provinsi yang sedang dipakai di pertandingan itu.</div></div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;width:20px;height:20px;padding:0;font-size:0.75em;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);color:#fff;border-radius:50%;opacity:1;box-shadow:none;">ℹ️</button>
-                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Info (Versi Bulat Kecil)</div>
-                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini versi mininya, biasanya nempel di sebelah tulisan "Peringkat". Dipencet buat lihat penjelasan cara kerja sistem peringkat.</div></div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <button disabled style="flex-shrink:0;width:30px;height:30px;padding:0;font-size:1.1em;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;opacity:1;box-shadow:none;">—</button>
                             <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Tombol Perkecil</div>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ada di lobi sebelum main dimulai. Kalau dipencet, ruang tunggunya jadi bulatan kecil yang ngambang di layar, jadi kamu bisa buka menu lain dulu sambil tetap menunggu.</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Sub: Gambar Peringkat (dinamis sesuai rank pemain) -->
+                    <div style="margin-top:18px;margin-bottom:8px;font-weight:bold;color:#c7d2fe;font-size:0.88em;letter-spacing:0.3px;">🖼️ Gambar Peringkat di Profil (Bisa Dipencet)</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <img id="tut-rank-now-img" src="gambar/rank/Bronze.png" alt="Peringkat Saat Ini" style="flex-shrink:0;width:48px;height:48px;object-fit:contain;" onerror="this.style.display='none'">
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Peringkat Saat Ini: <span id="tut-rank-now-name">Perunggu III</span></div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini gambar peringkatmu sekarang, jadi bentuknya bisa beda dengan punya temanmu. Kalau dipencet, kamu bisa lihat peringkatmu di musim-musim yang sudah lewat. Satu musim (season) itu lamanya 3 bulan, lalu peringkat mulai dari awal lagi. Kalau belum ada musim yang selesai, tulisannya "Masih Pra-Season".</div></div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <img id="tut-rank-peak-img" src="gambar/rank/Bronze.png" alt="Peringkat Tertinggi" style="flex-shrink:0;width:48px;height:48px;object-fit:contain;" onerror="this.style.display='none'">
+                            <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Peringkat Tertinggi: <span id="tut-rank-peak-name">Perunggu III</span></div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini peringkat paling tinggi yang pernah kamu capai. Kalau dipencet, muncul penjelasan cara naik peringkat dan arti tiap gambarnya.</div></div>
                         </div>
                     </div>
 
@@ -6068,9 +6068,8 @@
                         <div class="profile-rank-item">
                             <div class="profile-rank-label" style="display:flex;align-items:center;gap:6px;">
                                 Peringkat Tertinggi
-                                <button class="btn-rank-info" onclick="playSound('button');showRankInfo()" title="Info sistem peringkat">ℹ️</button>
                             </div>
-                            <img id="prf-peak-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="prf-peak-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Info sistem peringkat" role="button" tabindex="0" onclick="playSound('button');showRankInfo()" onkeydown="if(event.key==='Enter'){showRankInfo()}">
                             <div class="profile-rank-name" id="prf-peak-name">Perunggu III</div>
                             <div class="profile-rank-points" id="prf-peak-points">0 / 100 poin</div>
                         </div>
@@ -15483,7 +15482,20 @@
         // ============================================================
         // TUTORIAL
         // ============================================================
+        // [TUTORIAL] Isi gambar & nama peringkat contoh sesuai rank pemain yang sedang melihat.
+        // Hanya menyalin dari elemen profil yang sudah terisi (tanpa baca database baru).
+        function _syncTutorialRankImages() {
+            try {
+                [['tut-rank-now', 'prf-rank-img', 'prf-rank-name'], ['tut-rank-peak', 'prf-peak-img', 'prf-peak-name']].forEach(([p, imgId, nameId]) => {
+                    const srcImg = document.getElementById(imgId), srcName = document.getElementById(nameId);
+                    const ti = document.getElementById(p + '-img'), tn = document.getElementById(p + '-name');
+                    if (ti && srcImg) { ti.style.display = ''; ti.src = srcImg.getAttribute('src') || ti.src; ti.alt = srcImg.alt || ti.alt; }
+                    if (tn && srcName && srcName.textContent) tn.textContent = srcName.textContent;
+                });
+            } catch (_) {}
+        }
         function showTutorial() {
+            _syncTutorialRankImages();
             document.getElementById('tutorial-screen').style.display = 'block';
             document.getElementById('tutorial-screen').focus({ preventScroll: true }); // agar panah atas/bawah keyboard langsung bisa scroll tanpa perlu klik dulu
             document.body.style.overflow = 'hidden';
