@@ -7262,10 +7262,10 @@
             if (!el) return;
             const steps = [
                 'Memuat semua kartu provinsi...',
-                'Memuat gambar dan aset...',
-                'Menyiapkan sound effects...',
-                'Mempersiapkan sistem game...',
-                'Validasi data kartu...',
+                'Memuat gambar...',
+                'Menyiapkan suara dan musik...',
+                'Menyiapkan permainan...',
+                'Memeriksa data kartu...',
                 'Hampir selesai...'
             ];
             let i = 0;
@@ -7555,7 +7555,7 @@
             // 1) SISTEM — pastikan sesi token akun BARU benar-benar aktif
             //    (force refresh supaya tidak ada kemungkinan token akun lama masih terpakai)
             try {
-                setAuthLoading(true, '🔐 Memverifikasi sesi akun...');
+                setAuthLoading(true, '🔐 Memeriksa akunmu...');
                 await _withTimeout(user.getIdToken(true), 4000);
             } catch (e) {
                 console.warn('confirmAccountSwitch: gagal refresh token, lanjut tanpa blocking →', e);
@@ -7563,7 +7563,7 @@
 
             // 2) SISTEM — pastikan profil (avatar) akun BARU sudah termuat,
             //    bukan avatar sisa akun sebelumnya
-            setAuthLoading(true, '🖼️ Menyinkronkan profil akun...');
+            setAuthLoading(true, '🖼️ Memuat profilmu...');
             await _withTimeout(new Promise(resolve => {
                 db.ref(`userAvatars/${user.uid}`).get().then(avSnap => {
                     if (avSnap.exists()) {
@@ -7581,7 +7581,7 @@
 
             // 3) SERVER — tunggu Firebase mengonfirmasi sesi akun baru tercatat
             //    (presence/{uid}/{sessionToken} berhasil ditulis ke server)
-            setAuthLoading(true, '🌐 Menghubungi server, menyiapkan sesi...');
+            setAuthLoading(true, '🌐 Menyambungkan ke permainan...');
             await _withTimeout(new Promise(resolve => {
                 setupPresence(user, nickname, resolve);
             }), 5000);
@@ -10688,10 +10688,10 @@
 
             const steps = [
                 "Memuat semua kartu provinsi...",
-                "Memuat gambar dan aset...",
-                "Menyiapkan sound effects...",
-                "Mempersiapkan sistem game...",
-                "Validasi data kartu...",
+                "Memuat gambar...",
+                "Menyiapkan suara dan musik...",
+                "Menyiapkan permainan...",
+                "Memeriksa data kartu...",
                 "Hampir selesai..."
             ];
             let i = 0;
@@ -11153,7 +11153,7 @@
                 const subtitleEl = document.querySelector('.pre-loading-subtitle');
                 const playBtn = document.getElementById('btn-play');
                 const hint = document.getElementById('btn-play-rejoin-hint');
-                if (infoEl) { infoEl.style.display = 'block'; infoEl.textContent = '🔍 Memeriksa pertandingan aktif...'; }
+                if (infoEl) { infoEl.style.display = 'block'; infoEl.textContent = '🔍 Mencari pertandingan yang sedang berjalan...'; }
                 if (spinnerEl) spinnerEl.style.display = 'block';
                 if (subtitleEl) subtitleEl.style.display = 'none';
                 if (playBtn) playBtn.style.display = 'none';
