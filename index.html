@@ -5242,12 +5242,12 @@
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <img id="tut-rank-now-img" src="gambar/rank/Bronze.png" alt="Peringkat Saat Ini" style="flex-shrink:0;width:48px;height:48px;object-fit:contain;" onerror="this.style.display='none'">
                             <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Peringkat Saat Ini: <span id="tut-rank-now-name">Perunggu III</span></div>
-                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini gambar peringkatmu sekarang, jadi bentuknya bisa beda dengan punya temanmu. Kalau dipencet, kamu bisa lihat peringkatmu di musim-musim yang sudah lewat. Satu musim (season) itu lamanya 3 bulan, lalu peringkat mulai dari awal lagi. Kalau belum ada musim yang selesai, tulisannya "Masih Pra-Season".</div></div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini gambar peringkatmu sekarang, jadi bentuknya bisa beda dengan punya temanmu. Kalau dipencet, kamu bisa lihat peringkatmu di musim-musim yang sudah lewat. Satu musim itu lamanya 3 bulan, lalu peringkat mulai dari awal lagi. Kalau belum ada musim yang selesai, tulisannya "Masih Pra-Musim".</div></div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
                             <img id="tut-rank-peak-img" src="gambar/rank/Bronze.png" alt="Peringkat Tertinggi" style="flex-shrink:0;width:48px;height:48px;object-fit:contain;" onerror="this.style.display='none'">
                             <div><div style="font-weight:bold;color:#fff;font-size:0.9em;">Peringkat Tertinggi: <span id="tut-rank-peak-name">Perunggu III</span></div>
-                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini peringkat paling tinggi yang pernah kamu capai. Kalau dipencet, muncul penjelasan cara naik peringkat dan arti tiap gambarnya.</div></div>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Ini peringkat paling tinggi yang pernah kamu capai. Kalau dipencet, muncul penjelasan urutan peringkat dari Perunggu sampai Platina MAKS. Di situ juga ada daftar poin yang kamu dapat atau hilang kalau jadi juara 1, 2, 3, atau 4, dan penjelasan tentang musim.</div></div>
                         </div>
                     </div>
 
@@ -5859,7 +5859,7 @@
     <div id="season-history-overlay" class="hide-scrollbar" tabindex="-1" onclick="playSound('button');hideSeasonHistory()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:39500;overflow-y:auto;padding:20px;box-sizing:border-box;outline:none;">
         <div class="rank-info-modal" onclick="event.stopPropagation()">
             <div class="rank-info-header">
-                <div class="rank-info-title">🕘 Riwayat Peringkat Season</div>
+                <div class="rank-info-title">🕘 Riwayat Peringkat Musim</div>
                 <button class="btn-enc-close" onclick="playSound('x');hideSeasonHistory()">✖ Tutup</button>
             </div>
             <div class="rank-info-note" id="sh-current" style="margin:16px 20px 4px;"></div>
@@ -5937,7 +5937,7 @@
                 </tbody>
             </table>
             <div class="rank-info-note">🛡️ <strong>Perunggu</strong> — Tidak bisa turun peringkat, poin minimal 0.</div>
-            <div class="rank-info-note">🗓️ <strong>Season</strong> — Setiap 3 bulan peringkat saat ini direset ke Perunggu III (0 poin). Peringkat tertinggi dan statistik semua season tetap tersimpan.</div>
+            <div class="rank-info-note">🗓️ <strong>Musim</strong> — Setiap 3 bulan peringkat saat ini direset ke Perunggu III (0 poin). Peringkat tertinggi dan statistik semua musim tetap tersimpan.</div>
 
             <!-- Tabel perubahan Poin Pengalaman -->
             <div class="rank-info-section-title" style="margin-top:20px;">✨ Perubahan Poin Pengalaman per Posisi</div>
@@ -6060,7 +6060,7 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Peringkat Saat Ini</div>
-                            <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat season" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('self')" onkeydown="if(event.key==='Enter'){showSeasonHistory('self')}">
+                            <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat musim" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('self')" onkeydown="if(event.key==='Enter'){showSeasonHistory('self')}">
                             <div class="profile-rank-name" id="prf-rank-name">Perunggu III</div>
                             <div class="profile-rank-points" id="prf-rank-points">0 / 100 poin</div>
                             <div class="profile-rank-points" id="prf-season-label" style="opacity:0.8;"></div>
@@ -6096,13 +6096,13 @@
             <div id="tab-statistik" class="profile-panel">
                 <div class="profile-panel-title">📊 Statistik Pemain</div>
                 <div id="stats-mode-toggle" style="display:flex;position:relative;margin:-8px 0 6px;justify-content:flex-start;">
-                    <button id="stats-mode-btn" class="btn-stats-mode active" onclick="playSound('button');toggleStatsModeMenu()">Semua season ▾</button>
+                    <button id="stats-mode-btn" class="btn-stats-mode active" onclick="playSound('button');toggleStatsModeMenu()">Semua musim ▾</button>
                     <div id="stats-mode-menu" class="stats-mode-menu">
-                        <button id="stats-mode-all" class="stats-mode-opt active" onclick="playSound('button');setProfileStatsMode('all')">Semua season</button>
-                        <button id="stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setProfileStatsMode('season')">Season saat ini</button>
+                        <button id="stats-mode-all" class="stats-mode-opt active" onclick="playSound('button');setProfileStatsMode('all')">Semua musim</button>
+                        <button id="stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setProfileStatsMode('season')">Musim saat ini</button>
                     </div>
                 </div>
-                <div id="stats-season-note" style="margin:0 0 14px;font-size:0.85em;opacity:0.85;text-align:left;">Sekarang: Pra-Season</div>
+                <div id="stats-season-note" style="margin:0 0 14px;font-size:0.85em;opacity:0.85;text-align:left;">Sekarang: Pra-Musim</div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
                     <span class="profile-stat-value highlight" id="stat-winrate">0%</span>
@@ -6229,7 +6229,7 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Peringkat Saat Ini</div>
-                            <img id="vp-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat season" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('visit')" onkeydown="if(event.key==='Enter'){showSeasonHistory('visit')}">
+                            <img id="vp-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img rank-img-clickable" title="Lihat riwayat peringkat musim" role="button" tabindex="0" onclick="playSound('button');showSeasonHistory('visit')" onkeydown="if(event.key==='Enter'){showSeasonHistory('visit')}">
                             <div class="profile-rank-name" id="vp-rank-name">Perunggu III</div>
                             <div class="profile-rank-points" id="vp-rank-points">0 / 100 poin</div>
                         </div>
@@ -7010,7 +7010,7 @@
             const si = getSeasonInfo(seasonNow());
             let lbTxt;
             if (si.id === 0) {
-                lbTxt = 'Pra-Season'; // tanpa tanggal
+                lbTxt = 'Pra-Musim'; // tanpa tanggal
             } else {
                 const ms = si.endAt - seasonNow();
                 const days = Math.floor(ms / 86400000);
@@ -7022,10 +7022,10 @@
                 } else {
                     left = days >= 1 ? `${days} hari` : `${Math.max(1, Math.ceil(ms / 3600000))} jam`;
                 }
-                lbTxt = `Season ${si.id} • Berakhir dalam ${left}`;
+                lbTxt = `Musim ${si.id} • Berakhir dalam ${left}`;
             }
             const lb = document.getElementById('lb-season-info'); if (lb) lb.textContent = lbTxt;
-            const _seasonName = si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
+            const _seasonName = si.id >= 1 ? `Musim ${si.id}` : 'Pra-Musim';
             const pl = document.getElementById('prf-season-label'); if (pl) pl.textContent = si.id >= 1 ? _seasonName : ''; // Pra-Season: tidak ditampilkan
             const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
             const sn = document.getElementById('stats-season-note'); if (sn) sn.textContent = `Sekarang: ${_seasonName}`;
@@ -7059,11 +7059,11 @@
         }
         function _seasonModeName() {
             const si = getSeasonInfo(seasonNow());
-            return si.id >= 1 ? `Season ${si.id}` : 'Pra-Season';
+            return si.id >= 1 ? `Musim ${si.id}` : 'Pra-Musim';
         }
         function _refreshStatsModeBtn() {
             const btn = document.getElementById('stats-mode-btn');
-            if (btn) btn.textContent = `${_profStatsMode === 'season' ? 'Season saat ini' : 'Semua season'} ▾`;
+            if (btn) btn.textContent = `${_profStatsMode === 'season' ? 'Musim saat ini' : 'Semua musim'} ▾`;
         }
         function toggleStatsModeMenu(force) {
             const m = document.getElementById('stats-mode-menu'); if (!m) return;
@@ -17021,7 +17021,7 @@
         // =============================================
         const SEASON_HISTORY_LIMIT = 3;
         let _seasonHistToken = 0; // abaikan hasil lama jika popup ditutup/dibuka ulang saat data masih dimuat
-        function _seasonLabelById(id) { return Number(id) >= 1 ? `Season ${id}` : 'Pra-Season'; }
+        function _seasonLabelById(id) { return Number(id) >= 1 ? `Musim ${id}` : 'Pra-Musim'; }
         function showSeasonHistory(which) {
             const uid = which === 'visit' ? _visitUid : (currentUser && currentUser.uid);
             if (!uid) return;
@@ -17034,7 +17034,7 @@
 
             // Keterangan season saat ini (Pra-Season belum punya riwayat apa pun)
             const si = getSeasonInfo(seasonNow());
-            curEl.textContent = si.id === 0 ? '' : `Sekarang: Season ${si.id}`;
+            curEl.textContent = si.id === 0 ? '' : `Sekarang: Musim ${si.id}`;
             curEl.style.display = si.id === 0 ? 'none' : '';
 
             listEl.innerHTML = '<div class="rank-info-note" style="margin:8px 20px;">Memuat riwayat...</div>';
@@ -17052,7 +17052,7 @@
                 });
                 rows.sort((a, b) => b.id - a.id); // terbaru di atas
                 if (rows.length === 0) {
-                    listEl.innerHTML = `<div class="rank-info-note" style="margin:16px 20px 8px;text-align:center;">${si.id === 0 ? 'Masih Pra-Season' : 'Belum ada riwayat'}</div>`;
+                    listEl.innerHTML = `<div class="rank-info-note" style="margin:16px 20px 8px;text-align:center;">${si.id === 0 ? 'Masih Pra-Musim' : 'Belum ada riwayat'}</div>`;
                     infoEl.textContent = '';
                     return;
                 }
@@ -17068,8 +17068,8 @@
                         </div>
                     </div>`;
                 }).join('');
-                infoEl.textContent = `Menampilkan ${rows.length} season terakhir yang sudah berakhir: ${rows.map(r => _seasonLabelById(r.id)).join(', ')}. `
-                    + 'Peringkat di-reset ke Perunggu III setiap ganti season; rank dan poin di atas adalah posisi terakhir pemain sebelum reset.';
+                infoEl.textContent = `Menampilkan ${rows.length} musim terakhir yang sudah berakhir: ${rows.map(r => _seasonLabelById(r.id)).join(', ')}. `
+                    + 'Peringkat di-reset ke Perunggu III setiap ganti musim; rank dan poin di atas adalah posisi terakhir pemain sebelum reset.';
             }).catch(err => {
                 if (token !== _seasonHistToken) return;
                 // [DIAG] Biasanya karena Firebase Rules belum mengizinkan baca node seasonHistory
@@ -21109,8 +21109,8 @@ const ACHIEVEMENTS = [
         name: 'Maharaja',
         icon: '👑',
         tier: 5,
-        desc: 'Penguasa tertinggi arena — berdiri di puncak papan peringkat saat sebuah season berakhir.',
-        how: 'Jadi <strong>peringkat #1 di Papan Peringkat</strong> saat sebuah season berakhir (minimal 20 pertandingan di season itu)',
+        desc: 'Penguasa tertinggi arena — berdiri di puncak papan peringkat saat sebuah musim berakhir.',
+        how: 'Jadi <strong>peringkat #1 di Papan Peringkat</strong> saat sebuah musim berakhir (minimal 20 pertandingan di musim itu)',
         check: (stats) => (stats.championSeasons || []).length > 0
     },
 ];
@@ -21637,7 +21637,7 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats) {
             document.getElementById('ach-popup-how').insertAdjacentElement('afterend', _seaEl);
         }
         _seaEl.style.display = 'block';
-        _seaEl.textContent = `👑 Kamu peringkat #1 di Season ${_champList.join(', ')}!`;
+        _seaEl.textContent = `👑 Kamu peringkat #1 di Musim ${_champList.join(', ')}!`;
     } else if (_seaEl) {
         _seaEl.style.display = 'none';
     }
