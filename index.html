@@ -17981,7 +17981,7 @@
             nameEl.style.cursor = '';
             nameEl.title        = '';
             // Reset sub & clear
-            document.getElementById(`pslot-${slotNum}-sub`).textContent   = '(opsional)';
+            document.getElementById(`pslot-${slotNum}-sub`).textContent   = '';
             document.getElementById(`pslot-${slotNum}-clear`).style.display = 'none';
             // [FIX] Paksa buka picker untuk slot ini setelah reset (fix bug: picker tidak muncul setelah kick)
             _openPickerSlot = null;
@@ -20540,7 +20540,7 @@
                         onclick="event.stopPropagation();playSound('button');clearPartyFriend(2)" style="display:none;">✖</button>
                     <div class="party-slot-icon" id="pslot-2-icon">➕</div>
                     <div class="party-slot-name" id="pslot-2-name">Ajak Teman</div>
-                    <div class="party-slot-sub" id="pslot-2-sub">(opsional)</div>
+                    <div class="party-slot-sub" id="pslot-2-sub"></div>
                 </div>
 
                 <div class="party-vs-divider">+</div>
@@ -20551,7 +20551,7 @@
                         onclick="event.stopPropagation();playSound('button');clearPartyFriend(3)" style="display:none;">✖</button>
                     <div class="party-slot-icon" id="pslot-3-icon">➕</div>
                     <div class="party-slot-name" id="pslot-3-name">Ajak Teman</div>
-                    <div class="party-slot-sub" id="pslot-3-sub">(opsional)</div>
+                    <div class="party-slot-sub" id="pslot-3-sub"></div>
                 </div>
             </div>
 
