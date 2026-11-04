@@ -20407,27 +20407,24 @@
                 _encRowHovered = null;
             }
         });
-        let _encNoHoverToastAt = 0;
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+            if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"],[role="slider"],[role="listbox"],[role="combobox"],[role="menu"]')) return;
 
-            if (_encRowHovered) {
-                e.preventDefault();
-                _encRowHovered.scrollBy({ left: e.key === 'ArrowLeft' ? -200 : 200, behavior: 'smooth' });
-                return;
-            }
-
-            // Kursor belum diarahkan ke area provinsi manapun -> kasih tahu user,
-            // tapi hanya saat layar Ensiklopedia sedang terbuka, dan dibatasi
-            // jedanya (cooldown) supaya tidak spam toast saat tombol ditahan.
-            const encScreen = document.getElementById('encyclopedia-screen');
-            if (encScreen && getComputedStyle(encScreen).display !== 'none' && typeof showToast === 'function') {
-                const now = Date.now();
-                if (now - _encNoHoverToastAt > 2000) {
-                    _encNoHoverToastAt = now;
-                    showToast('Arahkan kursor ke bagian provinsi dulu untuk menggeser kartu', 'info', 2200);
+            // Baris di bawah kursor diprioritaskan, tetapi hanya bila masih tampil di layar
+            // (kursor bisa "tertinggal" di baris yang sudah ter-scroll keluar layar / layar sudah ditutup).
+            const r = _encRowHovered;
+            if (r && r.isConnected && r.getClientRects().length) {
+                const b = r.getBoundingClientRect();
+                if (b.bottom > 0 && b.top < window.innerHeight) {
+                    e.preventDefault();
+                    r.scrollBy({ left: e.key === 'ArrowLeft' ? -200 : 200, behavior: 'smooth' });
+                    return;
                 }
             }
+            // Tanpa hover: ditangani jaring pengaman global di akhir <body>
+            // (menggeser baris horizontal yang paling dekat dengan tengah layar — tidak perlu arahkan kursor).
         });
 
         function renderEncCards(filter) {
@@ -23041,6 +23038,49 @@ const _achWsPatch = setInterval(() => {
         else if (e.key === 'PageUp')    sc.scrollBy({ top: -page });
         else if (e.key === 'Home')      sc.scrollTo({ top: 0 });
         else if (e.key === 'End')       sc.scrollTo({ top: sc.scrollHeight });
+    });
+
+    /* ── Kiri/kanan: geser baris horizontal yang paling dekat dengan tengah layar (tanpa perlu hover) ── */
+    let _hCache = { layer: null, t: 0, list: [] };
+    function hScrollers(layer) {
+        const now = performance.now();
+        if (_hCache.layer === layer && now - _hCache.t < 400) return _hCache.list;
+        const list = [];
+        const check = (el) => {
+            if (el.scrollWidth <= el.clientWidth + 1) return;
+            const ox = getComputedStyle(el).overflowX;
+            if (ox === 'auto' || ox === 'scroll' || ox === 'overlay') list.push(el);
+        };
+        check(layer);
+        const all = layer.querySelectorAll('*');
+        for (let i = 0; i < all.length; i++) check(all[i]);
+        _hCache = { layer, t: now, list };
+        return list;
+    }
+    function pickHScroller(layer) {
+        const vh = window.innerHeight, cy = vh / 2;
+        let best = null, bestDist = Infinity;
+        for (const el of hScrollers(layer)) {
+            if (!el.isConnected || !el.getClientRects().length) continue;
+            const r = el.getBoundingClientRect();
+            if (r.width < 20 || r.height < 20 || r.bottom <= 0 || r.top >= vh) continue;
+            const d = (cy >= r.top && cy <= r.bottom) ? 0 : Math.min(Math.abs(cy - r.top), Math.abs(cy - r.bottom));
+            if (d < bestDist) { bestDist = d; best = el; }
+        }
+        return best;
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        if (e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        const t = e.target;
+        if (t && t.closest && t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"],[role="slider"],[role="listbox"],[role="combobox"],[role="menu"]')) return;
+        const layer = topLayer();
+        if (!layer) return;
+        if (t && t !== document.body && t !== document.documentElement && hScrollers(layer).includes(t)) return; // fokus di scroller itu sendiri → bawaan browser
+        const row = pickHScroller(layer);
+        if (!row) return;
+        e.preventDefault();
+        row.scrollBy({ left: e.key === 'ArrowLeft' ? -200 : 200, behavior: 'smooth' });
     });
 })();
 </script>
