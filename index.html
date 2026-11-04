@@ -7116,6 +7116,18 @@
             _refreshStatsModeBtn();
             toggleStatsModeMenu(false);
             _renderProfileStats();
+            // [FIX] Setelah menu ditutup, fokus hilang ke <body> sehingga panah atas/bawah tidak scroll.
+            // Kembalikan fokus ke container scroll agar keyboard tetap merespon otomatis.
+            try {
+                const _btn = document.getElementById('stats-mode-btn');
+                const _wrap = document.getElementById('stats-mode-toggle');
+                const _scr = (_btn && _btn.closest('#profile-content, #visit-profile-content')) || document.getElementById('profile-content');
+                if (_scr) {
+                    if (_wrap && document.activeElement && _wrap.contains(document.activeElement)) document.activeElement.blur();
+                    const refocus = () => { try { _scr.focus({ preventScroll: true }); } catch (e) {} };
+                    refocus(); requestAnimationFrame(refocus); setTimeout(refocus, 50);
+                }
+            } catch (e) {}
         }
 
         function getRankTier(rankName) {
