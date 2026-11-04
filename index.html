@@ -6285,6 +6285,14 @@
             <!-- Tab Statistik -->
             <div id="vtab-statistik" class="visit-panel">
                 <div class="visit-panel-title">📊 Statistik Pemain</div>
+                <div id="vp-stats-mode-toggle" style="display:flex;position:relative;margin:-8px 0 6px;justify-content:flex-start;">
+                    <button id="vp-stats-mode-btn" class="btn-stats-mode active" onclick="playSound('button');toggleVisitStatsModeMenu()">Semua musim ▾</button>
+                    <div id="vp-stats-mode-menu" class="stats-mode-menu">
+                        <button id="vp-stats-mode-all" class="stats-mode-opt active" onclick="playSound('button');setVisitStatsMode('all')">Semua musim</button>
+                        <button id="vp-stats-mode-season" class="stats-mode-opt" onclick="playSound('button');setVisitStatsMode('season')">Musim saat ini</button>
+                    </div>
+                </div>
+                <div id="vp-stats-season-note" class="stats-season-note" style="margin:0 0 14px;font-size:0.85em;opacity:0.85;text-align:left;">Sekarang: Pra-Musim</div>
                 <div class="profile-stat-card">
                     <span class="profile-stat-label">🏆 Persentase Kemenangan</span>
                     <span class="profile-stat-value highlight" id="vp-stat-winrate">0%</span>
@@ -7065,6 +7073,7 @@
             const tg = document.getElementById('stats-mode-toggle'); if (tg) tg.style.display = 'flex';
             const sn = document.getElementById('stats-season-note'); if (sn) sn.textContent = `Sekarang: ${_seasonName}`;
             if (typeof _refreshStatsModeBtn === 'function') _refreshStatsModeBtn();
+            const vsn = document.getElementById('vp-stats-season-note'); if (vsn) vsn.textContent = `Sekarang: ${_seasonName}`;
         }
         // [SEASON] ticker 1 detik: hanya aktif memperbarui saat < 14 hari sebelum season berakhir, atau saat season berganti
         let _lblSeasonId = null;
@@ -7103,6 +7112,7 @@
         function toggleStatsModeMenu(force) {
             const m = document.getElementById('stats-mode-menu'); if (!m) return;
             m.classList.toggle('open', typeof force === 'boolean' ? force : !m.classList.contains('open'));
+            const pc = document.getElementById('profile-content'); if (pc) pc.focus({ preventScroll: true });
         }
         document.addEventListener('click', (e) => {
             const wrap = document.getElementById('stats-mode-toggle');
@@ -7116,18 +7126,8 @@
             _refreshStatsModeBtn();
             toggleStatsModeMenu(false);
             _renderProfileStats();
-            // [FIX] Setelah menu ditutup, fokus hilang ke <body> sehingga panah atas/bawah tidak scroll.
-            // Kembalikan fokus ke container scroll agar keyboard tetap merespon otomatis.
-            try {
-                const _btn = document.getElementById('stats-mode-btn');
-                const _wrap = document.getElementById('stats-mode-toggle');
-                const _scr = (_btn && _btn.closest('#profile-content, #visit-profile-content')) || document.getElementById('profile-content');
-                if (_scr) {
-                    if (_wrap && document.activeElement && _wrap.contains(document.activeElement)) document.activeElement.blur();
-                    const refocus = () => { try { _scr.focus({ preventScroll: true }); } catch (e) {} };
-                    refocus(); requestAnimationFrame(refocus); setTimeout(refocus, 50);
-                }
-            } catch (e) {}
+            // Menu menutup → tombol yang difokus hilang; kembalikan fokus ke konten agar panah atas/bawah tetap scroll
+            const pc = document.getElementById('profile-content'); if (pc) pc.focus({ preventScroll: true });
         }
 
         function getRankTier(rankName) {
@@ -16673,7 +16673,49 @@
         // KUNJUNGI PROFIL PEMAIN LAIN (halaman penuh)
         // =============================================
         let _visitUid = null; // uid pemain yang sedang dikunjungi
-        let _visitListeners = { rankData: null, stats: null, history: null, playerExp: null };
+        let _visitListeners = { rankData: null, stats: null, seasonStats: null, history: null, playerExp: null };
+        let _visitStatsAll = null, _visitStatsSeason = null, _visitStatsMode = 'all';
+        function _renderVisitStats() {
+            const s = (_visitStatsMode === 'season' ? _visitStatsSeason : _visitStatsAll)
+                || { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
+            const total = s.totalMatches || 0;
+            const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
+            const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
+            const el = id => document.getElementById(id);
+            if (el('vp-stat-total'))   el('vp-stat-total').textContent   = total;
+            if (el('vp-stat-wins'))    el('vp-stat-wins').textContent    = totalWins;
+            if (el('vp-stat-losses'))  el('vp-stat-losses').textContent  = s.rank4 || 0;
+            if (el('vp-stat-winrate')) el('vp-stat-winrate').textContent = pct(totalWins);
+            if (el('vp-stat-p1'))      el('vp-stat-p1').textContent      = pct(s.rank1||0);
+            if (el('vp-stat-p2'))      el('vp-stat-p2').textContent      = pct(s.rank2||0);
+            if (el('vp-stat-p3'))      el('vp-stat-p3').textContent      = pct(s.rank3||0);
+            if (el('vp-stat-p4'))      el('vp-stat-p4').textContent      = pct(s.rank4||0);
+        }
+        function _refreshVisitStatsModeBtn() {
+            const btn = document.getElementById('vp-stats-mode-btn');
+            if (btn) btn.textContent = `${_visitStatsMode === 'season' ? 'Musim saat ini' : 'Semua musim'} ▾`;
+            const a = document.getElementById('vp-stats-mode-all'), b = document.getElementById('vp-stats-mode-season');
+            if (a) a.classList.toggle('active', _visitStatsMode === 'all');
+            if (b) b.classList.toggle('active', _visitStatsMode === 'season');
+            const sn = document.getElementById('vp-stats-season-note');
+            if (sn) sn.textContent = `Sekarang: ${_seasonModeName()}`;
+        }
+        function toggleVisitStatsModeMenu(force) {
+            const m = document.getElementById('vp-stats-mode-menu'); if (!m) return;
+            m.classList.toggle('open', typeof force === 'boolean' ? force : !m.classList.contains('open'));
+            const vc = document.getElementById('visit-profile-content'); if (vc) vc.focus({ preventScroll: true });
+        }
+        document.addEventListener('click', (e) => {
+            const wrap = document.getElementById('vp-stats-mode-toggle');
+            if (wrap && !wrap.contains(e.target)) toggleVisitStatsModeMenu(false);
+        });
+        function setVisitStatsMode(mode) {
+            _visitStatsMode = (mode === 'season') ? 'season' : 'all';
+            _refreshVisitStatsModeBtn();
+            toggleVisitStatsModeMenu(false);
+            _renderVisitStats();
+            const vc = document.getElementById('visit-profile-content'); if (vc) vc.focus({ preventScroll: true });
+        }
         let _visitFriendRefs = []; // listener realtime tombol pertemanan di visit-profile-screen
         function _detachVisitFriendListener() {
             _visitFriendRefs.forEach(({ ref, fn }) => ref.off('value', fn));
@@ -16705,6 +16747,8 @@
                 return;
             }
             _visitUid = uid;
+            _visitStatsAll = null; _visitStatsSeason = null; _visitStatsMode = 'all';
+            _refreshVisitStatsModeBtn();
             document.getElementById('visit-profile-screen').classList.add('active');
             document.body.style.overflow = 'hidden';
             attachVisitListeners(uid);
@@ -16767,20 +16811,22 @@
             // ── stats ──
             _visitListeners.stats = db.ref(`users/${uid}/stats`);
             _visitListeners.stats.on('value', snap => {
-                const s = snap.exists() ? snap.val() : { totalMatches:0, rank1:0, rank2:0, rank3:0, rank4:0 };
-                const total = s.totalMatches || 0;
-                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
-                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
-                const el = id => document.getElementById(id);
-                if (el('vp-stat-total'))   el('vp-stat-total').textContent   = total;
-                if (el('vp-stat-wins'))    el('vp-stat-wins').textContent    = totalWins;
-                if (el('vp-stat-losses'))  el('vp-stat-losses').textContent  = s.rank4 || 0;
-                if (el('vp-stat-winrate')) el('vp-stat-winrate').textContent = pct(totalWins);
-                if (el('vp-stat-p1'))      el('vp-stat-p1').textContent      = pct(s.rank1||0);
-                if (el('vp-stat-p2'))      el('vp-stat-p2').textContent      = pct(s.rank2||0);
-                if (el('vp-stat-p3'))      el('vp-stat-p3').textContent      = pct(s.rank3||0);
-                if (el('vp-stat-p4'))      el('vp-stat-p4').textContent      = pct(s.rank4||0);
+                _visitStatsAll = snap.exists() ? snap.val() : null;
+                _renderVisitStats();
             });
+            // Statistik musim berjalan (termasuk Pra-Musim = id 0)
+            _visitStatsSeason = null;
+            const _vSi = getSeasonInfo(seasonNow());
+            if (_vSi.id >= 0) {
+                _visitListeners.seasonStats = db.ref(`users/${uid}/seasonStats/${_vSi.id}`);
+                _visitListeners.seasonStats.on('value', snap => {
+                    _visitStatsSeason = snap.exists() ? snap.val() : null;
+                    _renderVisitStats();
+                }, err => console.error(`❌ Gagal membaca users/${uid}/seasonStats/${_vSi.id}:`, err && err.message ? err.message : err));
+            } else {
+                _visitListeners.seasonStats = null;
+            }
+            _refreshVisitStatsModeBtn();
 
             // ── playerExp (level pemain lain) — real-time ──
             _visitListeners.playerExp = db.ref(`users/${uid}/playerExp`);
@@ -16857,6 +16903,7 @@
         function detachVisitListeners() {
             if (_visitListeners.rankData)  { _visitListeners.rankData.off();  _visitListeners.rankData  = null; }
             if (_visitListeners.stats)     { _visitListeners.stats.off();     _visitListeners.stats     = null; }
+            if (_visitListeners.seasonStats) { _visitListeners.seasonStats.off(); _visitListeners.seasonStats = null; }
             if (_visitListeners.history)   { _visitListeners.history.off();   _visitListeners.history   = null; }
             if (_visitListeners.playerExp) { _visitListeners.playerExp.off(); _visitListeners.playerExp = null; }
             _detachVisitFriendListener();
@@ -16994,18 +17041,8 @@
             if (!uid) return;
             try {
                 const snap = await db.ref(`users/${uid}/stats`).get();
-                const s = snap.exists() ? snap.val() : { totalMatches:0, rank1:0, rank2:0, rank3:0, rank4:0 };
-                const total     = s.totalMatches || 0;
-                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
-                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
-                document.getElementById('vp-stat-total').textContent   = total;
-                document.getElementById('vp-stat-wins').textContent    = totalWins;
-                document.getElementById('vp-stat-losses').textContent  = s.rank4 || 0;
-                document.getElementById('vp-stat-winrate').textContent = pct(totalWins);
-                document.getElementById('vp-stat-p1').textContent = pct(s.rank1||0);
-                document.getElementById('vp-stat-p2').textContent = pct(s.rank2||0);
-                document.getElementById('vp-stat-p3').textContent = pct(s.rank3||0);
-                document.getElementById('vp-stat-p4').textContent = pct(s.rank4||0);
+                _visitStatsAll = snap.exists() ? snap.val() : null;
+                _renderVisitStats();
             } catch(e) {}
         }
 
