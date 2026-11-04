@@ -22966,6 +22966,84 @@ const _achWsPatch = setInterval(() => {
     _crObserver.observe(_crOverlay, { attributes: true, attributeFilter: ['style'] });
 })();
 </script>
+<script>
+/* [FIX] Jaring pengaman global: panah atas/bawah, PageUp/PageDown, Home/End tetap men-scroll layar/popup paling atas
+   walau fokus hilang (mis. setelah klik tombol, menutup halaman, atau elemen yang tadinya fokus disembunyikan/dihapus).
+   Hanya aktif bila fokus TIDAK berada di dalam area scroll layar teratas dan bukan di kolom input. */
+(function () {
+    const KEYS = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'];
+    const _cache = new WeakMap();
+
+    function isShown(el) {
+        const cs = getComputedStyle(el);
+        return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0;
+    }
+    function canScrollY(el) {
+        if (!el || el.scrollHeight <= el.clientHeight + 1) return false;
+        const oy = getComputedStyle(el).overflowY;
+        return oy === 'auto' || oy === 'scroll' || oy === 'overlay';
+    }
+    function topLayer() {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        let best = null, bestZ = -Infinity;
+        const kids = document.body.children;
+        for (let i = 0; i < kids.length; i++) {
+            const el = kids[i];
+            if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+            const cs = getComputedStyle(el);
+            if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') continue;
+            if (cs.pointerEvents === 'none' || parseFloat(cs.opacity) < 0.05) continue;
+            const r = el.getBoundingClientRect();
+            if (r.width < vw * 0.9 || r.height < vh * 0.9) continue;
+            const z = parseInt(cs.zIndex, 10) || 0;
+            if (z >= bestZ) { best = el; bestZ = z; } // sama tinggi → elemen yang lebih belakang di DOM menang
+        }
+        return best;
+    }
+    function scrollerOf(layer) {
+        const c = _cache.get(layer);
+        if (c && c.isConnected && layer.contains(c) && isShown(c) && canScrollY(c)) return c;
+        let found = null;
+        if (canScrollY(layer)) found = layer;
+        else {
+            let bestArea = 0;
+            const all = layer.querySelectorAll('*');
+            for (let i = 0; i < all.length; i++) {
+                const el = all[i];
+                if (el.scrollHeight <= el.clientHeight + 1) continue;
+                if (!canScrollY(el) || !isShown(el)) continue;
+                const area = el.clientWidth * el.clientHeight;
+                if (area > bestArea) { bestArea = area; found = el; }
+            }
+        }
+        if (found) _cache.set(layer, found);
+        return found;
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (!KEYS.includes(e.key) || e.defaultPrevented) return;
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+        const t = e.target;
+        if (t && t.closest && t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"],[role="slider"],[role="listbox"],[role="combobox"],[role="menu"]')) return;
+
+        const layer = topLayer();
+        if (!layer) return;
+        const sc = scrollerOf(layer);
+        if (!sc) return;
+        // Fokus sudah di dalam area scroll → biarkan perilaku bawaan browser
+        if (t && t !== document.body && t !== document.documentElement && sc.contains(t)) return;
+
+        e.preventDefault();
+        const page = sc.clientHeight * 0.9;
+        if (e.key === 'ArrowDown')      sc.scrollBy({ top: 60 });
+        else if (e.key === 'ArrowUp')   sc.scrollBy({ top: -60 });
+        else if (e.key === 'PageDown')  sc.scrollBy({ top: page });
+        else if (e.key === 'PageUp')    sc.scrollBy({ top: -page });
+        else if (e.key === 'Home')      sc.scrollTo({ top: 0 });
+        else if (e.key === 'End')       sc.scrollTo({ top: sc.scrollHeight });
+    });
+})();
+</script>
 </body>
 </html>
 
