@@ -8766,7 +8766,7 @@
             notif.innerHTML = `
                 <div style="font-size:1.3em; margin-bottom:4px;">⚠️ Akun Aktif di Tempat Lain</div>
                 <div style="font-weight:normal; opacity:0.92; font-size:0.88em;">
-                    <b>${escHtml(nickname)}</b> terdeteksi sedang daring di <b>${escHtml(device)}</b>.<br>
+                    <b>${escHtml(nickname)}</b> terdeteksi sedang online di <b>${escHtml(device)}</b>.<br>
                     Sesi lama akan digantikan oleh sesi baru ini.
                 </div>
                 <button onclick="playSound('button');document.getElementById('online-elsewhere-notif').remove()"
@@ -11038,7 +11038,7 @@
                         Akun ini sedang aktif di <b>${escHtml(otherDevice)}</b>.<br>
                         Tidak bisa bermain dari dua perangkat sekaligus.
                     </div>
-                    <div id="_sas-status" style="font-size:0.82em;color:#ffb74d;margin:14px 0;min-height:22px;">⏳ Menunggu perangkat lain luring…</div>
+                    <div id="_sas-status" style="font-size:0.82em;color:#ffb74d;margin:14px 0;min-height:22px;">⏳ Menunggu perangkat lain offline…</div>
                     <button id="_sas-logout-btn" style="padding:11px;border-radius:10px;border:2px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.65);font-size:0.85em;cursor:pointer;width:100%;">🚪 Keluar dari Akun Ini</button>
                 </div>`;
             document.body.appendChild(overlay);
@@ -11301,7 +11301,7 @@
                     <button id="_kicked-logout-btn" style="padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ef5350,#b71c1c);color:#fff;font-size:0.95em;font-weight:bold;cursor:pointer;width:100%;margin-bottom:10px;">
                         🚪 Keluar dari Akun Ini
                     </button>
-                    <div id="_kicked-status" style="font-size:0.82em;color:#ffb74d;margin-top:10px;">⏳ Menunggu perangkat lain luring...</div>
+                    <div id="_kicked-status" style="font-size:0.82em;color:#ffb74d;margin-top:10px;">⏳ Menunggu perangkat lain offline...</div>
                 </div>`;
             document.body.appendChild(overlay);
 
@@ -11328,7 +11328,7 @@
                     if (!stillActive) {
                         watchRef.off('value', watchFn);
                         overlay.remove();
-                        if (typeof showToast === 'function') showToast('\u2705 Perangkat lain sudah luring. Silakan lanjutkan.', 'success');
+                        if (typeof showToast === 'function') showToast('\u2705 Perangkat lain sudah offline. Silakan lanjutkan.', 'success');
                     }
                 });
             }
@@ -16733,13 +16733,13 @@
             countEl.textContent = `(${profiles.length})`;
 
             function _statusLabel(info) {
-                if (!info.online) return '<span class="friend-status-badge offline">⚫ Luring</span>';
+                if (!info.online) return '<span class="friend-status-badge offline">⚫ Offline</span>';
                 if (info.status === 'inGame')        return '<span class="friend-status-badge in-game">🎮 Sedang Bermain</span>';
                 if (info.status === 'inQueue')        return '<span class="friend-status-badge in-queue">🔍 Mencari Lawan</span>';
                 if (info.status === 'inLobbyRanked') return '<span class="friend-status-badge in-lobby-ranked">🏆 Di Lobi Peringkat</span>';
                 if (info.status === 'inLobbyCustom') return '<span class="friend-status-badge in-lobby-custom">⚔️ Di Lobi Tantang</span>';
                 if (info.status === 'inLobby')        return '<span class="friend-status-badge in-queue">🏠 Di Lobi</span>';
-                return '<span class="friend-status-badge online">🟢 Daring</span>';
+                return '<span class="friend-status-badge online">🟢 Online</span>';
             }
 
             function _renderCard(f, info) {
@@ -16787,15 +16787,15 @@
             ));
 
             let html = '';
-            html += `<div class="friend-status-section-title"><span class="friend-online-dot"></span>Daring (${onlineFriends.length})</div>`;
+            html += `<div class="friend-status-section-title"><span class="friend-online-dot"></span>Online (${onlineFriends.length})</div>`;
             if (onlineFriends.length === 0) {
-                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang sedang daring.</div>';
+                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang sedang online.</div>';
             } else {
                 html += onlineFriends.map(({ f, info }) => _renderCard(f, info)).join('');
             }
-            html += `<div class="friend-status-section-title" style="margin-top:10px;"><span class="friend-offline-dot"></span>Luring (${offlineFriends.length})</div>`;
+            html += `<div class="friend-status-section-title" style="margin-top:10px;"><span class="friend-offline-dot"></span>Offline (${offlineFriends.length})</div>`;
             if (offlineFriends.length === 0) {
-                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang luring.</div>';
+                html += '<div class="friend-pending" style="padding:10px 0 6px;">Tidak ada teman yang offline.</div>';
             } else {
                 html += offlineFriends.map(({ f, info }) => _renderCard(f, info)).join('');
             }
@@ -18037,7 +18037,7 @@
                         if (isInvited) {
                             statusLabel = '✅ Sudah diundang'; statusColor = 'rgba(76,175,80,0.9)';
                         } else if (!presInfo.online) {
-                            statusLabel = '⚫ Luring'; statusColor = 'rgba(255,255,255,0.35)';
+                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
                         } else if (presInfo.status === 'inGame') {
                             statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
                         } else if (presInfo.status === 'inQueue') {
@@ -18049,7 +18049,7 @@
                         } else if (presInfo.status === 'inLobby') {
                             statusLabel = '🚪 Sedang di lobi'; statusColor = 'rgba(255,193,7,0.9)';
                         } else {
-                            canInvite = true; statusLabel = '🟢 Daring'; statusColor = 'rgba(76,175,80,0.9)';
+                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
                         }
                         const init = escHtml(f.nickname.charAt(0).toUpperCase());
                         // [FIX] Render foto profil + bingkai rank langsung di HTML (tidak async lagi)
@@ -19344,7 +19344,7 @@
                         if (isInRoom) {
                             statusLabel = '✅ Sudah di room'; statusColor = 'rgba(76,175,80,0.9)';
                         } else if (!presInfo.online) {
-                            statusLabel = '⚫ Luring'; statusColor = 'rgba(255,255,255,0.35)';
+                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
                         } else if (presInfo.status === 'inGame') {
                             statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
                         } else if (presInfo.status === 'inQueue') {
@@ -19356,7 +19356,7 @@
                         } else if (presInfo.status === 'inLobby') {
                             statusLabel = '🚪 Sedang di lobi'; statusColor = 'rgba(255,193,7,0.9)';
                         } else {
-                            canInvite = true; statusLabel = '🟢 Daring'; statusColor = 'rgba(76,175,80,0.9)';
+                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
                         }
                         const init = escHtml(f.nickname.charAt(0).toUpperCase());
                         // [FIX] Render foto profil + bingkai rank langsung (tidak async)
@@ -20871,7 +20871,7 @@
     <div id="party-friend-picker" class="hide-scrollbar" style="display:none;" tabindex="-1" onclick="if(event.target===this){playSound('x');closePartyFriendPicker();}">
         <div class="party-friend-picker-card">
             <div class="party-friend-picker-header">
-                <div class="party-friend-picker-header-title">Pilih teman daring:</div>
+                <div class="party-friend-picker-header-title">Pilih teman online:</div>
                 <div class="enc-header-actions">
                     <button class="enc-scroll-btn" title="Scroll ke bawah" onclick="playSound('button');encScrollTo('bottom','party-friend-picker')">⬇</button>
                     <button class="party-friend-picker-close" onclick="playSound('x');closePartyFriendPicker()" title="Tutup">✖</button>
@@ -20956,7 +20956,7 @@
     <div id="custom-friend-picker" class="hide-scrollbar" style="display:none;" tabindex="-1" onclick="if(event.target===this){playSound('x');closeCustomFriendPicker();}">
         <div class="custom-friend-picker">
             <div class="custom-friend-picker-header">
-                <div class="custom-friend-picker-title">Pilih teman daring:</div>
+                <div class="custom-friend-picker-title">Pilih teman online:</div>
                 <div class="enc-header-actions">
                     <button class="enc-scroll-btn" title="Scroll ke bawah" onclick="playSound('button');encScrollTo('bottom','custom-friend-picker')">⬇</button>
                     <button class="custom-friend-picker-close" onclick="playSound('x');closeCustomFriendPicker()" title="Tutup">✖</button>
