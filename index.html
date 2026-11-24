@@ -4535,6 +4535,28 @@
             width: 100%; height: 100%;
             object-fit: fill;
         }
+
+        /* Legenda tombol di tab "Fungsi Setiap Tombol": tombol gambar, ukuran ditetapkan website */
+        .legend-img-btn {
+            flex: 0 0 auto;
+            position: relative;
+            width: 136px; height: 39px;
+            padding: 0 !important; border: none !important;
+            background: none !important; box-shadow: none !important;
+            opacity: 1 !important; cursor: default;
+            font-size: 0; line-height: 0;
+        }
+        .legend-img-btn.legend-btn-start { width: 160px; height: 40px; }
+        .legend-img-btn img {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: fill;            /* ikut kotak yang ditetapkan website */
+            pointer-events: none; user-select: none;
+        }
+        @media (max-width: 390px) {
+            .legend-img-btn { width: 112px; height: 32px; }
+            .legend-img-btn.legend-btn-start { width: 132px; height: 33px; }
+        }
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
@@ -5422,51 +5444,55 @@
                     <div style="margin-top:18px;margin-bottom:8px;font-weight:bold;color:#c7d2fe;font-size:0.88em;letter-spacing:0.3px;">🏠 Tombol di Halaman Utama (Bentuk Lonjong/Pil)</div>
                     <div style="display:flex;flex-direction:column;gap:8px;">
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border-radius:50px;padding:10px 22px;font-size:1em;font-weight:bold;text-transform:uppercase;letter-spacing:1px;opacity:1;box-shadow:none;">🎮 Peringkat</button>
+                            <button disabled class="legend-img-btn legend-btn-start"><img src="gambar/tombol/start.png" alt="Peringkat" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Tombol paling besar. Dipencet buat mulai cari lawan main peringkat.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#f7971e,#ffd200);color:#3d2000;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">🏆 Papan Peringkat</button>
+                            <button disabled class="legend-img-btn"><img src="gambar/tombol/tutorial.png" alt="Tutorial" draggable="false"></button>
+                            <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Belum tahu cara mainnya? Pencet tombol ini! Nanti muncul halaman belajar main yang punya 3 pilihan: <b>📖 Aturan</b> (cara dan aturan bermain), <b>Tombol</b> (penjelasan setiap tombol, yaitu halaman yang sedang kamu baca ini), dan <b>🎬 Video</b> (nonton contoh orang bermain). Kalau sudah paham, pencet tombol Tutup untuk kembali.</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/papan-peringkat.png" alt="Papan Peringkat" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Lihat siapa aja yang peringkatnya paling tinggi.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a3d1f;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">🎴 Koleksi Kartu</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/koleksi-kartu.png" alt="Koleksi Kartu" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Buka halaman koleksi kartu semua provinsi.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#c0392b,#8e44ad);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">🏅 Pencapaian</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/pencapaian.png" alt="Pencapaian" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Lihat penghargaan yang udah kamu dapatkan.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">👥 Teman</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/teman.png" alt="Teman" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Atur daftar teman kamu & undangan pertemanan yang masuk.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">⚔️ Tantang</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/tantang.png" alt="Tantang" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Bikin atau gabung lobi buat menantang teman bermain santai (tidak memengaruhi peringkat).</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#f6d365,#fda085);color:#5c2e00;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">📚 Materi</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/materi.png" alt="Materi" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Baca materi pelajaran "Daerahku Kebanggaanku".</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#a18cd1,#fbc2eb);color:#3d1a6e;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">⚙️ Pengaturan</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/pengaturan.png" alt="Pengaturan" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Atur suara, akun, dan pengaturan lainnya.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">👨‍💻 Pengembang</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/pengembang.png" alt="Pengembang" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Lihat siapa aja yang bikin website ini.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">💬 Komunitas</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/komunitas.png" alt="Komunitas" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Gabung grup WhatsApp buat ngobrol bareng pemain lain.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#f7971e,#e74c3c);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">📝 Kritik & Saran</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/kritik-saran.png" alt="Kritik & Saran" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Kasih masukan buat website ini lewat WhatsApp.</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px;">
-                            <button disabled style="flex-shrink:0;background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;border-radius:30px;padding:9px 16px;font-size:0.85em;font-weight:bold;opacity:1;box-shadow:none;">⚠️ Laporkan Masalah</button>
+                            <button disabled class="legend-img-btn "><img src="gambar/tombol/laporkan-masalah.png" alt="Laporkan Masalah" draggable="false"></button>
                             <div style="font-size:0.8em;color:rgba(255,255,255,0.75);line-height:1.5;">Lapor kalau ada yang error atau rusak di website ini.</div>
                         </div>
                     </div>
