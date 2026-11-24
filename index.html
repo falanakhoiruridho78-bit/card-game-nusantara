@@ -4407,6 +4407,53 @@
                 min-height: 210px !important;
             }
         }
+
+        /* ============================================ */
+        /* TOMBOL MENU BERBASIS GAMBAR (gambar/tombol/) */
+        /* Ukuran tombol mengikuti rasio asli gambar    */
+        /* ============================================ */
+        .btn-img,
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-img {
+            background: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin-top: 0;
+            min-height: 0 !important;
+            height: auto !important;
+            line-height: 0 !important;
+            font-size: 0 !important;
+            text-transform: none;
+            letter-spacing: 0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-img img {
+            display: block;
+            width: 100%;
+            height: auto;          /* tinggi otomatis sesuai rasio gambar */
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .btn-img:hover {
+            transform: translateY(-3px);
+            box-shadow: none !important;
+            filter: brightness(1.1) drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+        }
+        .btn-img:active { transform: scale(0.96); }
+
+        /* Tombol utama (btn-start): lebar menyesuaikan layar, tinggi mengikuti gambar */
+        .btn-start.btn-img {
+            width: clamp(220px, 60vw, 420px);
+            padding: 0 !important;
+            margin-bottom: 20px;
+        }
+
+        /* Tombol di nav bar: lebar mengikuti aturan lama (160/120/100/88px), tinggi otomatis */
+        .menu-nav-scroll-inner { align-items: center; }
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
@@ -4810,27 +4857,27 @@
         <img class="campus-logo" src="gambar/logo/Unmuh babel.png" alt="Logo Kampus">
         <div class="matchmaking-container">
             <div id="matchmaking-idle" style="display:flex;flex-direction:column;align-items:center;width:100%;">
-                <button class="btn-start" onclick="playSound('button');showPartyLobby()">🎮 PERINGKAT</button>
+                <button class="btn-img btn-start" onclick="playSound('button');showPartyLobby()"><img src="gambar/tombol/start.png" alt="Peringkat" draggable="false"></button>
                 <div class="menu-bottom-nav">
                     <button class="menu-nav-arrow" onclick="playSound('button');scrollMenuNav(-1)">◀</button>
                     <div class="menu-nav-scroll" id="menu-nav-scroll">
                         <div class="menu-nav-scroll-inner" id="menu-nav-inner">
-                            <button class="btn-encyclopedia btn-tutorial-style" onclick="playSound('button');showTutorial()">📘 Tutorial</button>
-                            <button class="btn-encyclopedia btn-materi-style" onclick="playSound('button');showMateriScreen()">📚 Materi</button>
-                            <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="playSound('button');showEncyclopedia()">🎴 Koleksi Kartu</button>
-                            <button class="btn-encyclopedia btn-leaderboard" onclick="playSound('button');showLeaderboard()">🏆 Papan Peringkat</button>
+                            <button class="btn-img btn-encyclopedia btn-tutorial-style" onclick="playSound('button');showTutorial()"><img src="gambar/tombol/tutorial.png" alt="Tutorial" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-materi-style" onclick="playSound('button');showMateriScreen()"><img src="gambar/tombol/materi.png" alt="Materi" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-ensiklopedia-style" onclick="playSound('button');showEncyclopedia()"><img src="gambar/tombol/koleksi-kartu.png" alt="Koleksi Kartu" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-leaderboard" onclick="playSound('button');showLeaderboard()"><img src="gambar/tombol/papan-peringkat.png" alt="Papan Peringkat" draggable="false"></button>
                             <div class="btn-achievement-wrapper">
                                 <button class="btn-encyclopedia btn-achievement-style" onclick="playSound('button');showAchievementScreen()">🏅 Pencapaian<span id="achievement-notif-badge">!</span></button>
                             </div>
                             <div class="btn-teman-wrapper">
                                 <button class="btn-encyclopedia btn-teman-style" onclick="playSound('button');showTemanScreen()">👥 Teman<span id="teman-notif-badge"></span></button>
                             </div>
-                            <button class="btn-encyclopedia btn-kostum-style" onclick="playSound('button');showKostumPicker()">⚔️ Tantang</button>
-                            <button class="btn-encyclopedia btn-settings-style" onclick="playSound('button');showSettingsScreen()">⚙️ Pengaturan</button>
-                            <button class="btn-encyclopedia btn-pengembang-style" onclick="playSound('button');showPengembangScreen()">👨‍💻 Pengembang</button>
-                            <button class="btn-encyclopedia btn-komunitas-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/EZiXitDlWPF83neFClgci0','_blank')">💬 Komunitas</button>
-                            <button class="btn-encyclopedia btn-kritik-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/C6pJpNCcwd5BEJdnI0rVsR','_blank')">📝 Kritik & Saran</button>
-                            <button class="btn-encyclopedia btn-lapor-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/FThheAUbdVED2j8LOCFOYm','_blank')">⚠️ Laporkan Masalah</button>
+                            <button class="btn-img btn-encyclopedia btn-kostum-style" onclick="playSound('button');showKostumPicker()"><img src="gambar/tombol/tantang.png" alt="Tantang" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-settings-style" onclick="playSound('button');showSettingsScreen()"><img src="gambar/tombol/pengaturan.png" alt="Pengaturan" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-pengembang-style" onclick="playSound('button');showPengembangScreen()"><img src="gambar/tombol/pengembang.png" alt="Pengembang" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-komunitas-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/EZiXitDlWPF83neFClgci0','_blank')"><img src="gambar/tombol/komunitas.png" alt="Komunitas" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-kritik-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/C6pJpNCcwd5BEJdnI0rVsR','_blank')"><img src="gambar/tombol/kritik-saran.png" alt="Kritik & Saran" draggable="false"></button>
+                            <button class="btn-img btn-encyclopedia btn-lapor-style" onclick="playSound('button');window.open('https://chat.whatsapp.com/FThheAUbdVED2j8LOCFOYm','_blank')"><img src="gambar/tombol/laporkan-masalah.png" alt="Laporkan Masalah" draggable="false"></button>
                         </div>
                     </div>
                     <button class="menu-nav-arrow" onclick="playSound('button');scrollMenuNav(1)">▶</button>
