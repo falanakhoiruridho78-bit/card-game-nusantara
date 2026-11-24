@@ -7276,18 +7276,28 @@
                 'Memeriksa data kartu...',
                 'Hampir selesai...'
             ];
+            // [LOADING TUNGGAL] Ini SATU-SATUNYA loading bar. Dulu ada dua (di sini 7 x 800ms = 5,6 dtk,
+            // lalu diulang di pre-loading-screen 7 x 800ms = 5,6 dtk). Totalnya sekarang digabung
+            // jadi satu animasi mulus dengan durasi sama dengan jumlah keduanya (5,6 + 5,6 = 11,2 dtk).
+            // Ubah angka ini kalau ingin loading lebih singkat/lama.
+            const LOADING_TOTAL_MS = 11200;
+            const segments = steps.length + 1;               // 6 teks langkah + 1 "Siap!"
+            const seg = LOADING_TOTAL_MS / segments;         // jeda antar langkah (1600 ms)
+            if (bar) bar.style.transition = 'width ' + seg + 'ms linear'; // bar bergerak halus, tidak melompat
+            const pct = (n) => Math.min(100, Math.round(n / segments * 100)) + '%';
             let i = 0;
+            if (bar) setTimeout(() => { bar.style.width = pct(1); }, 50);
             const iv = setInterval(() => {
                 if (i < steps.length) {
                     el.textContent = steps[i++];
-                    if (bar) bar.style.width = Math.round(i / (steps.length + 1) * 100) + '%';
+                    if (bar) bar.style.width = pct(i + 1);   // target milestone berikutnya, tercapai pas tick berikutnya
                 } else {
                     clearInterval(iv);
                     el.textContent = 'Siap!';
                     if (bar) bar.style.width = '100%';
                     preloadingDone = true;
                 }
-            }, 800);
+            }, seg);
         })();
 
         let _lastAuthUid = null;
@@ -10694,34 +10704,18 @@
             if (spinnerEl) { spinnerEl.style.display = 'block'; spinnerEl.classList.add('has-progress'); spinnerEl.style.setProperty('--p', '3%'); }
             if (subtitleEl) subtitleEl.style.display = '';
 
-            const steps = [
-                "Memuat semua kartu provinsi...",
-                "Memuat gambar...",
-                "Menyiapkan suara dan musik...",
-                "Menyiapkan permainan...",
-                "Memeriksa data kartu...",
-                "Hampir selesai..."
-            ];
-            let i = 0;
-            const iv = setInterval(() => {
-                if (i < steps.length) {
-                    infoEl.textContent = steps[i++];
-                    if (spinnerEl) spinnerEl.style.setProperty('--p', Math.round(i / (steps.length + 1) * 100) + '%');
-                } else {
-                    clearInterval(iv);
-                    infoEl.style.display = 'none';
-                    subtitleEl.style.display = 'none';
-                    spinnerEl.style.display = 'none';
-                    spinnerEl.classList.remove('has-progress');
-                    // [FIX] Jika ada callback (dari findMyRoomOnServer), tunggu
-                    // kedua proses selesai sebelum tampilkan tombol PLAY.
-                    if (typeof onDone === 'function') {
-                        onDone();
-                    } else {
-                        playBtn.style.display = 'block';
-                    }
-                }
-            }, 800);
+            // [LOADING TUNGGAL] Animasi loading sudah selesai di #firebase-loading (runEarlyPreload),
+            // jadi di sini TIDAK ada bar/animasi kedua lagi. Langsung lanjut ke callback / tombol PLAY.
+            if (spinnerEl) { spinnerEl.style.display = 'none'; spinnerEl.classList.remove('has-progress'); }
+            if (subtitleEl) subtitleEl.style.display = 'none';
+            if (typeof onDone === 'function') {
+                // Callback (dari pengecekan room di server) yang menentukan kapan PLAY muncul.
+                if (infoEl) { infoEl.textContent = 'Memeriksa pertandingan...'; infoEl.style.display = 'block'; }
+                onDone();
+            } else {
+                if (infoEl) infoEl.style.display = 'none';
+                if (playBtn) playBtn.style.display = 'block';
+            }
         }
 
         /** Helper: apakah user punya sesi aktif — dipakai friend list. */
