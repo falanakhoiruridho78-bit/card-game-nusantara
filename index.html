@@ -21864,7 +21864,7 @@ async function _renderAchGrid() {
         card.innerHTML = `
             <div class="ach-img-wrap">
                 <img src="${imgSrc}" alt="${ach.name}"
-                    style="width:100%;height:100%;object-fit:cover;border-radius:14px;"
+                    style="width:100%;height:100%;object-fit:contain;border-radius:14px;"
                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:1em;">${ach.icon}</span>
                 ${!isUnlocked && !isClaimable ? '<div class="ach-lock-icon">🔒</div>' : ''}
@@ -21890,7 +21890,7 @@ function openAchPopup(ach, isUnlocked, isClaimable, stats, viewOnly = false) {
     if (!ov || !pp) return;
     const _popImgEl = document.getElementById('ach-popup-img');
     _popImgEl.innerHTML = `<img src="gambar/pencapaian/${ach.id}.png" alt="${ach.name}"
-        style="width:100%;height:100%;object-fit:cover;border-radius:12px;"
+        style="width:100%;height:100%;object-fit:contain;border-radius:12px;"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
         <span style="display:none;font-size:1em;">${ach.icon}</span>`;
     document.getElementById('ach-popup-name').textContent = ach.name;
