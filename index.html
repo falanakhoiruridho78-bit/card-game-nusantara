@@ -4319,13 +4319,21 @@
         .mf-label { font-size: 0.82em; font-weight: 700; color: #fff; }
         .mf-timer { font-size: 0.75em; color: rgba(255,255,255,0.7); font-variant-numeric: tabular-nums; }
         .mf-cancel-btn {
-            background: rgba(255,80,80,0.25); border: 1px solid rgba(255,80,80,0.5);
-            color: #fff; border-radius: 50%; width: 26px; height: 26px;
-            cursor: pointer; font-size: 0.8em; display: flex; align-items: center;
-            justify-content: center; transition: background 0.2s;
-            flex-shrink: 0;
+            /* [FIX BENTUK] Sebelumnya melonjong (oval) karena kena aturan global `button { padding: 10px 25px }`
+               (lebar 26px + padding kiri-kanan 25px => ~52px lebar x 26px tinggi). Padding di-reset dan
+               ukuran dikunci supaya SELALU lingkaran sempurna. */
+            padding: 0; box-sizing: border-box;
+            width: 28px; height: 28px; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px;
+            aspect-ratio: 1 / 1; flex: 0 0 28px;
+            border-radius: 50%;
+            background: rgba(255,80,80,0.25); border: 1.5px solid rgba(255,255,255,0.35);
+            color: #fff; font-size: 0.85em; font-weight: 700; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: none;
+            transition: background 0.2s, transform 0.2s;
         }
-        .mf-cancel-btn:hover { background: rgba(255,80,80,0.5); }
+        .mf-cancel-btn:hover:not(:disabled) { background: rgba(255,80,80,0.55); transform: none; box-shadow: none; }
+        .mf-cancel-btn:active { transform: scale(0.92); }
 
         @keyframes bubbleIn {
             from { opacity: 0; transform: translateY(16px) scale(0.92); }
