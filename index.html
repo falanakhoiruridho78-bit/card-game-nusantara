@@ -4468,6 +4468,73 @@
             object-fit: contain;
             object-position: center;
         }
+
+        /* Pencapaian & Teman: tombol gambar di dalam wrapper + badge notifikasi di pojok kanan atas */
+        .btn-achievement-wrapper .btn-encyclopedia.btn-img,
+        .btn-teman-wrapper .btn-encyclopedia.btn-img {
+            width: 100%;
+            flex: 1 1 100%;
+            min-width: 0;
+        }
+        .btn-img #achievement-notif-badge,
+        .btn-img #teman-notif-badge {
+            position: absolute;
+            top: 2px;
+            right: 6px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        /* ======================================================== */
+        /* UKURAN TOMBOL GAMBAR DITETAPKAN WEBSITE (bukan ukuran asli) */
+        /* Gambar di-resize otomatis ke kotak ini: object-fit: fill  */
+        /* -> selalu penuh, tidak terpotong, tidak tergantung px asli */
+        /* Ubah --nav-btn-w / --nav-btn-h untuk mengatur ukuran semua */
+        /* ======================================================== */
+        .menu-nav-scroll-inner { --nav-btn-w: 160px; --nav-btn-h: 46px; }
+        @media (max-width: 560px) { .menu-nav-scroll-inner { --nav-btn-w: 120px; --nav-btn-h: 35px; } }
+        @media (max-width: 390px) { .menu-nav-scroll-inner { --nav-btn-w: 100px; --nav-btn-h: 29px; } }
+        @media (max-width: 340px) { .menu-nav-scroll-inner { --nav-btn-w: 88px;  --nav-btn-h: 25px; } }
+
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-img,
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-lapor-style.btn-img {
+            flex: 0 0 var(--nav-btn-w) !important;
+            width: var(--nav-btn-w) !important;
+            height: var(--nav-btn-h) !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            aspect-ratio: auto !important;
+            padding: 0 !important;
+        }
+        .menu-nav-scroll-inner .btn-achievement-wrapper,
+        .menu-nav-scroll-inner .btn-teman-wrapper {
+            flex: 0 0 var(--nav-btn-w) !important;
+            width: var(--nav-btn-w) !important;
+            height: var(--nav-btn-h);
+        }
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-img img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: fill !important;   /* paksa mengikuti kotak website */
+        }
+
+        /* Tombol utama (PERINGKAT): lebar dari website, tinggi tetap rasio 4:1 */
+        .btn-start.btn-img {
+            position: relative;
+            width: clamp(220px, 60vw, 420px) !important;
+            aspect-ratio: 4 / 1;
+            height: auto !important;
+        }
+        .btn-start.btn-img img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: fill;
+        }
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
@@ -4881,10 +4948,10 @@
                             <button class="btn-img btn-encyclopedia btn-ensiklopedia-style" onclick="playSound('button');showEncyclopedia()"><img src="gambar/tombol/koleksi-kartu.png" alt="Koleksi Kartu" draggable="false"></button>
                             <button class="btn-img btn-encyclopedia btn-leaderboard" onclick="playSound('button');showLeaderboard()"><img src="gambar/tombol/papan-peringkat.png" alt="Papan Peringkat" draggable="false"></button>
                             <div class="btn-achievement-wrapper">
-                                <button class="btn-encyclopedia btn-achievement-style" onclick="playSound('button');showAchievementScreen()">🏅 Pencapaian<span id="achievement-notif-badge">!</span></button>
+                                <button class="btn-img btn-encyclopedia btn-achievement-style" onclick="playSound('button');showAchievementScreen()"><img src="gambar/tombol/pencapaian.png" alt="Pencapaian" draggable="false"><span id="achievement-notif-badge">!</span></button>
                             </div>
                             <div class="btn-teman-wrapper">
-                                <button class="btn-encyclopedia btn-teman-style" onclick="playSound('button');showTemanScreen()">👥 Teman<span id="teman-notif-badge"></span></button>
+                                <button class="btn-img btn-encyclopedia btn-teman-style" onclick="playSound('button');showTemanScreen()"><img src="gambar/tombol/teman.png" alt="Teman" draggable="false"><span id="teman-notif-badge"></span></button>
                             </div>
                             <button class="btn-img btn-encyclopedia btn-kostum-style" onclick="playSound('button');showKostumPicker()"><img src="gambar/tombol/tantang.png" alt="Tantang" draggable="false"></button>
                             <button class="btn-img btn-encyclopedia btn-settings-style" onclick="playSound('button');showSettingsScreen()"><img src="gambar/tombol/pengaturan.png" alt="Pengaturan" draggable="false"></button>
