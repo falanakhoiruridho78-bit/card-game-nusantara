@@ -7620,6 +7620,10 @@
 
             setAuthLoading(false);
             hideAuthScreen();        // ← pastikan form login tertutup sebelum tampilkan layar berikutnya
+            // [LOADING LOGIN ULANG] true hanya jika login ini terjadi setelah logout di sesi halaman yang sama.
+            // Login pertama setelah buka/refresh halaman TIDAK pakai bar ini (sudah ada loading tunggal di awal).
+            const _showReLoginBar = !!window._reLoginLoading;
+            window._reLoginLoading = false;
             hideNicknameScreen();    // ← pastikan nickname screen juga tertutup
 
             showProfileBadge(user.uid, nickname);
@@ -7696,7 +7700,7 @@
                     // Animasi loading selesai
                     _animDone = true;
                     _tryShowPlay();
-                });
+                }, _showReLoginBar);
 
                 // Jalankan pencarian room bersamaan dengan animasi
                 (async function() {
@@ -8706,6 +8710,7 @@
             clearPresence();
 
             await auth.signOut();
+            window._reLoginLoading = true; // [LOADING LOGIN ULANG] login berikutnya (tanpa refresh) pakai bar loading singkat
 
             // Jangan hapus ROOM_ID dan PLAYER_ID agar bisa reconnect nanti jika ada sesi
             lsDel(LS.USER_UID);
@@ -9509,10 +9514,10 @@
         // =============================================
         // PRELOADING SCREEN (hanya tampil setelah login)
         // =============================================
-        function showPreloadingScreen(withLoading = true, onLoadingDone) {
+        function showPreloadingScreen(withLoading = true, onLoadingDone, showBar = false) {
             document.getElementById('pre-loading-screen').style.display = 'flex';
             document.getElementById('pre-loading-screen').classList.remove('hidden');
-            if (withLoading) startPreLoading(onLoadingDone);
+            if (withLoading) startPreLoading(onLoadingDone, showBar);
         }
 
         // =============================================
@@ -10681,7 +10686,7 @@
         // =============================================
         // PRE-LOADING
         // =============================================
-        function startPreLoading(onDone) {
+        function startPreLoading(onDone, showBar) {
             const infoEl = document.getElementById('pre-loading-info');
             const spinnerEl = document.getElementById('pre-loading-spinner');
             const subtitleEl = document.querySelector('.pre-loading-subtitle');
@@ -10704,18 +10709,54 @@
             if (spinnerEl) { spinnerEl.style.display = 'block'; spinnerEl.classList.add('has-progress'); spinnerEl.style.setProperty('--p', '3%'); }
             if (subtitleEl) subtitleEl.style.display = '';
 
-            // [LOADING TUNGGAL] Animasi loading sudah selesai di #firebase-loading (runEarlyPreload),
-            // jadi di sini TIDAK ada bar/animasi kedua lagi. Langsung lanjut ke callback / tombol PLAY.
-            if (spinnerEl) { spinnerEl.style.display = 'none'; spinnerEl.classList.remove('has-progress'); }
-            if (subtitleEl) subtitleEl.style.display = 'none';
-            if (typeof onDone === 'function') {
-                // Callback (dari pengecekan room di server) yang menentukan kapan PLAY muncul.
-                if (infoEl) { infoEl.textContent = 'Memeriksa pertandingan...'; infoEl.style.display = 'block'; }
-                onDone();
-            } else {
-                if (infoEl) infoEl.style.display = 'none';
-                if (playBtn) playBtn.style.display = 'block';
+            // Dipanggil saat loading selesai: lanjut ke callback (cek room server) atau tombol PLAY.
+            const finish = () => {
+                if (spinnerEl) { spinnerEl.style.display = 'none'; spinnerEl.classList.remove('has-progress'); }
+                if (subtitleEl) subtitleEl.style.display = 'none';
+                if (typeof onDone === 'function') {
+                    // Callback (dari pengecekan room di server) yang menentukan kapan PLAY muncul.
+                    if (infoEl) { infoEl.textContent = 'Memeriksa pertandingan...'; infoEl.style.display = 'block'; }
+                    onDone();
+                } else {
+                    if (infoEl) infoEl.style.display = 'none';
+                    if (playBtn) playBtn.style.display = 'block';
+                }
+            };
+
+            if (!showBar) {
+                // [LOADING TUNGGAL] Loading awal sudah selesai di #firebase-loading (runEarlyPreload),
+                // jadi tidak ada bar kedua. Langsung lanjut.
+                finish();
+                return;
             }
+
+            // [LOADING LOGIN ULANG] Bar singkat khusus logout -> login (tanpa refresh halaman).
+            // Total 3 dtk: 3 teks langkah + "Siap!" = 4 segmen x 750ms, lalu finish().
+            const RELOGIN_STEPS = [
+                'Memuat data akun...',
+                'Menyiapkan permainan...',
+                'Hampir selesai...'
+            ];
+            const RELOGIN_TOTAL_MS = 3000;
+            const segs = RELOGIN_STEPS.length + 1;
+            const tickMs = RELOGIN_TOTAL_MS / segs;
+            const setP = (n) => { if (spinnerEl) spinnerEl.style.setProperty('--p', Math.min(100, Math.round(n / segs * 100)) + '%'); };
+            if (infoEl) infoEl.textContent = RELOGIN_STEPS[0];
+            setTimeout(() => setP(1), 50);
+            let k = 0;
+            const iv = setInterval(() => {
+                k++;
+                if (k < RELOGIN_STEPS.length) {
+                    if (infoEl) infoEl.textContent = RELOGIN_STEPS[k];
+                    setP(k + 1);
+                } else if (k === RELOGIN_STEPS.length) {
+                    if (infoEl) infoEl.textContent = 'Siap!';
+                    setP(segs);
+                } else {
+                    clearInterval(iv);
+                    finish();
+                }
+            }, tickMs);
         }
 
         /** Helper: apakah user punya sesi aktif — dipakai friend list. */
