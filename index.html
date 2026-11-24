@@ -4454,6 +4454,20 @@
 
         /* Tombol di nav bar: lebar mengikuti aturan lama (160/120/100/88px), tinggi otomatis */
         .menu-nav-scroll-inner { align-items: center; }
+
+        /* Tombol nav bar: kotak seragam (rasio 160:56), gambar dimuat UTUH di dalamnya
+           (object-fit: contain) -> tidak pernah terpotong, sisa ruang transparan */
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-img {
+            position: relative;
+            aspect-ratio: 160 / 56;
+        }
+        .menu-nav-scroll-inner .btn-encyclopedia.btn-img img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
