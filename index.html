@@ -7442,12 +7442,37 @@
             // lalu diulang di pre-loading-screen 7 x 800ms = 5,6 dtk). Totalnya sekarang digabung
             // jadi satu animasi mulus dengan durasi sama dengan jumlah keduanya (5,6 + 5,6 = 11,2 dtk).
             // Ubah angka ini kalau ingin loading lebih singkat/lama.
-            const LOADING_TOTAL_MS = 11200;
+            const LOADING_TOTAL_MS = 4500;   // animasi bar (dulu 11200). Layar baru ditutup setelah gambar utama siap juga.
             const segments = steps.length + 1;               // 6 teks langkah + 1 "Siap!"
             const seg = LOADING_TOTAL_MS / segments;         // jeda antar langkah (1600 ms)
             if (bar) bar.style.transition = 'width ' + seg + 'ms linear'; // bar bergerak halus, tidak melompat
             const pct = (n) => Math.min(100, Math.round(n / segments * 100)) + '%';
             let i = 0;
+            // [LOADING NYATA] Layar loading hanya ditutup kalau animasi selesai DAN gambar utama
+            // (tombol menu + background) sudah termuat, dengan batas tunggu maksimal MAX_WAIT_MS
+            // supaya internet lambat tidak membuat pemain menunggu tanpa akhir.
+            const MAX_WAIT_MS = 6000;
+            let animDone = false, imagesReady = false, finished = false;
+            function tryFinish() {
+                if (finished || !animDone || !imagesReady) return;
+                finished = true;
+                el.textContent = 'Siap!';
+                preloadingDone = true;
+            }
+            (function waitCriticalImages() {
+                const urls = ['gambar/background/bg1.png'];
+                document.querySelectorAll('img[src^="gambar/tombol/"]').forEach(im => {
+                    if (urls.indexOf(im.getAttribute('src')) === -1) urls.push(im.getAttribute('src'));
+                });
+                let left = urls.length;
+                const done = () => { if (--left <= 0) { imagesReady = true; tryFinish(); } };
+                urls.forEach(u => {
+                    const im = new Image();            // dari cache jika sudah diunduh <img> di halaman
+                    im.onload = im.onerror = done;     // gambar gagal/tidak ada tidak boleh menahan loading
+                    im.src = u;
+                });
+                setTimeout(() => { imagesReady = true; tryFinish(); }, MAX_WAIT_MS);  // batas maksimal
+            })();
             if (bar) setTimeout(() => { bar.style.width = pct(1); }, 50);
             const iv = setInterval(() => {
                 if (i < steps.length) {
@@ -7455,9 +7480,10 @@
                     if (bar) bar.style.width = pct(i + 1);   // target milestone berikutnya, tercapai pas tick berikutnya
                 } else {
                     clearInterval(iv);
-                    el.textContent = 'Siap!';
                     if (bar) bar.style.width = '100%';
-                    preloadingDone = true;
+                    el.textContent = 'Hampir selesai...';
+                    animDone = true;
+                    tryFinish();
                 }
             }, seg);
         })();
