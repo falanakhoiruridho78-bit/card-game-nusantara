@@ -610,7 +610,7 @@
             .waiting-name { max-width: 55vw; }
         }
         .province-label-map {
-            height: 28px; width: auto; max-width: 56px;
+            height: clamp(22px, 6vw, 32px); width: auto; max-width: clamp(44px, 12vw, 64px);
             object-fit: contain; vertical-align: middle;
             margin-right: 6px; display: inline-block;
         }
@@ -1321,7 +1321,7 @@
         .province-info-header h2 { font-size: 1.8em; color: #fff; margin: 0; }
         /* Gambar peta di judul modal info provinsi (pengganti emoji 📍) */
         .province-info-title-map {
-            height: 1.3em; width: auto; max-width: 2.6em;
+            height: clamp(1.1em, 5vw, 1.4em); width: auto; max-width: clamp(2.2em, 10vw, 3em);
             object-fit: contain; vertical-align: middle;
             margin-right: 8px; display: inline-block;
         }
